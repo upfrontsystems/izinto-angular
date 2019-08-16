@@ -2,9 +2,44 @@
     <div fxFlex="100">
         <mat-card>
             <mat-card-content>
-                <mat-card-title>Missol Philippi</mat-card-title>
-                <mat-card-subtitle>Temperature, last 30 days</mat-card-subtitle>
+                <mat-card-title class="mb-3">Devices</mat-card-title>
+                <mat-form-field>
+                    <mat-select placeholder="Select device" [(value)]="selected_device" (selectionChange)="selectDevice(selected_device)">
+                        <mat-option *ngFor="let dev of this.devices"  [value]="dev">
+                            {{dev}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="selected_device">
+            <mat-toolbar class="no-shadow">
+                <mat-toolbar-row>
+                    <div fxShow="false" fxShow.gt-xs>
+                        <button mat-button (click)="updateView('hour')" [class.active]="view == 'hour'">Hour</button>
+                        <button mat-button (click)="updateView('day')" [class.active]="view == 'day'">Day</button>
+                        <button mat-button (click)="updateView('week')" [class.active]="view == 'week'">Week</button>
+                        <button mat-button (click)="updateView('month')" [class.active]="view == 'month'">Month</button>
+                    </div>
 
+                    <div fxHide="false" fxHide.gt-xs>
+                        <button mat-icon-button (click)="view = 'month'" [class.active]="view === 'month'">
+                            <mat-icon>view_module</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="view = 'week'" [class.active]="view === 'week'">
+                            <mat-icon>view_week</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="view = 'day'" [class.active]="view === 'day'">
+                            <mat-icon>view_day</mat-icon>
+                        </button>
+                    </div>
+
+                    <span fxFlex fxHide="false" fxHide.gt-xs></span>
+                </mat-toolbar-row>
+            </mat-toolbar>
+            <mat-card-content>
+                <mat-card-title>{{selected_device}}</mat-card-title>
+                <div class="d3-chart" #chart></div>
             </mat-card-content>
         </mat-card>
     </div>
