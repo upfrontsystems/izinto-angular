@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private datasets = [];
     private chartHeight = 160;
     private chartWidth = 1200;
-    private colours = ['#FC9E27', '#3A7FA3', '#B5CF6B', '#D6616B', '#E7BA52'];
+    private colours = ['#B5CF6B', '#3A7FA3', '#FC9E27', '#D6616B', '#E7BA52'];
     private units = ['°C', 'mm', 'mbar', '°'];
     private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)', 'Temperature (°C)', 'Wind speed (m/s) and direction (°)'];
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
@@ -240,6 +240,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+            svg.append('g').attr('class', 'bar-chart');
         }
 
         svg.selectAll('g.x-axis').remove();
@@ -269,7 +270,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
             .remove());
 
-        const update = svg.selectAll('rect.' + classname).data(dataset);
+        const update = svg.selectAll('g.bar-chart rect.' + classname).data(dataset);
         update.exit().remove();
 
         svg.selectAll('rect.' + classname).transition()
@@ -321,7 +322,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const gridScale = d3Scale.scaleLinear()
             .domain([ymin, ymax])
             .range([height - 40, 40] );
-        const gridLines = d3Axis.axisLeft(gridScale).ticks(3).tickSize(-width);
+        const gridLines = d3Axis.axisLeft(gridScale).ticks(4).tickSize(-width);
 
         const line = d3Shape.line<Record>()
             .x(function(d: Record): number { return xScale(d.date); }) // set the x values for the line generator
@@ -332,21 +333,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const create = svg.empty(),
               trans: any = 1000;
         if (create) {
-             svg = d3.select('div.d3-chart')
+            svg = d3.select('div.d3-chart')
                 .append('svg')
                 .attr('class', 'line')
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-            svg.append('path')
+            const linechart = svg.append('g').attr('class', 'line-chart');
+            linechart.append('path')
                 .datum(dataset)
                 .attr('fill', 'none')
                 .style('stroke', color)
                 .style('stroke-width', '2px')
                 .attr('class', 'line')
                 .attr('d', line);
-            svg.append('text')
+            linechart.append('text')
                 .attr('class', 'section-label')
                 .attr('x', 0)
                 .attr('y', 0)
@@ -354,7 +356,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('fill', 'black')
                 .text(title);
         } else {
-            svg.select('path.line')
+            svg.select('g.line-chart path.line')
                 .transition(trans)
                 .attr('d', line(dataset));
         }
