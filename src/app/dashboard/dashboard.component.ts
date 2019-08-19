@@ -229,7 +229,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .range([0, maxBarHeight] );
         const gridLines = d3Axis.axisLeft(gridScale).ticks(4).tickSize(-width);
 
-        let svg = d3.select('svg.' + classname + ' > g');
+        let svg = d3.select('svg.' + classname + ' > g'),
+            barChart = svg.select('g.' + classname);
         const create = svg.empty();
         if (create) {
             d3.selectAll('svg.' + classname).remove();
@@ -240,7 +241,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-            svg.append('g').attr('class', 'bar-chart');
+            barChart = svg.append('g').attr('class', classname);
         }
 
         svg.selectAll('g.x-axis').remove();
@@ -270,10 +271,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
             .remove());
 
-        const update = svg.selectAll('g.bar-chart rect.' + classname).data(dataset);
+        const update = barChart.selectAll('rect.' + classname).data(dataset);
         update.exit().remove();
 
-        svg.selectAll('rect.' + classname).transition()
+        barChart.selectAll('rect.' + classname).transition()
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
             })
