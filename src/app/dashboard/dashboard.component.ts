@@ -32,7 +32,7 @@ class Record {
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
 
-    private queryURL = 'http://izinto-influxdb:8086/query?q=';
+    private queryURL = '/query?q=';
     private devices = [];
     private selected_device = '';
     private create = true;
@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private colours = ['#B5CF6B', '#3A7FA3', '#FC9E27', '#D6616B', '#E7BA52'];
     private units = ['°C', 'mm', 'mbar', '°'];
     private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)', 'Temperature (°C)', 'Wind speed (m/s) and direction (°)'];
+    // humidity
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 20, right: 10, bottom: 20, left: 10};
@@ -105,7 +106,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                             this.datasets.forEach((dataset, i) => {
                                 const rec = new Record();
                                 rec.date = new Date(record[0]);
-                                rec.unit = this.units[i + 1];
+                                rec.unit = this.units[i];
                                 rec.value = Math.round(record[i + 1]);
                                 if (rec.value !== null) {
                                     dataset.push(rec);
@@ -244,12 +245,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+            svg.append('g')
+                .attr('class', 'grid')
+                .attr('transform', 'translate(0,' + (height - maxBarHeight) + ')');
             barChart = svg.append('g').attr('class', classname);
         }
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('text.section-label').remove();
-        svg.selectAll('g.grid').remove();
+        svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
@@ -261,9 +265,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('dy', '0.8em')
             .attr('fill', 'black')
             .text(title);
-        svg.append('g')
-            .attr('class', 'grid')
-            .attr('transform', 'translate(0,' + (height - maxBarHeight) + ')')
+        svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
             .attr('stroke-opacity', 0.5)
@@ -278,9 +280,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         update.exit().remove();
 
         barChart.selectAll('rect.' + classname).transition()
+            .attr('x', function (d: Record) {
+                return xScale(d.date);
+            })
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
             })
+            .attr('width', width / (dataset.length * 1.2))
             .attr('height', function (d: Record) {
                 return yScale(d.value);
             });
@@ -344,6 +350,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+            svg.append('g')
+                .attr('class', 'grid')
+                .attr('transform', 'translate(0,' + 30 + ')');
             const linechart = svg.append('g').attr('class', 'line-chart');
             linechart.append('path')
                 .datum(dataset)
@@ -366,14 +375,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
 
         svg.selectAll('g.x-axis').remove();
-        svg.selectAll('g.grid').remove();
+        svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale));
-        svg.append('g')
-            .attr('class', 'grid')
-            .attr('transform', 'translate(0,' + 30 + ')')
+        svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
             .attr('stroke-opacity', 0.5)
@@ -387,10 +394,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         if (create) {
             this.markerLine(d3.select('svg.line'), color, this.chartHeight);
         }
-
-        /*if (dataset.length > 40) {
-            return;
-        }*/
 
         const t = d3Trans.transition().duration(750);
 
