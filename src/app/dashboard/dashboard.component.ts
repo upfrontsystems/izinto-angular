@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private queryURL = '/query?q=';
     private devices = [];
     private selected_device = '';
-    private create = true;
     private view = 'month';
     private datasets = [];
     private chartHeight = 160;
@@ -65,9 +64,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     setChartWidth() {
         this.innerWidth = window.innerWidth;
-        this.chartWidth = this.innerWidth * 0.92;
+        this.chartWidth = this.innerWidth - 130;
+        d3.selectAll('svg').remove();
         if (this.selected_device) {
-            this.create = true;
             this.selectDevice(this.selected_device);
         }
     }
