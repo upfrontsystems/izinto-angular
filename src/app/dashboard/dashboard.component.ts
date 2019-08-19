@@ -8,6 +8,7 @@ import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Trans from 'd3-transition';
+import * as d3ScaleChromatic from 'd3-scale-chromatic';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -31,7 +32,7 @@ class Record {
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
 
-    private queryURL = 'http://localhost:8086/query?q=';
+    private queryURL = 'http://izinto-influxdb:8086/query?q=';
     private devices = [];
     private selected_device = '';
     private create = true;
@@ -90,50 +91,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const group_by = this.group_by[this.view],
             range = this.range[this.view],
             url = this.queryURL + encodeURIComponent('SELECT mean(\"temperature\") AS \"mean_temperature\",' +
-                'mean("rain") AS "mean_rain", mean("barometer") AS "mean_barometer" FROM \ ' +
+                'mean("rain") AS "mean_rain", mean("barometer") AS "mean_barometer",' +
+                'mean("wind") AS "mean_wind", mean("windDirection") AS "mean_windDirection" FROM \ ' +
                 '\"izintorain\".\"autogen\".\"measurement\" WHERE time > now() - ' + range + ' AND \"dev_id\"=\'' +
                 selected_device + '\' GROUP BY time(' + group_by + ') FILL(null)');
         return this.http.get(url, httpOptions)
             .subscribe(
                 data => {
-                    const temps = [],
-                        rains = [],
-                        mbars = [],
-                        element = this.chartContainer.nativeElement;
-                    this.datasets.length = 0;
+                    this.datasets = [[], [], [], [], []];
                     if (data['results'][0].hasOwnProperty('series')) {
                         for (const record of data['results'][0]['series'][0]['values']) {
-                            const temp = new Record();
-                            temp.date = new Date(record[0]);
-                            temp.unit = this.units[0];
-                            temp.value = Math.round(record[1]);
-                            if (temp.value === null) {
-                                temp.value = 0;
-                            }
-                            temps.push(temp);
-
-                            const rain = new Record();
-                            rain.date = new Date(record[0]);
-                            rain.unit = this.units[1];
-                            rain.value = Math.round(record[2]);
-                            if (rain.value === null) {
-                                rain.value = 0;
-                            }
-                            rains.push(rain);
-
-                            const mbar = new Record();
-                            mbar.date = new Date(record[0]);
-                            mbar.unit = this.units[2];
-                            mbar.value = Math.round(record[3]);
-                            if (mbar.value === null) {
-                                mbar.value = 0;
-                            }
-                            mbars.push(mbar);
+                            this.datasets.forEach((dataset, i) => {
+                                const rec = new Record();
+                                rec.date = new Date(record[0]);
+                                rec.unit = this.units[i + 1];
+                                rec.value = Math.round(record[i + 1]);
+                                if (rec.value !== null) {
+                                    dataset.push(rec);
+                                }
+                            });
                         }
                     }
-                    this.datasets.push(temps);
-                    this.datasets.push(rains);
-                    this.datasets.push(mbars);
                     this.updateCharts();
                 },
                 error => {
@@ -503,19 +481,75 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             // .attr("transform", "translate(" + arrowStart + ",100) rotate(" + 90 + ", " + x + ", 7.5)");
     }
 
+    windArrows() {
+        // XXX: make width and height calculation and creation of chart area a utility function
+        const width = this.chartWidth - this.margin.left - this.margin.right,
+              height = this.chartHeight - this.margin.top - this.margin.bottom;
+        let svg = d3.select('svg.wind > g');
+        const create = svg.empty();
+        if (create) {
+            svg = d3.select('div.d3-chart')
+                .append('svg')
+                .attr('class', 'wind')
+                .attr('width', this.chartWidth)
+                .attr('height', this.chartHeight)
+                .append('g')
+                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+        } else {
+            d3.selectAll('svg.wind path.arrowHead').remove();
+        }
+
+        // XXX: make section label a reusable function
+        svg.append('text')
+            .attr('class', 'section-label')
+            .attr('x', 5)
+            .attr('y', 10)
+            .attr('dy', '0.8em')
+            .attr('fill', 'black')
+            .text(this.titles[4]);
+
+        const lowScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateBlues)
+            .domain([0, 50]);
+        const highScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
+            .domain([51, 100]);
+
+        const windSpeed = this.datasets[3],
+            windDirection = this.datasets[4];
+        function colorScale(d) {
+            let value = 0;
+            for (let i = 0; i < windSpeed.length; i++) {
+                if (windSpeed[i].date.toUTCString() === d.date.toUTCString()) {
+                    value = windSpeed[i].value;
+                }
+            }
+            if (value < 51) {
+                return lowScale(value);
+            } else if (50 < value && value < 101) {
+                return highScale(value);
+            }
+        }
+        this.barChart('Wind speed', windSpeed, this.colours[4], this.chartHeight - 40, 'wind-bar', 'translate(0,-23)', colorScale);
+
+        const arrowScale = this.genxScale(windSpeed);
+
+        for (let i = 0; i < windSpeed.length; i++) {
+            const arrowX = arrowScale(windSpeed[i].date),
+                arrowWidth = width / windSpeed.length;
+            this.windArrow(i, arrowX, arrowWidth, windDirection[i].value, svg);
+        }
+
+        this.markerLine(d3.select('svg.wind'), arrowScale, this.colours[4], this.chartHeight);
+    }
+
     updateView(view) {
         this.view = view;
         this.selectDevice(this.selected_device);
     }
 
     updateCharts() {
-        const element = this.chartContainer.nativeElement;
         this.lineChart(this.titles[3], this.datasets[0], '#D6616B');
-        for (let i = 1; i < this.datasets.length; i++) {
-            this.create = true;
-            this.barChart(this.titles[i], this.datasets[i], this.colours[i], this.chartHeight, 'bar-' + i);
-        }
-
-        // drawXAxis(data);
+        this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
+        this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
+        // this.windArrows();
     }
 }
