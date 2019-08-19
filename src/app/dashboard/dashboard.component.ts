@@ -46,6 +46,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 20, right: 10, bottom: 20, left: 10};
+    private xScale: any;
 
     public innerWidth: any;
 
@@ -127,7 +128,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             range([rangeMin, rangeMax]);
     }
 
-    markerLine(svg, xScale, color, markerHeight= 160) {
+    markerLine(svg, color, markerHeight= 160) {
 
         const focus = svg.append('g')
             .attr('class', 'focus')
@@ -167,7 +168,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 this.mouseout();
             })
             .on('mousemove', function() {
-                _this.mousemove(this, xScale, markerHeight);
+                _this.mousemove(this, markerHeight);
             });
     }
 
@@ -179,16 +180,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         d3.selectAll('g.focus').style('display', 'none');
     }
 
-    mousemove(container, xScale, markerHeight) {
+    mousemove(container, markerHeight) {
         if (this.datasets.length === 0) {
             return;
         }
         const bisectDate = d3Array.bisector(function (d: Record) {
             return d.date;
         }).right;
-        const x0 = xScale.invert(d3.mouse(container)[0]),
+        const x0 = this.xScale.invert(d3.mouse(container)[0]),
             dsets = this.datasets,
-            width = this.chartWidth;
+            width = this.chartWidth,
+            xScale = this.xScale;
         d3.selectAll('g.focus').each(function(d: Record, i) {
                 const dset = dsets[i];
                 const j = bisectDate(dset, x0),
@@ -218,6 +220,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const width = this.chartWidth - this.margin.left - this.margin.right,
               height = this.chartHeight - this.margin.top - this.margin.bottom;
         const xScale = this.genxScale(dataset, this.margin.left + 10);
+        this.xScale = xScale;
         const ymin = d3Array.min<number>(dataset.map(d => d.value));
         const ymax = d3Array.max<number>(dataset.map(d => d.value));
         const maxBarHeight = height - (height / 3);
@@ -307,7 +310,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(d3Axis.axisBottom(xScale));
 
         if (create && showMarkerLine) {
-            this.markerLine(d3.select('svg.' + classname), xScale, color, this.chartHeight);
+            this.markerLine(d3.select('svg.' + classname), color, this.chartHeight);
         }
     }
 
@@ -382,7 +385,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .remove());
 
         if (create) {
-            this.markerLine(d3.select('svg.line'), xScale, color, this.chartHeight);
+            this.markerLine(d3.select('svg.line'), color, this.chartHeight);
         }
 
         /*if (dataset.length > 40) {
@@ -541,7 +544,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             this.windArrow(i, arrowX, arrowWidth, windDirection[i].value, svg);
         }
 
-        this.markerLine(d3.select('svg.wind'), arrowScale, this.colours[4], this.chartHeight);
+        this.markerLine(d3.select('svg.wind'), this.colours[4], this.chartHeight);
     }
 
     updateView(view) {
