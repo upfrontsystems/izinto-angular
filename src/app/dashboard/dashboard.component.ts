@@ -109,7 +109,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                                 rec.date = new Date(record[0]);
                                 rec.unit = this.units[i];
                                 rec.value = Math.round(record[i + 1]);
-                                if (rec.value !== null) {
+                                if (record[i + 1] !== null) {
                                     dataset.push(rec);
                                 }
                             });
