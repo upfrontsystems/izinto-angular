@@ -62,6 +62,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.getDevices();
         this.setChartWidth();
+        d3Trans.transition().duration(750);
     }
 
     setChartWidth() {
@@ -396,23 +397,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             this.markerLine(d3.select('svg.line'), color, this.chartHeight);
         }
 
-        const t = d3Trans.transition().duration(750);
-
-        const update = svg.selectAll('text.value').data(dataset);
-        update.exit().remove();
-
-        svg.selectAll('text.value')
-            .transition(t)
-            .attr('x', function(d: Record) { return xScale(d.date) - 12; })
-            .attr('y', function(d: Record) { return 15 + yScale(d.value); })
-            .text(function(d: Record) {return d.value + '°C'; });
-
-        update.enter().append('text')
-            .attr('class', 'value')
-            .attr('x', function(d: Record) { return xScale(d.date) - 12; })
-            .attr('y', function(d: Record) { return 15 + yScale(d.value); })
-            .attr('fill', '#3A7FA3')
-            .text(function(d: Record) {return d.value + '°C'; });
+        if (width < 600) {
+            svg.selectAll('circle').remove();
+            return;
+        }
 
         const blankdot = svg.selectAll('circle.blankdot').data(dataset);
         blankdot.exit().remove();
