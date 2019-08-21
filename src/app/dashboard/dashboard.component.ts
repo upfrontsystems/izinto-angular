@@ -8,6 +8,8 @@ import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Trans from 'd3-transition';
+import * as d3Time from 'd3-time';
+import * as d3TimeFormat from 'd3-time-format';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 
 const httpOptions = {
@@ -219,7 +221,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     barChart(title, dataset, color, chartHeight, classname= 'bar', transform= '', fillFunc?, showMarkerLine= true) {
         const width = this.chartWidth - this.margin.left - this.margin.right,
               height = this.chartHeight - this.margin.top - this.margin.bottom;
-        const xScale = this.genxScale(dataset, this.margin.left + 10);
+        const xScale = this.genxScale(dataset, this.margin.left + 30, width - 20);
         this.xScale = xScale;
         const ymin = d3Array.min<number>(dataset.map(d => d.value));
         const ymax = d3Array.max<number>(dataset.map(d => d.value));
