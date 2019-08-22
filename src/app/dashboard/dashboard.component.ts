@@ -47,8 +47,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     public windowWidth: any;
 
     private colours = ['#B5CF6B', '#3A7FA3', '#FC9E27', '#D6616B', '#E7BA52'];
-    private units = ['°C', 'mm', 'mbar', '°'];
-    private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)', 'Temperature (°C)', 'Wind speed (m/s) and direction (°)'];
+    private units = ['°C', 'mm', 'mbar', 'm/s', '°'];
+    private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)',
+        'Wind speed (m/s)', 'Wind direction (°)'];
     // humidity
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
@@ -257,7 +258,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return interval;
     }
 
-    barChart(title, dataset, color, chartHeight, classname= 'bar', transform= '', fillFunc?, showMarkerLine= true) {
+    barChart(title, dataset, color, chartHeight, classname= 'bar', fillFunc?, showMarkerLine= true) {
         const width = this.innerWidth,
             height = this.innerHeight,
             xScale = this.xScale(dataset),
@@ -273,7 +274,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .append('svg')
                 .attr('class', classname)
                 .attr('width', this.chartWidth)
-                .attr('height', this.chartHeight)
+                .attr('height', chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
@@ -342,11 +343,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 } else {
                     return color;
                 }
-            })
-            .attr('transform', transform);
+            });
 
         if (create && showMarkerLine) {
-            this.markerLine(d3.select('svg.' + classname), color, this.chartHeight);
+            this.markerLine(d3.select('svg.' + classname), color, chartHeight);
         }
     }
 
@@ -504,39 +504,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     windArrows() {
-        // XXX: make width and height calculation and creation of chart area a utility function
-        const width = this.chartWidth - this.margin.left - this.margin.right,
-              height = this.chartHeight - this.margin.top - this.margin.bottom;
-        let svg = d3.select('svg.wind > g');
-        const create = svg.empty();
-        if (create) {
-            svg = d3.select('div.d3-chart')
-                .append('svg')
-                .attr('class', 'wind')
-                .attr('width', this.chartWidth)
-                .attr('height', this.chartHeight)
-                .append('g')
-                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-        } else {
-            d3.selectAll('svg.wind path.arrowHead').remove();
-        }
-
-        // XXX: make section label a reusable function
-        svg.append('text')
-            .attr('class', 'section-label')
-            .attr('x', 5)
-            .attr('y', 10)
-            .attr('dy', '0.8em')
-            .attr('fill', 'black')
-            .text(this.titles[4]);
-
-        const lowScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateBlues)
-            .domain([0, 50]);
-        const highScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
-            .domain([51, 100]);
-
         const windSpeed = this.datasets[3],
-            windDirection = this.datasets[4];
+            windDirection = this.datasets[4],
+            lowScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateBlues)
+                .domain([0, 4]),
+            highScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
+                .domain([4, 20]);
+
         function colorScale(d) {
             let value = 0;
             for (let i = 0; i < windSpeed.length; i++) {
@@ -544,23 +518,32 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     value = windSpeed[i].value;
                 }
             }
-            if (value < 51) {
+            if (value < 5) {
                 return lowScale(value);
-            } else if (50 < value && value < 101) {
+            } else if (5 < value && value < 20) {
                 return highScale(value);
             }
         }
-        this.barChart('Wind speed', windSpeed, this.colours[4], this.chartHeight - 40, 'wind-bar', 'translate(0,-23)', colorScale);
 
-        const arrowScale = this.xScale;
+        this.barChart('Wind speed and direction', windSpeed, this.colours[4], this.chartHeight, 'wind-bar', colorScale);
+
+        // XXX: make width and height calculation and creation of chart area a utility function
+        const width = this.innerWidth,
+              height = this.innerHeight;
+        let svg = d3.select('svg.wind-bar > g.wind-arrows');
+        svg.remove();
+        svg = d3.select('svg.wind-bar')
+            .append('g')
+            .attr('class', 'wind-arrows')
+            .attr('transform', 'translate(' + this.margin.left + ',0)');
+
+        const arrowScale = this.xScale(windSpeed);
 
         for (let i = 0; i < windSpeed.length; i++) {
             const arrowX = arrowScale(windSpeed[i].date),
                 arrowWidth = width / windSpeed.length;
             this.windArrow(i, arrowX, arrowWidth, windDirection[i].value, svg);
         }
-
-        this.markerLine(d3.select('svg.wind'), this.colours[4], this.chartHeight);
     }
 
     updateView(view) {
@@ -574,6 +557,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.lineChart(this.titles[3], this.datasets[0], '#D6616B');
         this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
         this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
-        // this.windArrows();
+        this.windArrows();
     }
 }
