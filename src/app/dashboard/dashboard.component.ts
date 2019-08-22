@@ -39,18 +39,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private selected_device = '';
     private view = 'month';
     private datasets = [];
-    private chartHeight = 160;
+
+    private chartHeight = 200;
     private chartWidth = 1200;
+    private innerWidth = 0;
+    private innerHeight = 0;
+    public windowWidth: any;
+
     private colours = ['#B5CF6B', '#3A7FA3', '#FC9E27', '#D6616B', '#E7BA52'];
     private units = ['°C', 'mm', 'mbar', '°'];
     private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)', 'Temperature (°C)', 'Wind speed (m/s) and direction (°)'];
     // humidity
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
-    private margin = {top: 20, right: 20, bottom: 20, left: 30};
-    private xScale: any;
-
-    public innerWidth: any;
+    private margin = {top: 50, right: 20, bottom: 20, left: 40};
+    private markerScale: any;
 
     constructor(private http: HttpClient) { }
 
@@ -62,12 +65,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.getDevices();
         this.setChartWidth();
+        // Initialise transition
         d3Trans.transition().duration(750);
     }
 
     setChartWidth() {
-        this.innerWidth = window.innerWidth;
-        this.chartWidth = this.innerWidth - 130;
+        this.windowWidth = window.innerWidth;
+        this.chartWidth = this.windowWidth - 130;
+        this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
+        this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
         d3.selectAll('svg').remove();
         if (this.selected_device) {
             this.selectDevice(this.selected_device);
@@ -106,11 +112,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     if (data['results'][0].hasOwnProperty('series')) {
                         for (const record of data['results'][0]['series'][0]['values']) {
                             this.datasets.forEach((dataset, i) => {
-                                const rec = new Record();
+                                const rec = new Record(),
+                                    val = record[i + 1];
                                 rec.date = new Date(record[0]);
                                 rec.unit = this.units[i];
-                                rec.value = Math.round(record[i + 1]);
-                                if (record[i + 1] !== null) {
+                                rec.value = Math.round(val);
+                                if (val !== null) {
                                     dataset.push(rec);
                                 }
                             });
@@ -123,17 +130,35 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 });
     }
 
-    genxScale(dataset, rangeMin= 0, rangeMax= this.chartWidth) {
-        const xmin = d3Array.min<Date>(dataset.map(d => d.date));
-        const xmax = d3Array.max<Date>(dataset.map(d => d.date));
+    xScale(dataset) {
+        const xmin = d3Array.min<Date>(dataset.map(d => d.date)),
+            xmax = d3Array.max<Date>(dataset.map(d => d.date));
         return d3Scale.scaleTime().
             domain([xmin, xmax]).
-            range([rangeMin, rangeMax]);
+            range([0, this.innerWidth]);
     }
+
+    yScale(dataset, domain?) {
+        const ymin = d3Array.min<Date>(dataset.map(d => d.value)),
+            ymax = d3Array.max<Date>(dataset.map(d => d.value));
+        return d3Scale.scaleLinear().
+            domain(domain && domain || [ymin, ymax]).
+            range([0, this.innerHeight]);
+    }
+
+    gridScale(dataset) {
+        const ymin = d3Array.min<Date>(dataset.map(d => d.value)),
+            ymax = d3Array.max<Date>(dataset.map(d => d.value));
+        return d3Scale.scaleLinear()
+            .domain([ymin, ymax])
+            .range([this.innerHeight, 0] );
+    }
+
 
     markerLine(svg, color, markerHeight= 160) {
 
         const focus = svg.append('g')
+            .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'focus')
             .style('display', 'none');
 
@@ -144,23 +169,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('y1', 0)
             .attr('y2', markerHeight);
 
-        focus.append('line')
-            .attr('class', 'y-hover-line hover-line')
-            .attr('stroke', 'darkgray')
-            .attr('stroke-width', '2px')
-            .attr('x1', this.chartWidth)
-            .attr('x2', this.chartWidth);
-
         focus.append('text')
             .attr('class', 'hover-text')
             .attr('x', 5)
-            .attr('y', 55)
+            .attr('y', 45)
             .attr('fill', color);
 
         const _this = this;
         svg.append('rect')
+            .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'overlay')
-            .attr('width', this.chartWidth)
+            .attr('width', this.innerWidth)
             .attr('height', markerHeight)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
@@ -190,10 +209,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const bisectDate = d3Array.bisector(function (d: Record) {
             return d.date;
         }).right;
-        const x0 = this.xScale.invert(d3.mouse(container)[0]),
+        const x0 = this.markerScale.invert(d3.mouse(container)[0]),
             dsets = this.datasets,
-            width = this.chartWidth,
-            xScale = this.xScale;
+            xScale = this.markerScale,
+            newX = xScale(x0) + this.margin.left;
+
         d3.selectAll('g.focus').each(function(d: Record, i) {
                 const dset = dsets[i];
                 const j = bisectDate(dset, x0),
@@ -204,7 +224,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 }
                 d = x0 - d0.date > d1.date - x0 ? d1 : d0;
                 d3.select(this)
-                    .attr('transform', 'translate(' + xScale(x0) + ',' + 0 + ')')
+                    .attr('transform', 'translate(' + newX + ',' + 0 + ')')
                     .style('display', null)
                     .select('text').text(function(): any {
                         if (d.text) {
@@ -213,8 +233,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                             return d.value + ' ' + d.unit;
                         }
                     })
-                    .select('.x-hover-line').attr('y2', markerHeight)
-                    .select('.y-hover-line').attr('x2', width * 2);
+                    .select('.x-hover-line').attr('y2', markerHeight);
             }
         );
     }
@@ -239,20 +258,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     barChart(title, dataset, color, chartHeight, classname= 'bar', transform= '', fillFunc?, showMarkerLine= true) {
-        const width = this.chartWidth - this.margin.left - this.margin.right,
-              height = this.chartHeight - this.margin.top - this.margin.bottom;
-        const xScale = this.genxScale(dataset, this.margin.left, width);
-        this.xScale = xScale;
-        const ymin = d3Array.min<number>(dataset.map(d => d.value));
-        const ymax = d3Array.max<number>(dataset.map(d => d.value));
-        const maxBarHeight = height - (height / 3);
-        const gridScale = d3Scale.scaleLinear()
-            .domain([ymin, ymax])
-            .range([maxBarHeight, 0] );
-        const yScale = d3Scale.scaleLinear()
-            .domain([ymin, ymax])
-            .range([0, maxBarHeight] );
-        const gridLines = d3Axis.axisLeft(gridScale).ticks(4).tickSize(-width);
+        const width = this.innerWidth,
+            height = this.innerHeight,
+            xScale = this.xScale(dataset),
+            yScale = this.yScale(dataset),
+            gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-this.innerWidth);
 
         let svg = d3.select('svg.' + classname + ' > g'),
             barChart = svg.select('g.' + classname);
@@ -267,26 +277,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
-                .attr('class', 'grid')
-                .attr('transform', 'translate(0,' + (height - maxBarHeight) + ')');
+                .attr('class', 'grid');
             barChart = svg.append('g').attr('class', classname);
         }
 
-        svg.selectAll('g.x-axis').remove();
         svg.selectAll('text.section-label').remove();
+        svg.append('text')
+            .attr('class', 'section-label')
+            .attr('x', 0)
+            .attr('y', -40)
+            .attr('dy', '0.8em')
+            .attr('fill', 'black')
+            .text(title);
+
+        svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         const interval = this.xAxisInterval(width);
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale).ticks(interval));
-        svg.append('text')
-            .attr('class', 'section-label')
-            .attr('x', 0)
-            .attr('y', 0)
-            .attr('dy', '0.8em')
-            .attr('fill', 'black')
-            .text(title);
         svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
@@ -294,7 +304,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('stroke-opacity', 0.5)
             .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-            .attr('x', 0)
+            .attr('x', -10)
             .attr('dy', -4))
             .call(g => g.select('.domain')
             .remove());
@@ -341,22 +351,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     lineChart(title, dataset, color) {
-        const width = this.chartWidth - this.margin.left - this.margin.right,
-              height = this.chartHeight - this.margin.top - this.margin.bottom;
-        const xScale = this.genxScale(dataset, this.margin.left, width);
-        const ymin = d3Array.min<Date>(dataset.map(d => d.value));
-        const ymax = d3Array.max<Date>(dataset.map(d => d.value));
-        const yScale = d3Scale.scaleLinear().
-            domain([ymax, ymin]).
-            range([40, height - 40]);
-        const gridScale = d3Scale.scaleLinear()
-            .domain([ymin, ymax])
-            .range([height - 40, 40] );
-        const gridLines = d3Axis.axisLeft(gridScale).ticks(4).tickSize(-width);
+        const width = this.innerWidth,
+            height = this.innerHeight,
+            gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-width),
+            xScale = this.xScale(dataset),
+            yScale = this.yScale(dataset, [
+                d3Array.max<Date>(dataset.map(d => d.value)),
+                d3Array.min<Date>(dataset.map(d => d.value))]);
 
         const line = d3Shape.line<Record>()
             .x(function(d: Record): number { return xScale(d.date); }) // set the x values for the line generator
-            .y(function(d: Record): number { return 30 + yScale(d.value); }) // set the y values for the line generator
+            .y(function(d: Record): number { return yScale(d.value); }) // set the y values for the line generator
             .curve(d3Shape.curveMonotoneX); // apply smoothing to the line
 
         let svg = d3.select('svg.line > g');
@@ -371,8 +376,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
-                .attr('class', 'grid')
-                .attr('transform', 'translate(0,' + 30 + ')');
+                .attr('class', 'grid');
             const linechart = svg.append('g').attr('class', 'line-chart');
             linechart.append('path')
                 .datum(dataset)
@@ -384,7 +388,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             linechart.append('text')
                 .attr('class', 'section-label')
                 .attr('x', 0)
-                .attr('y', 0)
+                .attr('y', -40)
                 .attr('dy', '0.8em')
                 .attr('fill', 'black')
                 .text(title);
@@ -408,7 +412,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('stroke-opacity', 0.5)
             .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-            .attr('x', 0)
+            .attr('x', -10)
             .attr('dy', -4))
             .call(g => g.select('.domain')
             .remove());
@@ -426,28 +430,28 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         blankdot.exit().remove();
         svg.selectAll('circle.blankdot')
             .attr('cx', function(d: Record) { return xScale(d.date); })
-            .attr('cy', function(d: Record) { return 30 + yScale(d.value); });
+            .attr('cy', function(d: Record) { return yScale(d.value); });
 
         blankdot.enter().append('circle')
             .attr('class', 'blankdot')
             .attr('fill', 'white')
             .attr('stroke', '')
             .attr('cx', function(d: Record) { return xScale(d.date); })
-            .attr('cy', function(d: Record) { return 30 + yScale(d.value); })
+            .attr('cy', function(d: Record) { return yScale(d.value); })
             .attr('r', 7);
 
         const dot = svg.selectAll('circle.dot').data(dataset);
         dot.exit().remove();
         svg.selectAll('circle.dot')
             .attr('cx', function(d: Record) { return xScale(d.date); })
-            .attr('cy', function(d: Record) { return 30 + yScale(d.value); });
+            .attr('cy', function(d: Record) { return yScale(d.value); });
 
         dot.enter().append('circle')
             .attr('class', 'dot')
             .attr('fill', '#3A7FA3')
             .attr('stroke', '')
             .attr('cx', function(d: Record) { return xScale(d.date); })
-            .attr('cy', function(d: Record) { return 30 + yScale(d.value); })
+            .attr('cy', function(d: Record) { return yScale(d.value); })
             .attr('r', 5);
     }
 
@@ -548,7 +552,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
         this.barChart('Wind speed', windSpeed, this.colours[4], this.chartHeight - 40, 'wind-bar', 'translate(0,-23)', colorScale);
 
-        const arrowScale = this.genxScale(windSpeed);
+        const arrowScale = this.xScale;
 
         for (let i = 0; i < windSpeed.length; i++) {
             const arrowX = arrowScale(windSpeed[i].date),
@@ -565,6 +569,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     updateCharts() {
+        // Use first dataset to set scale for the marker line
+        this.markerScale = this.xScale(this.datasets[0]);
         this.lineChart(this.titles[3], this.datasets[0], '#D6616B');
         this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
         this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
