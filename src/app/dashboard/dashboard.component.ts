@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // humidity
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
-    private margin = {top: 20, right: 10, bottom: 20, left: 10};
+    private margin = {top: 20, right: 20, bottom: 20, left: 30};
     private xScale: any;
 
     public innerWidth: any;
@@ -219,10 +219,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         );
     }
 
+    xAxisInterval(width) {
+        let ticks = d3Time.timeDay;
+        if (this.view === 'hour') {
+            ticks = d3Time.timeMinute;
+        } else if (this.view === 'day') {
+            ticks = d3Time.timeHour;
+        }
+        let interval = ticks.every(1);
+        if (width < 800) {
+            interval = ticks.every(4);
+        } else if (width < 1200) {
+            interval = ticks.every(2);
+        }
+        if (this.view === 'hour') {
+            interval = ticks.every(5);
+        }
+        return interval;
+    }
+
     barChart(title, dataset, color, chartHeight, classname= 'bar', transform= '', fillFunc?, showMarkerLine= true) {
         const width = this.chartWidth - this.margin.left - this.margin.right,
               height = this.chartHeight - this.margin.top - this.margin.bottom;
-        const xScale = this.genxScale(dataset, this.margin.left + 30, width - 20);
+        const xScale = this.genxScale(dataset, this.margin.left, width);
         this.xScale = xScale;
         const ymin = d3Array.min<number>(dataset.map(d => d.value));
         const ymax = d3Array.max<number>(dataset.map(d => d.value));
@@ -256,10 +275,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('text.section-label').remove();
         svg.selectAll('g.grid > *').remove();
+        const interval = this.xAxisInterval(width);
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale));
+            .call(d3Axis.axisBottom(xScale).ticks(interval));
         svg.append('text')
             .attr('class', 'section-label')
             .attr('x', 0)
@@ -270,10 +290,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
+            .attr('x1', 10)
             .attr('stroke-opacity', 0.5)
             .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-            .attr('x', 15)
+            .attr('x', 0)
             .attr('dy', -4))
             .call(g => g.select('.domain')
             .remove());
@@ -314,9 +335,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             })
             .attr('transform', transform);
 
-        svg.selectAll('g.x-axis')
-            .call(d3Axis.axisBottom(xScale));
-
         if (create && showMarkerLine) {
             this.markerLine(d3.select('svg.' + classname), color, this.chartHeight);
         }
@@ -325,7 +343,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     lineChart(title, dataset, color) {
         const width = this.chartWidth - this.margin.left - this.margin.right,
               height = this.chartHeight - this.margin.top - this.margin.bottom;
-        const xScale = this.genxScale(dataset, this.margin.left + 30, width - 20);
+        const xScale = this.genxScale(dataset, this.margin.left, width);
         const ymin = d3Array.min<Date>(dataset.map(d => d.value));
         const ymax = d3Array.max<Date>(dataset.map(d => d.value));
         const yScale = d3Scale.scaleLinear().
@@ -376,19 +394,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('d', line(dataset));
         }
 
+        const interval = this.xAxisInterval(width);
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale));
+            .call(d3Axis.axisBottom(xScale).ticks(interval));
         svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
+            .attr('x1', 10)
             .attr('stroke-opacity', 0.5)
             .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-            .attr('x', 15)
+            .attr('x', 0)
             .attr('dy', -4))
             .call(g => g.select('.domain')
             .remove());
