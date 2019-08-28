@@ -261,9 +261,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     barChart(title, dataset, color, chartHeight, classname= 'bar', fillFunc?, showMarkerLine= true) {
         const width = this.innerWidth,
             height = this.innerHeight,
-            xScale = this.xScale(dataset),
+            xScale = d3Scale.scaleBand().range([0, width]).padding(0.1),
             yScale = this.yScale(dataset),
             gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-this.innerWidth);
+
+        xScale.domain(dataset.map(function(d) { return d.date; }));
 
         let svg = d3.select('svg.' + classname + ' > g'),
             barChart = svg.select('g.' + classname);
@@ -297,7 +299,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale).ticks(interval));
+            .call(d3Axis.axisBottom(xScale)
+                .tickValues(xScale.domain().filter(function(d, i) { return !(i % 1 ); }))
+                .tickFormat(function(d: any) {
+                    return d3TimeFormat.timeFormat('%d %b')(d);
+                })
+            );
         svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
@@ -314,22 +321,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         update.exit().remove();
 
         barChart.selectAll('rect.' + classname).transition()
-            .attr('x', function (d: Record) {
-                return xScale(d.date);
-            })
+            .attr('x', (d: any) => xScale(d.date))
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
             })
-            .attr('width', width / (dataset.length * 1.2))
+            .attr('width', xScale.bandwidth())
             .attr('height', function (d: Record) {
                 return yScale(d.value);
             });
 
         update.enter().append('rect')
             .attr('class', classname)
-            .attr('x', function (d: Record) {
-                return xScale(d.date);
-            })
+            .attr('x', (d: any) => xScale(d.date))
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
             })
@@ -554,7 +557,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     updateCharts() {
         // Use first dataset to set scale for the marker line
         this.markerScale = this.xScale(this.datasets[0]);
-        this.lineChart(this.titles[3], this.datasets[0], '#D6616B');
+        this.lineChart(this.titles[0], this.datasets[0], '#D6616B');
         this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
         this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
         this.windArrows();
