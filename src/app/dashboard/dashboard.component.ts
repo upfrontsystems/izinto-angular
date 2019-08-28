@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private selected_device = '';
     private view = 'month';
     private datasets = [];
+    private scales = [];
 
     private chartHeight = 200;
     private chartWidth = 1200;
@@ -54,7 +55,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 50, right: 20, bottom: 20, left: 40};
-    private markerScale: any;
 
     constructor(private http: HttpClient) { }
 
@@ -132,11 +132,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     xScale(dataset) {
-        const xmin = d3Array.min<Date>(dataset.map(d => d.date)),
-            xmax = d3Array.max<Date>(dataset.map(d => d.date));
-        return d3Scale.scaleTime().
-            domain([xmin, xmax]).
-            range([0, this.innerWidth]);
+        const x = d3Scale.scaleBand().range([0, this.innerWidth]).padding(0.1);
+        x.domain(dataset.map(function(d) { return d.date; }));
+        return x;
     }
 
     yScale(dataset, domain?) {
@@ -210,13 +208,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const bisectDate = d3Array.bisector(function (d: Record) {
             return d.date;
         }).right;
-        const x0 = this.markerScale.invert(d3.mouse(container)[0]),
+        const xcoord = d3.mouse(container)[0],
             dsets = this.datasets,
-            xScale = this.markerScale,
-            newX = xScale(x0) + this.margin.left;
+            scales = this.scales,
+            newX = xcoord + this.margin.left;
 
         d3.selectAll('g.focus').each(function(d: Record, i) {
-                const dset = dsets[i];
+                const dset = dsets[i],
+                    scale = scales[i];
+                let x0 = scale.domain()[0];
+                if (typeof scale.invert === 'undefined') {
+                    const eachBand = scale.step(),
+                        index = Math.round(((xcoord - eachBand / 2) / eachBand));
+                    x0 = scale.domain()[index];
+                } else {
+                    x0 = scale.invert(xcoord);
+                }
                 const j = bisectDate(dset, x0),
                     d0 = dset[j - 1],
                     d1 = dset[j];
@@ -261,12 +268,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     barChart(title, dataset, color, chartHeight, classname= 'bar', fillFunc?, showMarkerLine= true) {
         const width = this.innerWidth,
             height = this.innerHeight,
-            xScale = d3Scale.scaleBand().range([0, width]).padding(0.1),
+            xScale = this.xScale(dataset),
             yScale = this.yScale(dataset),
             gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-this.innerWidth);
 
-        xScale.domain(dataset.map(function(d) { return d.date; }));
-
+        this.scales.push(xScale);
         let svg = d3.select('svg.' + classname + ' > g'),
             barChart = svg.select('g.' + classname);
         const create = svg.empty();
@@ -362,8 +368,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 d3Array.max<Date>(dataset.map(d => d.value)),
                 d3Array.min<Date>(dataset.map(d => d.value))]);
 
+        this.scales.push(xScale);
+
         const line = d3Shape.line<Record>()
-            .x(function(d: Record): number { return xScale(d.date); }) // set the x values for the line generator
+            .x(function(d: any): number { return xScale(d.date) + xScale.bandwidth() / 2; }) // set the x values for the line generator
             .y(function(d: Record): number { return yScale(d.value); }) // set the y values for the line generator
             .curve(d3Shape.curveMonotoneX); // apply smoothing to the line
 
@@ -407,7 +415,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale).ticks(interval));
+            .call(d3Axis.axisBottom(xScale)
+                .tickValues(xScale.domain().filter(function(d, i) { return !(i % 1 ); }))
+                .tickFormat(function(d: any) {
+                    return d3TimeFormat.timeFormat('%d %b')(d);
+                })
+            );
         svg.select('g.grid')
             .call(gridLines)
             .call(g => g.selectAll('.tick line')
@@ -432,28 +445,28 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const blankdot = svg.selectAll('circle.blankdot').data(dataset);
         blankdot.exit().remove();
         svg.selectAll('circle.blankdot')
-            .attr('cx', function(d: Record) { return xScale(d.date); })
+            .attr('cx', function(d: any) { return xScale(d.date) + xScale.bandwidth() / 2; })
             .attr('cy', function(d: Record) { return yScale(d.value); });
 
         blankdot.enter().append('circle')
             .attr('class', 'blankdot')
             .attr('fill', 'white')
             .attr('stroke', '')
-            .attr('cx', function(d: Record) { return xScale(d.date); })
+            .attr('cx', function(d: any) { return xScale(d.date) + xScale.bandwidth() / 2; })
             .attr('cy', function(d: Record) { return yScale(d.value); })
             .attr('r', 7);
 
         const dot = svg.selectAll('circle.dot').data(dataset);
         dot.exit().remove();
         svg.selectAll('circle.dot')
-            .attr('cx', function(d: Record) { return xScale(d.date); })
+            .attr('cx', function(d: any) { return xScale(d.date) + xScale.bandwidth() / 2; })
             .attr('cy', function(d: Record) { return yScale(d.value); });
 
         dot.enter().append('circle')
             .attr('class', 'dot')
             .attr('fill', '#3A7FA3')
             .attr('stroke', '')
-            .attr('cx', function(d: Record) { return xScale(d.date); })
+            .attr('cx', function(d: any) { return xScale(d.date) + xScale.bandwidth() / 2; })
             .attr('cy', function(d: Record) { return yScale(d.value); })
             .attr('r', 5);
     }
@@ -555,8 +568,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     updateCharts() {
-        // Use first dataset to set scale for the marker line
-        this.markerScale = this.xScale(this.datasets[0]);
         this.lineChart(this.titles[0], this.datasets[0], '#D6616B');
         this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
         this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
