@@ -226,20 +226,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     x0 = scale.invert(xcoord);
                 }
                 const j = bisectDate(dset, x0),
-                    d0 = dset[j - 1],
-                    d1 = dset[j];
-                if (j <= 0 || j > dset.length - 1) {
-                    return;
-                }
-                d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+                    d0 = dset[j - 1];
                 d3.select(this)
                     .attr('transform', 'translate(' + newX + ',' + 0 + ')')
                     .style('display', null)
                     .select('text').text(function(): any {
-                        if (d.text) {
-                            return d.text;
+                        if (d0.text) {
+                            return d0.text;
                         } else {
-                            return d.value + ' ' + d.unit;
+                            return d0.value + ' ' + d0.unit;
                         }
                     })
                     .select('.x-hover-line').attr('y2', markerHeight);
