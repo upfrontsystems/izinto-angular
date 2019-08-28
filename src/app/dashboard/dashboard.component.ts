@@ -462,7 +462,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     calcPoint(input) {
         const j = input % 8,
-            _input = (input / 8) || 0 % 4,
+            _input = Math.round(input / 8) || 0 % 4,
             cardinal = ['north', 'east', 'south', 'west'],
             pointDesc = ['1', '1 by 2', '1-C', 'C by 1', 'C', 'C by 2', '2-C', '2 by 1'],
             str1 = cardinal[_input],
@@ -505,7 +505,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('stroke', 'black')
             .attr('stroke-width', '2px')
             .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
-            // .attr("transform", "translate(" + arrowStart + ",100) rotate(" + 90 + ", " + x + ", 7.5)");
     }
 
     windArrows() {
@@ -513,6 +512,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             windDirection = this.datasets[4],
             windScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateSpectral)
                 .domain([20, 0]);
+
+        windSpeed.forEach((rec, i) => {
+            const windDir = windDirection[i],
+                direction = windDir.value,
+                input = Math.round(direction / 11.25 + .5) || 0,
+                name = this.calcPoint(input),
+                shortName = this.getShortName(name);
+            rec.text = rec.value + rec.unit + ' - ' + direction + ' ° ' + shortName;
+        });
 
         function colorScale(d) {
             let value = 0;
