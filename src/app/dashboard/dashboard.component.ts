@@ -8,7 +8,6 @@ import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
 import * as d3Trans from 'd3-transition';
-import * as d3Time from 'd3-time';
 import * as d3TimeFormat from 'd3-time-format';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 
@@ -75,7 +74,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.chartWidth = this.windowWidth - 130;
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
-        d3.selectAll('svg').remove();
         if (this.selected_device) {
             this.selectDevice(this.selected_device);
         }
@@ -109,6 +107,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return this.http.get(url, httpOptions)
             .subscribe(
                 data => {
+                    d3.selectAll('svg').remove();
                     this.datasets = [[], [], [], [], []];
                     this.scales = [];
                     if (data['results'][0].hasOwnProperty('series')) {
@@ -512,10 +511,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     windArrows() {
         const windSpeed = this.datasets[3],
             windDirection = this.datasets[4],
-            lowScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateBlues)
-                .domain([0, 4]),
-            highScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
-                .domain([4, 20]);
+            windScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateSpectral)
+                .domain([20, 0]);
 
         function colorScale(d) {
             let value = 0;
@@ -524,11 +521,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     value = windSpeed[i].value;
                 }
             }
-            if (value < 5) {
-                return lowScale(value);
-            } else if (5 < value && value < 20) {
-                return highScale(value);
-            }
+            return windScale(value);
         }
 
         this.barChart('Wind speed and direction', windSpeed, this.colours[4], this.chartHeight, 'wind-bar', colorScale);
