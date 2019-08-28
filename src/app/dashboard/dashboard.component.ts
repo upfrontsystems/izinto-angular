@@ -254,6 +254,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return interval;
     }
 
+    tickFormat() {
+        let fmt = '%d %b';
+        if (this.view === 'hour' || this.view === 'day') {
+            fmt = '%H:%M';
+        }
+        return d3TimeFormat.timeFormat(fmt);
+    }
+
     barChart(title, dataset, color, chartHeight, classname= 'bar', fillFunc?, showMarkerLine= true) {
         const width = this.innerWidth,
             height = this.innerHeight,
@@ -290,14 +298,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
-        const interval = this.xAxisInterval(width);
+        const interval = this.xAxisInterval(width),
+            tickFormat = this.tickFormat();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale)
                 .tickValues(xScale.domain().filter(function(d, i) { return !(i % interval); }))
                 .tickFormat(function(d: any) {
-                    return d3TimeFormat.timeFormat('%d %b')(d);
+                    return tickFormat(d);
                 })
             );
         svg.select('g.grid')
@@ -398,7 +407,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('d', line(dataset));
         }
 
-        const interval = this.xAxisInterval(width);
+        const interval = this.xAxisInterval(width),
+            tickFormat = this.tickFormat();
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         svg.append('g')
@@ -407,7 +417,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(d3Axis.axisBottom(xScale)
                 .tickValues(xScale.domain().filter(function(d, i) { return !(i % interval ); }))
                 .tickFormat(function(d: any) {
-                    return d3TimeFormat.timeFormat('%d %b')(d);
+                    return tickFormat(d);
                 })
             );
         svg.select('g.grid')
