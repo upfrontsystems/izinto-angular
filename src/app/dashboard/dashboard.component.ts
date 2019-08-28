@@ -110,6 +110,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .subscribe(
                 data => {
                     this.datasets = [[], [], [], [], []];
+                    this.scales = [];
                     if (data['results'][0].hasOwnProperty('series')) {
                         for (const record of data['results'][0]['series'][0]['values']) {
                             this.datasets.forEach((dataset, i) => {
