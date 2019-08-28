@@ -243,20 +243,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     xAxisInterval(width) {
-        let ticks = d3Time.timeDay;
-        if (this.view === 'hour') {
-            ticks = d3Time.timeMinute;
-        } else if (this.view === 'day') {
-            ticks = d3Time.timeHour;
-        }
-        let interval = ticks.every(1);
+        let interval = 1;
         if (width < 800) {
-            interval = ticks.every(4);
+            interval = 4;
         } else if (width < 1200) {
-            interval = ticks.every(2);
+            interval = 2;
         }
         if (this.view === 'hour') {
-            interval = ticks.every(5);
+            interval = 5;
         }
         return interval;
     }
@@ -302,7 +296,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale)
-                .tickValues(xScale.domain().filter(function(d, i) { return !(i % 1 ); }))
+                .tickValues(xScale.domain().filter(function(d, i) { return !(i % interval); }))
                 .tickFormat(function(d: any) {
                     return d3TimeFormat.timeFormat('%d %b')(d);
                 })
@@ -412,7 +406,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale)
-                .tickValues(xScale.domain().filter(function(d, i) { return !(i % 1 ); }))
+                .tickValues(xScale.domain().filter(function(d, i) { return !(i % interval ); }))
                 .tickFormat(function(d: any) {
                     return d3TimeFormat.timeFormat('%d %b')(d);
                 })
