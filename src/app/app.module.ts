@@ -25,6 +25,7 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 import { SharedModule } from './shared/shared.module';
 import { SpinnerComponent } from './shared/spinner.component';
+import { ChartComponent } from './dashboard/chart/chart.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -40,7 +41,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         SpinnerComponent,
         AppBlankComponent,
         AppSidebarComponent,
-        DashboardComponent
+        DashboardComponent,
+        ChartComponent
     ],
     imports: [
         BrowserModule,

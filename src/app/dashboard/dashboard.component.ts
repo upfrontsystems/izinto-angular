@@ -1,20 +1,24 @@
 import {Component, AfterViewInit, OnInit, ElementRef, ViewChild, HostListener} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
+import { ChartService } from '../_services/chart.service';
+import { Chart } from '../_models/chart';
 
 import * as d3 from 'd3-selection';
 import * as d3Scale from 'd3-scale';
 import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
+import * as d3Time from 'd3-time';
 import * as d3Trans from 'd3-transition';
 import * as d3TimeFormat from 'd3-time-format';
-import * as d3ScaleChromatic from 'd3-scale-chromatic';
+import {data} from '../tables/smart-table/smart-data-table';
+import {AxisDomain} from 'd3-axis';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type':  'application/json',
-    'Authorization': 'Basic ' + btoa('upfrontsoftware:keHZZEd3L8nkXJvK')
+      'Content-Type':  'application/json',
+      'Authorization': 'Basic ' + btoa('upfrontsoftware:keHZZEd3L8nkXJvK')
   })
 };
 
@@ -33,6 +37,7 @@ class Record {
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
 
+    private charts: Chart[];
     private queryURL = '/query?q=';
     private devices = [];
     private selected_device = '';
@@ -46,16 +51,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private innerHeight = 0;
     public windowWidth: any;
 
-    private colours = ['#B5CF6B', '#3A7FA3', '#FC9E27', '#D6616B', '#E7BA52'];
-    private units = ['°C', 'mm', 'mbar', 'm/s', '°'];
-    private titles = ['Temperature (°C)', 'Rainfall (mm)', 'Air Pressure (mbar)',
-        'Wind speed (m/s)', 'Wind direction (°)'];
-    // humidity
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 50, right: 20, bottom: 20, left: 40};
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private chartService: ChartService) { }
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -63,10 +63,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.getCharts();
         this.getDevices();
         this.setChartWidth();
         // Initialise transition
         d3Trans.transition().duration(750);
+    }
+
+    getCharts() {
+        this.chartService.getCharts().subscribe(charts => this.charts = charts);
     }
 
     setChartWidth() {
@@ -97,38 +102,46 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     selectDevice(selected_device) {
-        const group_by = this.group_by[this.view],
-            range = this.range[this.view],
-            url = this.queryURL + encodeURIComponent('SELECT mean(\"temperature\") AS \"mean_temperature\",' +
-                'mean("rain") AS "mean_rain", mean("barometer") AS "mean_barometer",' +
-                'mean("wind") AS "mean_wind", mean("windDirection") AS "mean_windDirection" FROM \ ' +
-                '\"izintorain\".\"autogen\".\"measurement\" WHERE time > now() - ' + range + ' AND \"dev_id\"=\'' +
-                selected_device + '\' GROUP BY time(' + group_by + ') FILL(null)');
-        return this.http.get(url, httpOptions)
-            .subscribe(
-                data => {
-                    d3.selectAll('svg').remove();
-                    this.datasets = [[], [], [], [], []];
-                    this.scales = [];
-                    if (data['results'][0].hasOwnProperty('series')) {
-                        for (const record of data['results'][0]['series'][0]['values']) {
-                            this.datasets.forEach((dataset, i) => {
+        this.datasets.length = 0;
+        this.scales = [];
+        d3.selectAll('svg').remove();
+        for (const chart of this.charts) {
+            let query = chart.query;
+            query = query.replace(':range:', this.range[this.view])
+                .replace(':dev_id:', selected_device)
+                .replace(':group_by:', this.group_by[this.view]);
+
+            const url = this.queryURL + encodeURIComponent(query);
+
+            this.http.get(url, httpOptions)
+                .subscribe(
+                    data => {
+                        const dataset = [];
+                        if (data['results'][0].hasOwnProperty('series')) {
+                            for (const record of data['results'][0]['series'][0]['values']) {
                                 const rec = new Record(),
-                                    val = record[i + 1];
+                                    val = record[1];
                                 rec.date = new Date(record[0]);
-                                rec.unit = this.units[i];
+                                rec.unit = chart.unit;
                                 rec.value = Math.round(val);
                                 if (val !== null) {
                                     dataset.push(rec);
                                 }
-                            });
+                            }
                         }
-                    }
-                    this.updateCharts();
-                },
-                error => {
-                    console.log('Error: ', error);
-                });
+                        this.datasets.push(dataset);
+                        if (chart.type === 'Line') {
+                            this.lineChart(chart, dataset);
+                        } else if (chart.type === 'Bar') {
+                            this.barChart(chart, dataset);
+                        } else if (chart.type === 'Wind Arrow') {
+                            this.windArrows(chart, dataset);
+                        }
+                    },
+                    error => {
+                        console.log('Error: ', error);
+                    });
+        }
     }
 
     xScale(dataset) {
@@ -241,7 +254,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         );
     }
 
-    xAxisInterval(width) {
+    xAxisInterval(width, group_by= '1d') {
         let interval = 1;
         if (width < 800) {
             interval = 4;
@@ -250,6 +263,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
         if (this.view === 'hour') {
             interval = 5;
+        }
+
+        if (this.view === 'hour') {
+            return interval;
+        } else if (this.view === 'day') {
+            return interval;
+        } else if (this.view === 'week' || this.view === 'month') {
+            if (group_by === '1d') {
+                return interval;
+            } else if (group_by === '1h') {
+                return 24 * interval;
+            }
         }
         return interval;
     }
@@ -262,7 +287,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return d3TimeFormat.timeFormat(fmt);
     }
 
-    barChart(title, dataset, color, chartHeight, classname= 'bar', fillFunc?, showMarkerLine= true) {
+    barChart(chart, dataset) {
         const width = this.innerWidth,
             height = this.innerHeight,
             xScale = this.xScale(dataset),
@@ -270,21 +295,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-this.innerWidth);
 
         this.scales.push(xScale);
-        let svg = d3.select('svg.' + classname + ' > g'),
-            barChart = svg.select('g.' + classname);
+        let svg = d3.select('svg.' + chart.selector + ' > g'),
+            barChart = svg.select('g.' + chart.selector);
         const create = svg.empty();
         if (create) {
-            d3.selectAll('svg.' + classname).remove();
+            d3.selectAll('svg.' + chart.selector).remove();
             svg = d3.select('div.d3-chart')
                 .append('svg')
-                .attr('class', classname)
+                .attr('class', chart.selector)
                 .attr('width', this.chartWidth)
-                .attr('height', chartHeight)
+                .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
                 .attr('class', 'grid');
-            barChart = svg.append('g').attr('class', classname);
+            barChart = svg.append('g').attr('class', chart.selector);
         }
 
         svg.selectAll('text.section-label').remove();
@@ -294,7 +319,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('y', -40)
             .attr('dy', '0.8em')
             .attr('fill', 'black')
-            .text(title);
+            .text(chart.title);
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
@@ -321,10 +346,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
             .remove());
 
-        const update = barChart.selectAll('rect.' + classname).data(dataset);
+        const update = barChart.selectAll('rect.' + chart.selector).data(dataset);
         update.exit().remove();
 
-        barChart.selectAll('rect.' + classname).transition()
+        barChart.selectAll('rect.' + chart.selector).transition()
             .attr('x', (d: any) => xScale(d.date))
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
@@ -335,7 +360,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             });
 
         update.enter().append('rect')
-            .attr('class', classname)
+            .attr('class', chart.selector)
             .attr('x', (d: any) => xScale(d.date))
             .attr('y', function (d: Record) {
                 return height - yScale(d.value);
@@ -345,19 +370,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 return yScale(d.value);
             })
             .attr('fill', function(d: Record) {
-                if (fillFunc) {
-                    return fillFunc(d);
+                if (chart.fillFunc) {
+                    return chart.fillFunc(d.value);
                 } else {
-                    return color;
+                    return chart.color;
                 }
             });
 
-        if (create && showMarkerLine) {
-            this.markerLine(d3.select('svg.' + classname), color, chartHeight);
-        }
+        this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
     }
 
-    lineChart(title, dataset, color) {
+    lineChart(chart, dataset) {
         const width = this.innerWidth,
             height = this.innerHeight,
             gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-width),
@@ -373,13 +396,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .y(function(d: Record): number { return yScale(d.value); }) // set the y values for the line generator
             .curve(d3Shape.curveMonotoneX); // apply smoothing to the line
 
-        let svg = d3.select('svg.line > g');
+        let svg = d3.select('svg.' + chart.selector + ' > g');
         const create = svg.empty(),
               trans: any = 1000;
         if (create) {
             svg = d3.select('div.d3-chart')
                 .append('svg')
-                .attr('class', 'line')
+                .attr('class', chart.selector)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
                 .append('g')
@@ -390,7 +413,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             linechart.append('path')
                 .datum(dataset)
                 .attr('fill', 'none')
-                .style('stroke', color)
+                .style('stroke', chart.color)
                 .style('stroke-width', '2px')
                 .attr('class', 'line')
                 .attr('d', line);
@@ -400,22 +423,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('y', -40)
                 .attr('dy', '0.8em')
                 .attr('fill', 'black')
-                .text(title);
+                .text(chart.title);
         } else {
             svg.select('g.line-chart path.line')
                 .transition(trans)
                 .attr('d', line(dataset));
         }
 
-        const interval = this.xAxisInterval(width),
-            tickFormat = this.tickFormat();
+        const tickFormat = this.tickFormat(),
+            interval = this.xAxisInterval(width, chart.group_by);
+
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3Axis.axisBottom(xScale)
-                .tickValues(xScale.domain().filter(function(d, i) { return !(i % interval ); }))
+                .tickValues(xScale.domain().filter(function(d, i) {
+                    return !(i % interval);
+                }))
                 .tickFormat(function(d: any) {
                     return tickFormat(d);
                 })
@@ -433,10 +459,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .remove());
 
         if (create) {
-            this.markerLine(d3.select('svg.line'), color, this.chartHeight);
+            this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
         }
 
-        if (width < 600) {
+        if (width < 600 || dataset.length > 30) {
             svg.selectAll('circle').remove();
             return;
         }
@@ -517,49 +543,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
     }
 
-    windArrows() {
-        const windSpeed = this.datasets[3],
-            windDirection = this.datasets[4],
-            windScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateSpectral)
-                .domain([20, 0]);
+    windArrows(chart, dataset) {
+        // use the bar chart as base for the chart
+        this.barChart(chart, dataset);
 
-        windSpeed.forEach((rec, i) => {
-            const windDir = windDirection[i],
-                direction = windDir.value,
-                input = Math.round(direction / 11.25 + .5) || 0,
-                name = this.calcPoint(input),
-                shortName = this.getShortName(name);
-            rec.text = rec.value + rec.unit + ' - ' + direction + ' ° ' + shortName;
-        });
+        // remove the bars
+        const bars = d3.select('svg.' + chart.selector + ' > g').select('g.' + chart.selector);
+        bars.remove();
 
-        function colorScale(d) {
-            let value = 0;
-            for (let i = 0; i < windSpeed.length; i++) {
-                if (windSpeed[i].date.toUTCString() === d.date.toUTCString()) {
-                    value = windSpeed[i].value;
-                }
-            }
-            return windScale(value);
-        }
-
-        this.barChart('Wind speed and direction', windSpeed, this.colours[4], this.chartHeight, 'wind-bar', colorScale);
-
-        // XXX: make width and height calculation and creation of chart area a utility function
-        const width = this.innerWidth,
-              height = this.innerHeight;
-        let svg = d3.select('svg.wind-bar > g.wind-arrows');
+        let svg = d3.select('svg.' + chart.selector + ' > g.wind-arrows');
         svg.remove();
-        svg = d3.select('svg.wind-bar')
+        svg = d3.select('svg.' + chart.selector)
             .append('g')
             .attr('class', 'wind-arrows')
             .attr('transform', 'translate(' + this.margin.left + ',0)');
 
-        const arrowScale = this.xScale(windSpeed);
+        const arrowScale = this.xScale(dataset);
 
-        for (let i = 0; i < windSpeed.length; i++) {
-            const arrowX = arrowScale(windSpeed[i].date),
-                arrowWidth = width / windSpeed.length;
-            this.windArrow(i, arrowX, arrowWidth, windDirection[i].value, svg);
+        for (let i = 0; i < dataset.length; i++) {
+            const arrowX = arrowScale(dataset[i].date),
+                arrowWidth = this.innerWidth / dataset.length;
+            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
         }
     }
 
@@ -568,10 +572,4 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.selectDevice(this.selected_device);
     }
 
-    updateCharts() {
-        this.lineChart(this.titles[0], this.datasets[0], '#D6616B');
-        this.barChart(this.titles[1], this.datasets[1], this.colours[1], this.chartHeight, 'bar-rain');
-        this.barChart(this.titles[2], this.datasets[2], this.colours[2], this.chartHeight, 'bar-pressure');
-        this.windArrows();
-    }
 }
