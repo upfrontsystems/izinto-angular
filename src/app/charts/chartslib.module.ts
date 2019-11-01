@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { CommonModule } from '@angular/common';
 
-import { DemoMaterialModule } from '../demo-material-module';
+import { MaterialModule } from '../material.module';
 import { CdkTableModule } from '@angular/cdk/table';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +22,7 @@ import { NgxchartComponent } from './ngx-charts/ngx-chart.component';
   imports: [
     CommonModule,
     RouterModule.forChild(ChartsRoutes),
-    DemoMaterialModule,
+    MaterialModule,
     HttpModule,
     FormsModule,
     ReactiveFormsModule,

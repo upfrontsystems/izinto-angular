@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -14,7 +14,9 @@ import {
 })
 export class LockscreenComponent implements OnInit {
   public form: FormGroup;
-  constructor(private fb: FormBuilder, private router: Router) {}
+
+  constructor(private fb: FormBuilder, private router: Router) {
+  }
 
   ngOnInit() {
     this.form = this.fb.group({

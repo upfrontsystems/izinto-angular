@@ -2,7 +2,7 @@ import 'hammerjs';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DemoMaterialModule } from '../demo-material-module';
+import { MaterialModule } from '../material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { PagesRoutes } from './pages.routing';
@@ -17,7 +17,7 @@ import { HelperComponent } from './helper-classes/helper.component';
   imports: [
     CommonModule,
     RouterModule.forChild(PagesRoutes),
-    DemoMaterialModule,
+    MaterialModule,
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,

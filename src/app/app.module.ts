@@ -1,31 +1,41 @@
 import * as $ from 'jquery';
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { AppRoutes } from './app.routing';
-import { AppComponent } from './app.component';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+import {HttpClientModule, HttpClient, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {ReactiveFormsModule} from '@angular/forms';
+import {GraphQLModule} from './graph-ql/graph-ql.module';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
+import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 
-import { GraphQLModule } from './graph-ql/graph-ql.module';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { FullComponent } from './layouts/full/full.component';
-import { AppBlankComponent } from './layouts/blank/blank.component';
-import { AppHeaderComponent } from './layouts/full/header/header.component';
-import { AppSidebarComponent } from './layouts/full/sidebar/sidebar.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DemoMaterialModule } from './demo-material-module';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
-
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-
-import { SharedModule } from './shared/shared.module';
-import { SpinnerComponent } from './shared/spinner.component';
-import { ChartComponent } from './dashboard/chart/chart.component';
+import {FullComponent} from './layouts/full/full.component';
+import {AppBlankComponent} from './layouts/blank/blank.component';
+import {AppHeaderComponent} from './layouts/full/header/header.component';
+import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
+import {MaterialModule} from './material.module';
+import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
+import {ErrorInterceptor} from './_helpers/error.interceptor';
+import {JwtInterceptor} from './_helpers/jwt.interceptor';
+import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
+import {AuthService} from './auth.service';
+import {AppRoutes} from './app.routing';
+import {AppComponent} from './app.component';
+import {AlertService} from './_services/alert.service';
+import {SpinnerService} from './_services/spinner.service';
+import {AdminComponent} from './admin/admin.component';
+import { AlertNotificationComponent } from './shared/alert/alert.component';
+import {HomeComponent} from './home/home.component';
+import {SharedModule} from './shared/shared.module';
+import {ChartComponent} from './dashboard/chart/chart.component';
+import { SpinnerComponent } from './shared/spinner/spinner.component';
+import {UserComponent} from './user/user.component';
+import {UserDialogComponent} from './user/user.dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -35,35 +45,49 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
 @NgModule({
     declarations: [
+        AdminComponent,
         AppComponent,
-        FullComponent,
         AppHeaderComponent,
-        SpinnerComponent,
         AppBlankComponent,
         AppSidebarComponent,
+        ConfirmationComponent,
+        ConfirmationDialogComponent,
         DashboardComponent,
-        ChartComponent
+        ChartComponent,
+        FullComponent,
+        HomeComponent,
+        SpinnerComponent,
+        UserComponent,
+        UserDialogComponent,
     ],
     imports: [
+        AppRoutes,
         BrowserModule,
         BrowserAnimationsModule,
-        DemoMaterialModule,
+        MaterialModule,
         FormsModule,
         FlexLayoutModule,
         GraphQLModule,
         HttpClientModule,
         PerfectScrollbarModule,
+        ReactiveFormsModule,
         SharedModule,
-        RouterModule.forRoot(AppRoutes),
         NgMultiSelectDropDownModule.forRoot(),
+    ],
+    entryComponents: [
+        UserDialogComponent,
+        ConfirmationDialogComponent,
     ],
     providers: [
         AuthService,
-        {
-            provide: PERFECT_SCROLLBAR_CONFIG,
-            useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-        }
+        AlertService,
+        SpinnerService,
+        {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true},
+        {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+        {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+        {provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG}
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}

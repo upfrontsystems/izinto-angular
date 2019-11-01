@@ -1,37 +1,77 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormControl
+    FormBuilder,
+    FormGroup,
+    Validators,
+    FormControl
 } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
+import { AuthenticationService } from '../../_services/authentication.service';
+import { AlertService } from '../../_services/alert.service';
 
 const password = new FormControl('', Validators.required);
 const confirmPassword = new FormControl('', CustomValidators.equalTo(password));
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  public form: FormGroup;
-  constructor(private fb: FormBuilder, private router: Router) {}
+    public form: FormGroup;
+    currentStep = 1;
 
-  ngOnInit() {
-    this.form = this.fb.group({
-      email: [
-        null,
-        Validators.compose([Validators.required, CustomValidators.email])
-      ],
-      password: password,
-      confirmPassword: confirmPassword
-    });
-  }
+    constructor(
+        private authenticationService: AuthenticationService,
+        private alertService: AlertService,
+        private fb: FormBuilder,
+        private router: Router) {}
 
-  onSubmit() {
-    this.router.navigate(['/']);
-  }
+    ngOnInit() {
+        // set role to Handler
+        this.form = this.fb.group({
+            role: ['Handler'],
+            firstname: [
+                null,
+                Validators.compose([Validators.required, CustomValidators.firstname])
+            ],
+            surname: [
+                null,
+                Validators.compose([Validators.required, CustomValidators.surname])
+            ],
+            membership_no: [
+                null,
+                Validators.compose([Validators.required, CustomValidators.membership_no])
+            ],
+            email: [
+                null,
+                Validators.compose([Validators.required, CustomValidators.email])
+            ],
+            password,
+            confirmPassword
+        });
+    }
+
+    nextStep() {
+        this.currentStep += 1;
+    }
+
+    previousStep() {
+        this.currentStep -= 1;
+    }
+
+    stepOneValid() {
+        return this.form.controls.firstname.valid && this.form.controls.surname.valid && this.form.controls.membership_no.valid;
+    }
+
+    onSubmit() {
+        const url = window.location.protocol + '//' + window.location.host;
+        this.authenticationService.register(this.form.value, url).subscribe(
+            resp => {
+                this.alertService.success('You have successfully registered. <br>' +
+                'Please check your email for further instructions', true, 10000);
+                this.router.navigate(['/']);
+            });
+    }
 }

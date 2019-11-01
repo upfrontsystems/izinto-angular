@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DemoMaterialModule } from '../demo-material-module';
+import { MaterialModule } from '../material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
 import { CalendarModule, CalendarDateFormatter } from 'angular-calendar';
@@ -21,7 +21,7 @@ import { TaskboardComponent } from './taskboard/taskboard.component';
   imports: [
     CommonModule,
     RouterModule.forChild(AppsRoutes),
-    DemoMaterialModule,
+    MaterialModule,
     CalendarModule.forRoot(),
     FlexLayoutModule,
     QuillModule,

@@ -1,27 +1,46 @@
 <div class="login-register" style="background-image:url(assets/images/background/login-register.jpg);">
-  <div class="login-register-box">
-    <mat-card>
-      <mat-card-content>
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="text-center">
-            <img alt="homepage" src="assets/images/logo-icon.png">
-            <h4 class="m-t-0">Recover Password</h4>
-          </div>
-          <p class="text-center font-14">Enter your email and we'll send you the password reset link.</p>
+    <div class="login-register-box">
+        <mat-card *ngIf="!resetRequested">
+            <mat-card-content>
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <div class="text-center">
+                        <a href="/"><img alt="homepage" width="100%" src="assets/images/logo-icon.png"></a>
+                        <h4 class="m-t-0">Recover Password</h4>
+                    </div>
+                    <p class="text-center font-14">Enter your email and we'll send you the password reset link.</p>
 
-          <div fxLayout="column" fxLayoutAlign="space-around">
-            <div class="pb-1">
-              <mat-form-field style="width: 100%">
-                <input matInput placeholder="Email address" type="email" [formControl]="form.controls['email']">
-              </mat-form-field>
-              <small *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched" class="text-danger support-text">You must include an email address.</small>
-              <small *ngIf="form.controls['email'].errors?.email && form.controls['email'].touched" class="text-danger support-text">You must include a valid email address.</small>
-            </div>
-            <button mat-raised-button color="primary" type="submit" class="btn-block btn-lg m-t-20" [disabled]="!form.valid">Submit</button>
-          </div>
+                    <div fxLayout="column" fxLayoutAlign="space-around">
+                        <div class="pb-1">
+                            <mat-form-field style="width: 100%">
+                                <input matInput placeholder="Email address" type="email"
+                                       [formControl]="form.controls['email']">
+                            </mat-form-field>
+                            <small *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched"
+                                   class="text-danger support-text">You must include an email address.
+                            </small>
+                            <small *ngIf="form.controls['email'].errors?.email && form.controls['email'].touched"
+                                   class="text-danger support-text">You must include a valid email address.
+                            </small>
+                        </div>
+                        <button mat-raised-button color="primary" type="submit" class="btn-block btn-lg m-t-20"
+                                [disabled]="!form.valid">Submit
+                        </button>
+                    </div>
 
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+        <mat-card *ngIf="resetRequested">
+            <mat-card-content>
+                <div class="text-center">
+                    <a href="/"><img alt="homepage" width="100%" src="assets/images/logo-icon.png"></a>
+                    <h2 class="m-t-0">Check your email</h2>
+                </div>
+                <p>We sent you an email with instructions on how to reset your password.</p>
+                <p>Didn't receive an email from us? Check your spam folder or <a href="mailto:support@izinto.co.za">Contact us</a>.
+                <p>Email confirmation helps us to ensure your data will always be safe.</p>
+            </mat-card-content>
+            <img mat-card-image class="banner-image" src="assets/images/mail.png" alt="mail">
+        </mat-card>
+    </div>
 </div>

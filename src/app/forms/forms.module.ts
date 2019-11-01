@@ -2,7 +2,7 @@ import 'hammerjs';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DemoMaterialModule } from '../demo-material-module';
+import { MaterialModule } from '../material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormRoutes } from './forms.routing';
@@ -34,7 +34,7 @@ import { MultiselectComponent } from './multiselect/multiselect.component';
   imports: [
     CommonModule,
     RouterModule.forChild(FormRoutes),
-    DemoMaterialModule,
+    MaterialModule,
     FlexLayoutModule,
     FormsModule,
     QuillModule,
