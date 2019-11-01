@@ -1,13 +1,17 @@
 <!-- ============================================================== -->
 <!-- Profile - style you can find in header.scss -->
 <!-- ============================================================== -->
-<button [matMenuTriggerFor]="profile" mat-icon-button class="m-r-5">
-    <img src="assets/images/users/gronum.jfif" alt="user" class="profile-pic"> </button>
+<button [matMenuTriggerFor]="profile" mat-icon-button matTooltip="{{currentUser?.fullname + '\n' + currentUser?.email}}"
+        class="m-r-5" matTooltipClass="white-space-pre" matTooltipPosition="before">
+    <mat-icon>account_circle</mat-icon>
+</button>
 <mat-menu #profile="matMenu" class="mymegamenu">
-    <button mat-menu-item>
-        <mat-icon>settings</mat-icon> Settings </button>
-    <button mat-menu-item>
-        <mat-icon>account_box</mat-icon> Profile </button>
-    <button mat-menu-item>
-        <mat-icon>exit_to_app</mat-icon> Sign Out </button>
+    <button mat-menu-item (click)="editProfile()">
+        <mat-icon>account_box</mat-icon>
+        Profile
+    </button>
+    <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        Sign Out
+    </button>
 </mat-menu>

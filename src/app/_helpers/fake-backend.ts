@@ -18,15 +18,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const users: User[] = [
             {
-                id: '42c9d2c5116c4e23aeca50bfdafb7308', email: 'admin', password: 'admin', firstName: 'Admin', lastName: 'User',
-                role: Role.Administrator, roles: [Role.Administrator], firstname: 'Admin',
-                surname: 'User', fullname: 'Admin User', membership_no: '001',
-                inactive: false, profile_pic: ''
+                id: '42c9d2c5116c4e23aeca50bfdafb7308', email: 'admin', password: 'admin', firstname: 'Admin', surname: 'User',
+                fullname: 'Admin User', role: Role.Administrator, roles: [Role.Administrator], inactive: false
             },
             {
-                id: 'e846e4f4f27b4917a92de462ddbb102a', email: 'user', password: 'user', firstName: 'Normal', lastName: 'User',
-                role: Role.User, roles: [Role.User], firstname: 'Normal', surname: 'User', fullname: 'Normal User', membership_no: '002',
-                inactive: false, profile_pic: ''
+                id: 'e846e4f4f27b4917a92de462ddbb102a', email: 'user', password: 'user', firstname: 'Normal', surname: 'User',
+                fullname: 'Normal User', role: Role.User, roles: [Role.User], inactive: false
             }
         ];
 
@@ -47,8 +44,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                 return ok({
                     id: user.id,
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
+                    firstname: user.firstname,
+                    surname: user.surname,
                     role: user.role,
                     token: `fake-jwt-token.${user.role}`
                 });
