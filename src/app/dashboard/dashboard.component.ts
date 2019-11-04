@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {HttpHeaders} from '@angular/common/http';
 import {ChartService} from '../_services/chart.service';
 import {Chart} from '../_models/chart';
+import { Dashboard } from '../_models/dashboard';
 
 import * as d3 from 'd3-selection';
 import * as d3Scale from 'd3-scale';
@@ -18,6 +19,7 @@ import {Record} from '../_models/record';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
+import {ActivatedRoute} from '@angular/router';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -34,6 +36,8 @@ const httpOptions = {
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
 
+    dashboardId: number;
+    dashboard: Dashboard;
     private charts: Chart[];
     private queryURL = '/query?q=';
     private devices = [];
@@ -58,7 +62,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
     ];
 
-    constructor(private http: HttpClient,
+    constructor(private route: ActivatedRoute,
+                private http: HttpClient,
                 public dialog: MatDialog,
                 private chartService: ChartService,
                 private dashboardService: DashboardService) { }
@@ -69,15 +74,31 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.getCharts();
-        this.getDevices();
-        this.setChartWidth();
-        // Initialise transition
-        d3Trans.transition().duration(750);
+        this.route.paramMap.subscribe(params => {
+            // this.dashboardId = +params.get('id');
+            this.dashboardId = 1;
+
+
+            // this.getDashboard();
+
+
+
+            this.getCharts();
+            this.getDevices();
+            this.setChartWidth();
+            // Initialise transition
+            d3Trans.transition().duration(750);
+        });
+    }
+
+    getDashboard() {
+        this.dashboardService.getById(this.dashboardId).subscribe(resp => {
+            this.dashboard = resp;
+        });
     }
 
     getCharts() {
-        this.chartService.getCharts().subscribe(charts => this.charts = charts);
+        this.chartService.getCharts({dashboard_id: this.dashboardId}).subscribe(charts => this.charts = charts);
     }
 
     setChartWidth() {
@@ -96,7 +117,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '550px',
-            data: {chart: {dashboard_id: undefined}}
+            data: {chart: {dashboard_id: this.dashboardId}}
         });
 
         dialogRef.afterClosed().subscribe(result => {

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Chart} from '../_models/chart';
+import {Dashboard} from '../_models/dashboard';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -21,5 +23,9 @@ export class DashboardService {
 
     selectDevice(url) {
         return this.http.get(url, httpOptions);
+    }
+
+    getById(id) {
+        return this.http.get<Dashboard>(`/api/dashboard/` + id);
     }
 }

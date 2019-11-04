@@ -16,11 +16,11 @@ const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: '/dashboard',
+                redirectTo: '/dashboard/1',
                 pathMatch: 'full'
             },
             {
-                path: 'dashboard',
+                path: 'dashboard/:id',
                 component: DashboardComponent
             },
             {

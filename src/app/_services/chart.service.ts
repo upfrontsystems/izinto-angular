@@ -12,24 +12,25 @@ export class ChartService {
     constructor(private http: HttpClient) {
     }
 
-    getCharts(): Observable<Chart[]> {
+    getCharts(filters): Observable<Chart[]> {
         return of(CHARTS);
+        return this.http.get<Chart[]>(`/api/charts`, {params: filters});
     }
 
-    getById(filters) {
-        return this.http.get<Chart>(`/api/entry`, {params: filters});
+    getById(id) {
+        return this.http.get<Chart>(`/api/chart/` + id);
     }
 
     add(chart) {
-        return this.http.post<Chart>('/api/entries', chart);
+        return this.http.post<Chart>('/api/charts', chart);
     }
 
     edit(chart) {
-        return this.http.put<Chart>(`api/entries`, chart);
+        return this.http.put<Chart>(`api/chart/` + chart.id, chart);
     }
 
-    delete(params) {
-        return this.http.delete(`api/entry`, {params});
+    delete(chart) {
+        return this.http.delete(`api/chart/` + chart.id);
     }
 
 }
