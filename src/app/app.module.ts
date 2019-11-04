@@ -23,7 +23,6 @@ import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {ErrorInterceptor} from './_helpers/error.interceptor';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
-import {AuthService} from './auth.service';
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
 import {AlertService} from './_services/alert.service';
@@ -36,6 +35,8 @@ import {ChartComponent} from './dashboard/chart/chart.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
+import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.component';
+import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -54,6 +55,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         ConfirmationDialogComponent,
         DashboardComponent,
         ChartComponent,
+        ChartDialogComponent,
+        FabSpeedDialComponent,
         FullComponent,
         HomeComponent,
         SpinnerComponent,
@@ -75,11 +78,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         NgMultiSelectDropDownModule.forRoot(),
     ],
     entryComponents: [
-        UserDialogComponent,
+        ChartDialogComponent,
         ConfirmationDialogComponent,
+        UserDialogComponent
     ],
     providers: [
-        AuthService,
         AlertService,
         SpinnerService,
         {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true},

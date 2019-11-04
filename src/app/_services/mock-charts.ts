@@ -3,7 +3,7 @@ import * as d3Scale from 'd3-scale';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 
 const windScale = d3Scale.scaleSequential(d3ScaleChromatic.interpolateSpectral)
-    .domain([20, 0])
+    .domain([20, 0]);
 
 
 export const CHARTS: Chart[] = [

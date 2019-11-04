@@ -16,6 +16,8 @@ import {data} from '../tables/smart-table/smart-data-table';
 import {AxisDomain} from 'd3-axis';
 import {Record} from '../_models/record';
 import {DashboardService} from '../_services/dashboard.service';
+import {ChartDialogComponent} from './chart/chart.dialog.component';
+import {MatDialog} from '@angular/material';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -49,8 +51,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 50, right: 20, bottom: 20, left: 40};
+    fabButtons = [
+        {
+            icon: 'add',
+            label: 'Add Chart',
+        }
+    ];
 
-    constructor(private http: HttpClient, private chartService: ChartService, private dashboardService: DashboardService) { }
+    constructor(private http: HttpClient,
+                public dialog: MatDialog,
+                private chartService: ChartService,
+                private dashboardService: DashboardService) { }
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -82,6 +93,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
     }
 
+    addChart() {
+        const dialogRef = this.dialog.open(ChartDialogComponent, {
+            width: '550px',
+            data: {chart: {dashboard_id: undefined}}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.chartService.add(result).subscribe(resp => {
+                    this.charts.push(resp);
+                });
+            }
+        });
+    }
+
     getDevices() {
         const url = this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" FROM \"measurement\" WITH KEY = \"dev_id\"');
         return this.http.get(url, httpOptions)
@@ -105,7 +131,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .replace(':group_by:', this.group_by[this.view]);
 
             const url = this.queryURL + encodeURIComponent(query);
-
+            console.log('http get');
             this.http.get(url, httpOptions)
                 .subscribe(
                     resp => {

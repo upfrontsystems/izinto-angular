@@ -10,14 +10,14 @@ import { MenuItems } from './menu-items/menu-items';
         AccordionLinkDirective,
         AccordionDirective,
         AlertComponent,
-        AlertNotificationComponent
+        AlertNotificationComponent,
     ],
     exports: [
         AccordionAnchorDirective,
         AccordionLinkDirective,
         AccordionDirective,
         AlertComponent,
-        AlertNotificationComponent
+        AlertNotificationComponent,
     ],
     entryComponents: [
         AlertNotificationComponent,

@@ -3,7 +3,7 @@ import { MatSnackBar, MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/materi
 import { AlertService } from '../../_services/alert.service';
 
 @Component({
-    selector: 'alert',
+    selector: 'app-alert',
     template: '<div></div>',
     styleUrls: ['alert.component.scss']
 })
