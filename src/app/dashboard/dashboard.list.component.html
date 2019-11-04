@@ -1,0 +1,34 @@
+<ng-container *ngFor="let dashboard of dashboards">
+    <div fxLayout="row">
+        <div fxFlex="100%">
+            <mat-card>
+                <mat-card-content>
+                    <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
+                        <mat-icon>more_horiz</mat-icon>
+                    </button>
+                    <mat-menu #itemMenu="matMenu">
+                        <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
+                                title="Delete">
+                            <mat-icon>delete</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                        <confirmation #deleteConfirm [title]="'Delete dashboard'"
+                                      [content]="'Are you sure you wish to permanently delete this dashboard?'"
+                                      (onAccept)="delete(dashboard)">
+                        </confirmation>
+                        <button mat-menu-item class="pull-right" color="accent" (click)="edit(dashboard)" title="Edit">
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+                    </mat-menu>
+
+                    <mat-card-actions></mat-card-actions>
+                    <mat-card-title><a [routerLink]="[dashboard.id]">{{dashboard.title}}</a></mat-card-title>
+                    <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
+
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</ng-container>
+<app-fab-speed-dial (buttonClick)="add()" [fabButtons]="fabButtons"></app-fab-speed-dial>

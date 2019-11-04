@@ -1,9 +1,8 @@
 import * as $ from 'jquery';
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {HttpClientModule, HttpClient, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ReactiveFormsModule} from '@angular/forms';
 import {GraphQLModule} from './graph-ql/graph-ql.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -16,6 +15,7 @@ import {AppBlankComponent} from './layouts/blank/blank.component';
 import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import { DashboardListComponent } from './dashboard/dashboard.list.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
 import {MaterialModule} from './material.module';
@@ -37,6 +37,7 @@ import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
 import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.component';
 import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
+import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -54,6 +55,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         ConfirmationComponent,
         ConfirmationDialogComponent,
         DashboardComponent,
+        DashboardDialogComponent,
+        DashboardListComponent,
         ChartComponent,
         ChartDialogComponent,
         FabSpeedDialComponent,
@@ -80,6 +83,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     entryComponents: [
         ChartDialogComponent,
         ConfirmationDialogComponent,
+        DashboardDialogComponent,
         UserDialogComponent
     ],
     providers: [

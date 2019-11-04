@@ -12,6 +12,7 @@ export class ChartDialogComponent implements OnInit {
 
     public form: FormGroup;
     chart: Chart;
+    chartTypes = ['Bar', 'Line', 'Wind Arrow'];
     state: string;
 
     constructor(

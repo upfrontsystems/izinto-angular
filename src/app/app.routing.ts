@@ -7,6 +7,7 @@ import {FullComponent} from './layouts/full/full.component';
 import {AppBlankComponent} from './layouts/blank/blank.component';
 import {UserComponent} from './user/user.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import {DashboardListComponent} from './dashboard/dashboard.list.component';
 
 const appRoutes: Routes = [
     {
@@ -16,11 +17,15 @@ const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: '/dashboard/1',
+                redirectTo: '/dashboards',
                 pathMatch: 'full'
             },
             {
-                path: 'dashboard/:id',
+                path: 'dashboards',
+                component: DashboardListComponent
+            },
+            {
+                path: 'dashboards/:id',
                 component: DashboardComponent
             },
             {

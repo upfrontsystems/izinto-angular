@@ -75,14 +75,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
-            // this.dashboardId = +params.get('id');
-            this.dashboardId = 1;
-
-
-            // this.getDashboard();
-
-
-
+            this.dashboardId = +params.get('id');
+            this.getDashboard();
             this.getCharts();
             this.getDevices();
             this.setChartWidth();
@@ -131,14 +125,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     getDevices() {
         const url = this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" FROM \"measurement\" WITH KEY = \"dev_id\"');
-        return this.http.get(url, httpOptions)
-            .subscribe(
-                resp => { // json data
-                    this.devices = [];
-                    for (const record of resp['results'][0]['series'][0]['values']) {
-                        this.devices.push(record[1]);
-                    }
-                });
+        return this.http.get(url, httpOptions).subscribe(resp => { // json data
+            this.devices = [];
+            for (const record of resp['results'][0]['series'][0]['values']) {
+                this.devices.push(record[1]);
+            }
+        });
     }
 
     selectDevice(selected_device) {
@@ -152,7 +144,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .replace(':group_by:', this.group_by[this.view]);
 
             const url = this.queryURL + encodeURIComponent(query);
-            console.log('http get');
             this.http.get(url, httpOptions)
                 .subscribe(
                     resp => {

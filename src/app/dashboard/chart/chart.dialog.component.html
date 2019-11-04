@@ -32,14 +32,34 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Type"
-                           [formControl]="form.controls['type']">
+                    <input matInput placeholder="Group By" [formControl]="form.controls['group_by']"
+                           autocomplete="">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <mat-label>Type</mat-label>
+                    <mat-select [formControl]="form.controls['type']">
+                        <mat-option *ngFor="let type of chartTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <mat-label>Query</mat-label>
+                    <textarea matInput [formControl]="form.controls['query']"
+                              cdkTextareaAutosize></textarea>
                 </mat-form-field>
             </div>
         </div>
     </form>
 </div>
 <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
+    <span fxFlex></span>
+    <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
+    <button class="pull-right" mat-button (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
 </div>
