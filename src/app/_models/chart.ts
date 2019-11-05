@@ -1,4 +1,6 @@
-export type ChartType = 'Pie' | 'Bar' | 'Line' | 'Wind Arrow';
+export const ChartGroupBy = ['10m', '1h', '1d'];
+export const ChartTypes = ['Bar', 'Line', 'Wind Arrow'];
+export type ChartType = 'Bar' | 'Line' | 'Wind Arrow';
 
 export class Chart {
     id: number;

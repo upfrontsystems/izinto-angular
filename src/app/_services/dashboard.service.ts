@@ -1,27 +1,14 @@
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Dashboard} from '../_models/dashboard';
 
-const httpOptions = {
-  headers: new HttpHeaders({
-      'Content-Type':  'application/json',
-      'Authorization': 'Basic ' + btoa('upfrontsoftware:keHZZEd3L8nkXJvK')
-  })
-};
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class DashboardService {
 
-    constructor(private http: HttpClient) { }
-
-    getDevices(url) {
-        return this.http.get(url, httpOptions);
-    }
-
-    selectDevice(url) {
-        return this.http.get(url, httpOptions);
+    constructor(private http: HttpClient) {
     }
 
     getDashboards(filters) {
@@ -31,7 +18,7 @@ export class DashboardService {
     getById(id) {
         return this.http.get<Dashboard>(`/api/dashboard/` + id);
     }
-    
+
     add(dashboard) {
         return this.http.post<Dashboard>('/api/dashboards', dashboard);
     }

@@ -1,20 +1,44 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Chart} from '../_models/chart';
-import {CHARTS} from './mock-charts';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+        import {CHARTS} from './mock-charts';
+
+const httpOptions = {
+    headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa('upfrontsoftware:keHZZEd3L8nkXJvK')
+    })
+};
 
 @Injectable({
     providedIn: 'root'
 })
 export class ChartService {
 
+    private queryURL = '/query?q=';
+
     constructor(private http: HttpClient) {
     }
 
+    getDevices() {
+        const url = this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
+            'FROM \"measurement\" WITH KEY = \"dev_id\"');
+
+        return this.http.get(url, httpOptions);
+    }
+
+    selectDevice(url) {
+        return this.http.get(url, httpOptions);
+    }
+
     getCharts(filters): Observable<Chart[]> {
-        return of(CHARTS);
         return this.http.get<Chart[]>(`/api/charts`, {params: filters});
+    }
+
+    getChartData(query) {
+        const url = this.queryURL + encodeURIComponent(query);
+        return this.http.get(url, httpOptions);
     }
 
     getById(id) {

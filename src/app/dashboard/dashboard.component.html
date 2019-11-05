@@ -2,17 +2,9 @@
     <div fxFlex="100">
         <mat-card>
             <mat-card-content>
-                <mat-card-title class="mb-3">Devices</mat-card-title>
-                <mat-form-field>
-                    <mat-select placeholder="Select device" [(value)]="selected_device" (selectionChange)="selectDevice(selected_device)">
-                        <mat-option *ngFor="let dev of this.devices"  [value]="dev">
-                            {{dev}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <mat-card-title>{{dashboard?.title}}</mat-card-title>
+                <mat-card-subtitle>{{dashboard?.description}}</mat-card-subtitle>
             </mat-card-content>
-        </mat-card>
-        <mat-card *ngIf="selected_device">
             <mat-toolbar class="no-shadow">
                 <mat-toolbar-row>
                     <div fxShow="false" fxShow.gt-xs>
@@ -38,7 +30,6 @@
                 </mat-toolbar-row>
             </mat-toolbar>
             <mat-card-content>
-                <mat-card-title>{{selected_device}}</mat-card-title>
                 <div class="d3-chart" #chart></div>
             </mat-card-content>
         </mat-card>

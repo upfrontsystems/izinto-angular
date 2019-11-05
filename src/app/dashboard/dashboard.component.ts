@@ -1,6 +1,5 @@
 import {Component, AfterViewInit, OnInit, ElementRef, ViewChild, HostListener} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {HttpHeaders} from '@angular/common/http';
 import {ChartService} from '../_services/chart.service';
 import {Chart} from '../_models/chart';
 import { Dashboard } from '../_models/dashboard';
@@ -10,23 +9,14 @@ import * as d3Scale from 'd3-scale';
 import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
-import * as d3Time from 'd3-time';
 import * as d3Trans from 'd3-transition';
 import * as d3TimeFormat from 'd3-time-format';
-import {data} from '../tables/smart-table/smart-data-table';
-import {AxisDomain} from 'd3-axis';
 import {Record} from '../_models/record';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
 
-const httpOptions = {
-  headers: new HttpHeaders({
-      'Content-Type':  'application/json',
-      'Authorization': 'Basic ' + btoa('upfrontsoftware:keHZZEd3L8nkXJvK')
-  })
-};
 
 @Component({
     selector: 'app-dashboard',
@@ -38,10 +28,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     dashboardId: number;
     dashboard: Dashboard;
-    private charts: Chart[];
-    private queryURL = '/query?q=';
-    private devices = [];
-    private selected_device = '';
+    private charts: Chart[] = [];
     private view = 'month';
     private datasets = [];
     private scales = [];
@@ -78,8 +65,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             this.dashboardId = +params.get('id');
             this.getDashboard();
             this.getCharts();
-            this.getDevices();
-            this.setChartWidth();
             // Initialise transition
             d3Trans.transition().duration(750);
         });
@@ -92,7 +77,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     getCharts() {
-        this.chartService.getCharts({dashboard_id: this.dashboardId}).subscribe(charts => this.charts = charts);
+        this.chartService.getCharts({dashboard_id: this.dashboardId}).subscribe(charts => {
+            this.charts = charts;
+            this.setChartWidth();
+        });
     }
 
     setChartWidth() {
@@ -100,9 +88,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.chartWidth = this.windowWidth - 130;
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
-        if (this.selected_device) {
-            this.selectDevice(this.selected_device);
-        }
+        this.loadDatasets();
     }
 
     ngAfterViewInit() {
@@ -118,57 +104,44 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             if (result) {
                 this.chartService.add(result).subscribe(resp => {
                     this.charts.push(resp);
+                    this.loadDatasets();
                 });
             }
         });
     }
 
-    getDevices() {
-        const url = this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" FROM \"measurement\" WITH KEY = \"dev_id\"');
-        return this.http.get(url, httpOptions).subscribe(resp => { // json data
-            this.devices = [];
-            for (const record of resp['results'][0]['series'][0]['values']) {
-                this.devices.push(record[1]);
-            }
-        });
-    }
-
-    selectDevice(selected_device) {
+    loadDatasets() {
         this.datasets.length = 0;
         this.scales = [];
         d3.selectAll('svg').remove();
         for (const chart of this.charts) {
             let query = chart.query;
             query = query.replace(':range:', this.range[this.view])
-                .replace(':dev_id:', selected_device)
                 .replace(':group_by:', this.group_by[this.view]);
 
-            const url = this.queryURL + encodeURIComponent(query);
-            this.http.get(url, httpOptions)
-                .subscribe(
-                    resp => {
-                        const dataset = [];
-                        if (resp['results'][0].hasOwnProperty('series')) {
-                            for (const record of resp['results'][0]['series'][0]['values']) {
-                                const rec = new Record(),
-                                    val = record[1];
-                                rec.date = new Date(record[0]);
-                                rec.unit = chart.unit;
-                                rec.value = Math.round(val);
-                                if (val !== null) {
-                                    dataset.push(rec);
-                                }
-                            }
+            this.chartService.getChartData(query).subscribe(resp => {
+                const dataset = [];
+                if (resp['results'][0].hasOwnProperty('series')) {
+                    for (const record of resp['results'][0]['series'][0]['values']) {
+                        const rec = new Record(),
+                            val = record[1];
+                        rec.date = new Date(record[0]);
+                        rec.unit = chart.unit;
+                        rec.value = Math.round(val);
+                        if (val !== null) {
+                            dataset.push(rec);
                         }
-                        this.datasets.push(dataset);
-                        if (chart.type === 'Line') {
-                            this.lineChart(chart, dataset);
-                        } else if (chart.type === 'Bar') {
-                            this.barChart(chart, dataset);
-                        } else if (chart.type === 'Wind Arrow') {
-                            this.windArrows(chart, dataset);
-                        }
-                    });
+                    }
+                }
+                this.datasets.push(dataset);
+                if (chart.type === 'Line') {
+                    this.lineChart(chart, dataset);
+                } else if (chart.type === 'Bar') {
+                    this.barChart(chart, dataset);
+                } else if (chart.type === 'Wind Arrow') {
+                    this.windArrows(chart, dataset);
+                }
+            });
         }
     }
 
@@ -544,6 +517,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 return yScale(d.value);
             })
             .attr('r', 5);
+
+    }
+
+    buttonClick() {
+        console.log('clicked');
     }
 
     calcPoint(input) {
@@ -619,7 +597,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     updateView(view) {
         this.view = view;
-        this.selectDevice(this.selected_device);
+        this.loadDatasets();
     }
 
 }

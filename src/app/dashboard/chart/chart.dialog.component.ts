@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Chart} from '../../_models/chart';
+import {Chart, ChartGroupBy, ChartTypes} from '../../_models/chart';
 
 @Component({
     selector: 'app-chart-dialog',
@@ -12,7 +12,8 @@ export class ChartDialogComponent implements OnInit {
 
     public form: FormGroup;
     chart: Chart;
-    chartTypes = ['Bar', 'Line', 'Wind Arrow'];
+    chartTypes = ChartTypes;
+    groupBy = ChartGroupBy;
     state: string;
 
     constructor(
