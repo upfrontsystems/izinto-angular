@@ -2,7 +2,7 @@ import {Component, AfterViewInit, OnInit, ElementRef, ViewChild, HostListener} f
 import {HttpClient} from '@angular/common/http';
 import {ChartService} from '../_services/chart.service';
 import {Chart} from '../_models/chart';
-import { Dashboard } from '../_models/dashboard';
+import {Dashboard} from '../_models/dashboard';
 
 import * as d3 from 'd3-selection';
 import * as d3Scale from 'd3-scale';
@@ -25,6 +25,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
+    @ViewChild('deleteConfirm') private deleteConfirm: ElementRef;
 
     dashboardId: number;
     dashboard: Dashboard;
@@ -53,7 +54,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 private http: HttpClient,
                 public dialog: MatDialog,
                 private chartService: ChartService,
-                private dashboardService: DashboardService) { }
+                private dashboardService: DashboardService) {
+    }
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -96,7 +98,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
-            width: '550px',
+            width: '600px',
             data: {chart: {dashboard_id: this.dashboardId}}
         });
 
@@ -110,10 +112,64 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
     }
 
+    editChart(chart) {
+        const dialogRef = this.dialog.open(ChartDialogComponent, {
+            width: '600px',
+            data: {chart: chart}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.chartService.edit(result).subscribe( resp => {
+                    for (const ix in this.charts) {
+                        if (this.charts[ix].id === resp.id) {
+                            this.charts[ix] = resp;
+                            this.loadDatasets();
+                            break;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    deleteChart(chart) {
+        this.deleteConfirm.show();
+        this.deleteConfirm.onAccept.subscribe(event => {
+            this.chartService.delete(chart).subscribe(resp => {
+                for (const ix in this.charts) {
+                    if (this.charts[ix].id === chart.id) {
+                        this.charts.splice(+ix, 1);
+                        this.loadDatasets();
+                        break;
+                    }
+                }
+            });
+        });
+    }
+
+    createButtons(chart) {
+        const self = this;
+        d3.select('div.' + chart.selector)
+            .append('button')
+            .text('Delete')
+            .attr('class', 'mat-button pull-right mat-error delete' + chart.id)
+            .on('click', function () {
+                self.deleteChart(chart);
+            });
+        d3.select('div.' + chart.selector)
+            .append('button')
+            .text('Edit')
+            .attr('class', 'mat-button pull-right edit' + chart.id)
+            .on('click', function () {
+                self.editChart(chart);
+            });
+    }
+
     loadDatasets() {
         this.datasets.length = 0;
         this.scales = [];
-        d3.selectAll('svg').remove();
+        d3.selectAll('div.svg-container').remove();
         for (const chart of this.charts) {
             let query = chart.query;
             query = query.replace(':range:', this.range[this.view])
@@ -300,8 +356,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             barChart = svg.select('g.' + chart.selector);
         const create = svg.empty();
         if (create) {
-            d3.selectAll('svg.' + chart.selector).remove();
-            svg = d3.select('div.d3-chart')
+            d3.selectAll('div.' + chart.selector).remove();
+            d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
+            // add edit and delete buttons
+            this.createButtons(chart);
+
+            svg = d3.select('div.' + chart.selector)
                 .append('svg')
                 .attr('class', chart.selector)
                 .attr('width', this.chartWidth)
@@ -407,7 +467,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         const create = svg.empty(),
             trans: any = 1000;
         if (create) {
-            svg = d3.select('div.d3-chart')
+            d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
+            // add edit and delete buttons
+            this.createButtons(chart);
+
+            svg = d3.select('div.' + chart.selector)
                 .append('svg')
                 .attr('class', chart.selector)
                 .attr('width', this.chartWidth)
@@ -518,10 +582,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             })
             .attr('r', 5);
 
-    }
-
-    buttonClick() {
-        console.log('clicked');
     }
 
     calcPoint(input) {
