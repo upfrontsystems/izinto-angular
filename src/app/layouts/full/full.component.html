@@ -17,24 +17,24 @@
                 </span>
             </a>
         </div>
-        <!-- ============================================================== -->
-        <!-- sidebar toggle -->
-        <!-- ============================================================== -->
 
-        <button mat-icon-button (click)="snav.toggle()" fxShow.sm="true" fxShow.xs="true" fxShow.gt-lg="false" fxShow="false">
-            <mat-icon>menu</mat-icon>
-        </button>
         <span fxFlex></span>
         <!-- ============================================================== -->
         <!-- app header component - style you can find in header.scss / header.component.ts-->
         <!-- ============================================================== -->
         <app-header></app-header>
         <!-- ============================================================== -->
-        <!-- Right sidebar toggle - style you can find in rightsidebar.component.scss -->
+        <!-- settings dropdown -->
         <!-- ============================================================== -->
-        <button (click)="end.toggle()" mat-icon-button class="ml-xs overflow-visible">
+        <button [matMenuTriggerFor]="settings" mat-icon-button class="ml-xs overflow-visible">
             <mat-icon>settings</mat-icon>
         </button>
+        <mat-menu #settings="matMenu" class="mymegamenu">
+            <button mat-menu-item [routerLink]="['/users']">
+                <mat-icon>people_alt</mat-icon>
+                Users
+            </button>
+        </mat-menu>
     </mat-toolbar>
     <!-- ============================================================== -->
     <!-- End Topbar - style you can find in pages.scss -->
@@ -48,49 +48,15 @@
             <app-sidebar></app-sidebar>
         </mat-sidenav>
         <!-- ============================================================== -->
-        <!-- Sidebar - style you can find in sidebar.scss -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Right Sidebar - style you can find in rightsidebar.component.scss -->
-        <!-- ============================================================== -->
-        <mat-sidenav #end position="end" class="chat-panel" mode="over" opened="false">
-            <div class="scroll">
-                <mat-nav-list>
-
-                    <h3 mat-subheader class="text-uppercase font-weight-bold">Settings</h3>
-                    <mat-list-item>
-                        <mat-slide-toggle color="warn" (change)="dir = (dir == 'rtl' ? 'ltr' : 'rtl')">RTL</mat-slide-toggle>
-                    </mat-list-item>
-                    <mat-list-item>
-                        <mat-slide-toggle color="warn" [(ngModel)]="boxed">Boxed Layout</mat-slide-toggle>
-                    </mat-list-item>
-                    <mat-divider></mat-divider>
-                    <h3 mat-subheader class="text-uppercase font-weight-bold">Colors</h3>
-                    <mat-list-item>
-                        <mat-checkbox color="warn" [(ngModel)]="danger" (change)="green = blue = false" class="text-danger">Red</mat-checkbox>
-                    </mat-list-item>
-                    <mat-list-item>
-                        <mat-checkbox color="warn" [(ngModel)]="green" (change)="danger = blue = false" class="text-megna">Teal Green</mat-checkbox>
-                    </mat-list-item>
-                    <mat-list-item>
-                        <mat-checkbox color="warn" [(ngModel)]="blue" (change)="green = danger = false" class="text-info">Blue</mat-checkbox>
-                    </mat-list-item>
-                    <mat-list-item>
-                        <mat-checkbox color="warn" [(ngModel)]="dark" (change)="green = blue = danger = false">Dark</mat-checkbox>
-                    </mat-list-item>
-                </mat-nav-list>
-            </div>
-        </mat-sidenav>
-
-        <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->
         <!-- ============================================================== -->
         <mat-sidenav-content class="page-wrapper">
             
                 <div class="page-content">
 
+                    <app-spinner></app-spinner>
                     <router-outlet>
-                        <app-spinner></app-spinner>
+                        <app-alert></app-alert>
                     </router-outlet>
 
                 </div>

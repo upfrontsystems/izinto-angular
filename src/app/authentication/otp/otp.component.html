@@ -4,7 +4,6 @@
             <mat-card-content>
                 <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
                     <div class="text-center">
-                        <img alt="homepage" width="100%" src="assets/images/logo-icon.png">
                         <h4 class="m-t-0">Enter OTP</h4>
                     </div>
 
@@ -12,7 +11,7 @@
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field>
-                                <input matInput placeholder="OTP" [formControl]="otpform.get('otp')">
+                                <input matInput placeholder="OTP" [formControl]="otpForm.get('otp')">
                             </mat-form-field>
                         </div>
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">

@@ -4,7 +4,6 @@
             <mat-card-content>
                 <form [formGroup]="form" (ngSubmit)="onSubmit()">
                     <div class="text-center">
-                        <a href="/"><img alt="homepage" width="100%" src="assets/images/logo-icon.png"></a>
                         <h4 class="m-t-0">Recover Password</h4>
                     </div>
                     <p class="text-center font-14">Enter your email and we'll send you the password reset link.</p>
@@ -33,7 +32,6 @@
         <mat-card *ngIf="resetRequested">
             <mat-card-content>
                 <div class="text-center">
-                    <a href="/"><img alt="homepage" width="100%" src="assets/images/logo-icon.png"></a>
                     <h2 class="m-t-0">Check your email</h2>
                 </div>
                 <p>We sent you an email with instructions on how to reset your password.</p>

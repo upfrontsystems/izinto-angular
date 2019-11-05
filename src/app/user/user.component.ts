@@ -5,7 +5,7 @@ import {MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/mat
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../_services/user.service';
-import {UserDialogComponent} from '../user/user.dialog.component';
+import {UserDialogComponent} from './user.dialog.component';
 import {Role} from '../_models/role';
 import {AuthenticationService} from '../_services/authentication.service';
 
@@ -20,7 +20,7 @@ export class UserComponent implements OnInit, AfterViewInit {
     roles: Role[];
     dataSource = new MatTableDataSource<User>(this.users);
     public form: FormGroup;
-    displayedColumns: string[] = ['firstname', 'surname', 'email', 'membership_no', 'role', 'action'];
+    displayedColumns: string[] = ['firstname', 'surname', 'email', 'role', 'action'];
     fabButtons = [
         {
             icon: 'add',

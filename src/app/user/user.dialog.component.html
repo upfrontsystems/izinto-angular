@@ -3,32 +3,30 @@
     <form [formGroup]="form" autocomplete="off">
         <div fxLayout="row wrap">
 
-            <div fxFlex.gt-sm="60" fxFlex.gt-xs="60" fxFlex="60" fxLayout="column">
-                <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                    <mat-form-field style="width: 100%">
-                        <input matInput placeholder="First name" [formControl]="form.controls['firstname']"
-                               autocomplete="off">
-                    </mat-form-field>
-                </div>
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="First name" [formControl]="form.controls['firstname']"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
 
-                <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                    <mat-form-field style="width: 100%">
-                        <input matInput placeholder="Surname" [formControl]="form.controls['surname']"
-                               autocomplete="off">
-                    </mat-form-field>
-                </div>
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Surname" [formControl]="form.controls['surname']"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
 
-                <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                    <mat-form-field style="width: 100%">
-                        <input matInput type="email" placeholder="Email" [formControl]="form.controls['email']"
-                               autocomplete="new-email">
-                    </mat-form-field>
-                </div>
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput type="email" placeholder="Email" [formControl]="form.controls['email']"
+                           autocomplete="new-email">
+                </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="hasRole('Administrator')">
                 <mat-form-field>
-                    <mat-label>Type</mat-label>
+                    <mat-label>Role</mat-label>
                     <mat-select [formControl]="form.controls['role']">
                         <mat-option *ngFor="let role of roles" [value]="role">
                             {{role}}

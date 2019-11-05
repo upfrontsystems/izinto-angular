@@ -6,7 +6,6 @@
                 <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
                     <div class="text-center">
-                        <img alt="homepage" width="100%" src="assets/images/logo-icon.png">
                         <h4 class="m-t-0">Register</h4>
                     </div>
                     <div fxLayout="row wrap" *ngIf="currentStep==1">
@@ -14,7 +13,7 @@
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
-                                <input matInput placeholder="First Name" type="text" autofocus
+                                <input matInput placeholder="First Name" type="text" autofocus name="name"
                                        [formControl]="form.get('firstname')">
                             </mat-form-field>
                             <small
@@ -26,7 +25,7 @@
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
-                                <input matInput placeholder="Surname" type="text"
+                                <input matInput placeholder="Surname" type="text" name="surname"
                                        [formControl]="form.get('surname')">
                             </mat-form-field>
                             <small
@@ -34,30 +33,6 @@
                                 class="text-danger support-text">You must include a surname.
                             </small>
                         </div>
-
-                        <!-- col full-->
-                        <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                            <mat-form-field style="width: 100%">
-                                <input matInput placeholder="Membership Number" type="text"
-                                       [formControl]="form.get('membership_no')">
-                            </mat-form-field>
-                            <small
-                                *ngIf="form.get('membership_no').hasError('required') && form.get('membership_no').touched"
-                                class="text-danger support-text">You must include a membership number.
-                            </small>
-                        </div>
-
-                        <mat-card-actions fxFlex="100" align="end">
-                            <button mat-raised-button [disabled]="!stepOneValid()" (click)="nextStep()">Next</button>
-                        </mat-card-actions>
-                        <div class="text-center p-t-20 font-14" fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                            <span>Already have an account?
-                                <a [routerLink]="['/authentication/login']" class="link text-info"> Log in</a>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div fxLayout="row wrap" *ngIf="currentStep==2">
 
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
@@ -74,6 +49,18 @@
                                 class="text-danger support-text">You must include a valid email address.
                             </small>
                         </div>
+
+                        <mat-card-actions fxFlex="100" align="end">
+                            <button mat-raised-button [disabled]="!stepOneValid()" (click)="nextStep()">Next</button>
+                        </mat-card-actions>
+                        <div class="text-center p-t-20 font-14" fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                            <span>Already have an account?
+                                <a [routerLink]="['/authentication/login']" class="link text-info"> Log in</a>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div fxLayout="row wrap" *ngIf="currentStep==2">
 
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
@@ -98,7 +85,7 @@
                                 *ngIf="form.get('confirmPassword').hasError('required') && form.get('confirmPassword').touched"
                                 class="text-danger support-text">Please confirm your password.
                             </small>
-                            <small *ngIf="form.get('confirmPassword').errors?.equalTo"
+                            <small *ngIf="form.get('confirmPassword').dirty && form.get('confirmPassword').errors?.equalTo"
                                    class="text-danger support-text">Passwords do not match.
                             </small>
                         </div>

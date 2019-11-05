@@ -9,6 +9,7 @@ import {
 import { CustomValidators } from 'ng2-validation';
 import { AuthenticationService } from '../../_services/authentication.service';
 import { AlertService } from '../../_services/alert.service';
+import { Role } from '../../_models/role';
 
 const password = new FormControl('', Validators.required);
 const confirmPassword = new FormControl('', CustomValidators.equalTo(password));
@@ -31,7 +32,7 @@ export class RegisterComponent implements OnInit {
     ngOnInit() {
         // set role to Handler
         this.form = this.fb.group({
-            role: ['Handler'],
+            role: [Role.User],
             firstname: [
                 null,
                 Validators.compose([Validators.required, CustomValidators.firstname])
@@ -39,10 +40,6 @@ export class RegisterComponent implements OnInit {
             surname: [
                 null,
                 Validators.compose([Validators.required, CustomValidators.surname])
-            ],
-            membership_no: [
-                null,
-                Validators.compose([Validators.required, CustomValidators.membership_no])
             ],
             email: [
                 null,
@@ -62,7 +59,7 @@ export class RegisterComponent implements OnInit {
     }
 
     stepOneValid() {
-        return this.form.controls.firstname.valid && this.form.controls.surname.valid && this.form.controls.membership_no.valid;
+        return this.form.controls.firstname.valid && this.form.controls.surname.valid && this.form.controls.email.valid;
     }
 
     onSubmit() {

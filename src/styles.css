@@ -5,3 +5,16 @@
     font-family: Dosis;
     src: url("https://fonts.gstatic.com/s/dosis/v8/HhyXU5sn9vOmLzHTLuCFMIs.woff2") format("woff");
 }
+
+/* display table actions on hover */
+.mat-row .hover-action, row .hover-action {
+    opacity: 0;
+}
+
+.mat-row:hover .hover-action, row:hover .hover-action {
+    opacity: 100;
+}
+
+.white-space-pre {
+    white-space: pre !important;
+}

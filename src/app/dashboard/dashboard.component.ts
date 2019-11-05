@@ -25,7 +25,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
     @ViewChild('chart') private chartContainer: ElementRef;
-    @ViewChild('deleteConfirm') private deleteConfirm: ElementRef;
+    @ViewChild('deleteConfirm') private deleteConfirm: any;
 
     dashboardId: number;
     dashboard: Dashboard;
