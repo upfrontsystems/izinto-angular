@@ -13,12 +13,12 @@
                         <div class="pb-1">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="Email address" type="email"
-                                       [formControl]="form.controls['email']">
+                                       [formControl]="form.get('email')">
                             </mat-form-field>
-                            <small *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched"
+                            <small *ngIf="form.get('email').hasError('required') && form.get('email').touched"
                                    class="text-danger support-text">You must include an email address.
                             </small>
-                            <small *ngIf="form.controls['email'].errors?.email && form.controls['email'].touched"
+                            <small *ngIf="form.get('email').errors?.email && form.get('email').touched"
                                    class="text-danger support-text">You must include a valid email address.
                             </small>
                         </div>

@@ -5,34 +5,34 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Title" [formControl]="form.controls['title']"
+                    <input matInput placeholder="Title" [formControl]="form.get('title')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Selector" [formControl]="form.controls['selector']"
+                    <input matInput placeholder="Selector" [formControl]="form.get('selector')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Unit" [formControl]="form.controls['unit']">
+                    <input matInput placeholder="Unit" [formControl]="form.get('unit')">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Color" [formControl]="form.controls['color']"
+                    <input matInput placeholder="Color" [formControl]="form.get('color')"
                            autocomplete="">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Group By" [formControl]="form.controls['group_by']"
+                    <input matInput placeholder="Group By" [formControl]="form.get('group_by')"
                            autocomplete="">
                 </mat-form-field>
             </div>
@@ -40,7 +40,7 @@
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <mat-label>Type</mat-label>
-                    <mat-select [formControl]="form.controls['type']">
+                    <mat-select [formControl]="form.get('type')">
                         <mat-option *ngFor="let type of chartTypes" [value]="type">
                             {{type}}
                         </mat-option>
@@ -51,7 +51,7 @@
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <mat-label>Query</mat-label>
-                    <textarea matInput [formControl]="form.controls['query']"
+                    <textarea matInput [formControl]="form.get('query')"
                               cdkTextareaAutosize></textarea>
                 </mat-form-field>
             </div>

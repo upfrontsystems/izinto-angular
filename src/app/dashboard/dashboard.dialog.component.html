@@ -5,14 +5,14 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Title" [formControl]="form.controls['title']"
+                    <input matInput placeholder="Title" [formControl]="form.get('title')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Description" [formControl]="form.controls['description']"
+                    <input matInput placeholder="Description" [formControl]="form.get('description')"
                            autocomplete="off">
                 </mat-form-field>
             </div>

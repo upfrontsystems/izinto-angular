@@ -12,9 +12,9 @@
             <!-- col full-->
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
               <mat-form-field style="width: 100%">
-                <input matInput placeholder="Username" [formControl]="form.controls['uname']">
+                <input matInput placeholder="Username" [formControl]="form.get('uname')">
               </mat-form-field>
-              <small *ngIf="form.controls['uname'].hasError('required') && form.controls['uname'].touched"
+              <small *ngIf="form.get('uname').hasError('required') && form.get('uname').touched"
                      class="text-danger support-text">Username
                 is required.
               </small>

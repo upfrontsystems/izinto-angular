@@ -15,10 +15,10 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="First Name" type="text" autofocus
-                                       [formControl]="form.controls['firstname']">
+                                       [formControl]="form.get('firstname')">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['firstname'].hasError('required') && form.controls['firstname'].touched"
+                                *ngIf="form.get('firstname').hasError('required') && form.get('firstname').touched"
                                 class="text-danger support-text">You must include a first name.
                             </small>
                         </div>
@@ -27,10 +27,10 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="Surname" type="text"
-                                       [formControl]="form.controls['surname']">
+                                       [formControl]="form.get('surname')">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['surname'].hasError('required') && form.controls['surname'].touched"
+                                *ngIf="form.get('surname').hasError('required') && form.get('surname').touched"
                                 class="text-danger support-text">You must include a surname.
                             </small>
                         </div>
@@ -39,10 +39,10 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="Membership Number" type="text"
-                                       [formControl]="form.controls['membership_no']">
+                                       [formControl]="form.get('membership_no')">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['membership_no'].hasError('required') && form.controls['membership_no'].touched"
+                                *ngIf="form.get('membership_no').hasError('required') && form.get('membership_no').touched"
                                 class="text-danger support-text">You must include a membership number.
                             </small>
                         </div>
@@ -63,14 +63,14 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="Email address" type="email" autofocus
-                                       [formControl]="form.controls['email']">
+                                       [formControl]="form.get('email')">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched"
+                                *ngIf="form.get('email').hasError('required') && form.get('email').touched"
                                 class="text-danger support-text">You must include an email address.
                             </small>
                             <small
-                                *ngIf="form.controls['email'].errors?.email && form.controls['email'].touched"
+                                *ngIf="form.get('email').errors?.email && form.get('email').touched"
                                 class="text-danger support-text">You must include a valid email address.
                             </small>
                         </div>
@@ -79,11 +79,11 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput type="password" placeholder="Password"
-                                       [formControl]="form.controls['password']"
+                                       [formControl]="form.get('password')"
                                        autocomplete="new-password">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['password'].hasError('required') && form.controls['password'].touched"
+                                *ngIf="form.get('password').hasError('required') && form.get('password').touched"
                                 class="text-danger support-text">You must include a password.
                             </small>
                         </div>
@@ -91,14 +91,14 @@
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field style="width: 100%">
                                 <input matInput placeholder="Confirm Password"
-                                       [formControl]="form.controls['confirmPassword']"
+                                       [formControl]="form.get('confirmPassword')"
                                        type="password" autocomplete="new-password">
                             </mat-form-field>
                             <small
-                                *ngIf="form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched"
+                                *ngIf="form.get('confirmPassword').hasError('required') && form.get('confirmPassword').touched"
                                 class="text-danger support-text">Please confirm your password.
                             </small>
-                            <small *ngIf="form.controls['confirmPassword'].errors?.equalTo"
+                            <small *ngIf="form.get('confirmPassword').errors?.equalTo"
                                    class="text-danger support-text">Passwords do not match.
                             </small>
                         </div>

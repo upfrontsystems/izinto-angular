@@ -11,17 +11,17 @@
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field>
-                                <input matInput placeholder="Email" [formControl]="loginForm.controls['email']">
+                                <input matInput placeholder="Email" [formControl]="loginform.get('email')">
                             </mat-form-field>
-                            <small *ngIf="loginForm.controls['email'].hasError('required') && loginForm.controls['email'].touched"
+                            <small *ngIf="loginform.get('email').hasError('required') && loginform.get('email').touched"
                                 class="text-danger support-text">Email is required.</small>
                         </div>
                         <!-- col full-->
                         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                             <mat-form-field>
-                                <input matInput type="password" placeholder="Password" [formControl]="loginForm.controls['password']">
+                                <input matInput type="password" placeholder="Password" [formControl]="loginform.get('password')">
                             </mat-form-field>
-                            <small *ngIf="loginForm.controls['password'].hasError('required') && loginForm.controls['password'].touched"
+                            <small *ngIf="loginform.get('password').hasError('required') && loginform.get('password').touched"
                                 class="text-danger support-text">Password is required.</small>
                         </div>
                         <!-- col half-->
