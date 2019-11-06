@@ -3,21 +3,15 @@ import {
     Input,
     OnDestroy,
     Inject,
-    ViewEncapsulation
+    ViewEncapsulation, OnInit
 } from '@angular/core';
-import {
-    Router,
-    NavigationStart,
-    NavigationEnd,
-    NavigationCancel,
-    NavigationError
-} from '@angular/router';
 import {DOCUMENT} from '@angular/common';
+import {SpinnerService} from '../../_services/spinner.service';
 
 @Component({
     selector: 'app-spinner',
     template: `
-        <div class="preloader" *ngIf="isSpinnerVisible">
+        <div class="preloader" [style.backgroundColor]="backgroundColor" *ngIf="isSpinnerVisible">
             <div class="spinner">
                 <div class="double-bounce1"></div>
                 <div class="double-bounce2"></div>
@@ -25,31 +19,20 @@ import {DOCUMENT} from '@angular/common';
         </div>`,
     encapsulation: ViewEncapsulation.None
 })
-export class SpinnerComponent implements OnDestroy {
-    public isSpinnerVisible = true;
+export class SpinnerComponent implements OnDestroy, OnInit {
+    public isSpinnerVisible = false;
 
-    @Input() public backgroundColor = 'rgba(0, 115, 170, 0.69)';
+    @Input() public backgroundColor = 'rgba(255, 255, 255, 0.69)';
 
     constructor(
-        private router: Router,
-        @Inject(DOCUMENT) private document: Document
-    ) {
-        this.router.events.subscribe(
-            event => {
-                if (event instanceof NavigationStart) {
-                    this.isSpinnerVisible = true;
-                } else if (
-                    event instanceof NavigationEnd ||
-                    event instanceof NavigationCancel ||
-                    event instanceof NavigationError
-                ) {
-                    this.isSpinnerVisible = false;
-                }
-            },
-            () => {
-                this.isSpinnerVisible = false;
-            }
-        );
+        private spinnerService: SpinnerService,
+        @Inject(DOCUMENT) private document: Document) {
+    }
+
+    ngOnInit() {
+        this.spinnerService.isSpinning().subscribe(spinning => {
+            this.isSpinnerVisible = spinning;
+        });
     }
 
     ngOnDestroy(): void {

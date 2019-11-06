@@ -16,6 +16,7 @@ import {AppHeaderComponent} from './header/header.component';
 import {AppSidebarComponent} from './sidebar/sidebar.component';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 /** @title Responsive sidenav */
 @Component({
@@ -41,6 +42,7 @@ export class FullComponent implements OnDestroy, AfterViewInit {
     constructor(
         changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher,
+        public authService: AuthenticationService,
         public menuItems: MenuItems
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');

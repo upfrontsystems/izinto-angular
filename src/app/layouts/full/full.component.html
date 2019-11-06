@@ -10,7 +10,7 @@
         <!-- Logo - style you can find in header.scss -->
         <!-- ============================================================== -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
                 <!-- Logo text -->
                 <span class="site-title" fxShow="false" fxShow.gt-xs>
                     IZINTO
@@ -26,7 +26,8 @@
         <!-- ============================================================== -->
         <!-- settings dropdown -->
         <!-- ============================================================== -->
-        <button [matMenuTriggerFor]="settings" mat-icon-button class="ml-xs overflow-visible">
+        <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
+                mat-icon-button class="ml-xs overflow-visible">
             <mat-icon>settings</mat-icon>
         </button>
         <mat-menu #settings="matMenu" class="mymegamenu">
@@ -54,7 +55,6 @@
             
                 <div class="page-content">
 
-                    <app-spinner></app-spinner>
                     <router-outlet>
                         <app-alert></app-alert>
                     </router-outlet>
