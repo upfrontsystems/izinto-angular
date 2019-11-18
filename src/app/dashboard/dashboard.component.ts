@@ -197,6 +197,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 } else if (chart.type === 'Wind Arrow') {
                     this.windArrows(chart, dataset);
                 }
+            }, err => {
+                const dataset = [];
+                if (chart.type === 'Line') {
+                    this.lineChart(chart, dataset);
+                } else if (chart.type === 'Bar') {
+                    this.barChart(chart, dataset);
+                } else if (chart.type === 'Wind Arrow') {
+                    this.windArrows(chart, dataset);
+                }
             });
         }
     }
