@@ -114,7 +114,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: {dashboard_id: this.dashboardId}}
+            data: {chart: {dashboard_id: this.dashboardId}},
+            disableClose: true
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -130,7 +131,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     editChart(chart) {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: chart}
+            data: {chart: chart},
+            disableClose: true
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -261,6 +263,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 } else if (chart.type === 'Wind Arrow') {
                     this.windArrows(chart, dataset);
                 }
+            }, err => {
+                const dataset = [];
+                if (chart.type === 'Line') {
+                    this.lineChart(chart, dataset);
+                } else if (chart.type === 'Bar') {
+                    this.barChart(chart, dataset);
+                } else if (chart.type === 'Wind Arrow') {
+                    this.windArrows(chart, dataset);
+                }
             });
         }
     }
@@ -362,6 +373,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         d3.selectAll('g.focus').each(function (d: Record, i) {
                 const dset = dsets[i],
                     scale = scales[i];
+                if (dset === undefined) {
+                    return;
+                }
                 let x0 = scale.domain()[0];
                 if (typeof scale.invert === 'undefined') {
                     const eachBand = scale.step(),
@@ -605,7 +619,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
                 .remove());
 
-        if (create) {
+        if (create && dataset.length > 0) {
             this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
         }
 
