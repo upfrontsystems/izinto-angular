@@ -37,5 +37,6 @@ export class FabSpeedDialComponent {
 
     onButtonClick(buttonId) {
         this.buttonClick.next(buttonId);
+        this.hideItems();
     }
 }

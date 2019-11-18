@@ -16,6 +16,8 @@ import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
+import {VariableDialogComponent} from './variable/variable.dialog.component';
+import {VariableService} from '../_services/variable.service';
 
 
 @Component({
@@ -47,6 +49,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         {
             icon: 'add',
             label: 'Add Chart',
+        },
+        {
+            icon: 'add',
+            label: 'Add Variable'
         }
     ];
 
@@ -54,7 +60,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 private http: HttpClient,
                 public dialog: MatDialog,
                 private chartService: ChartService,
-                private dashboardService: DashboardService) {
+                private dashboardService: DashboardService,
+                private variableService: VariableService) {
     }
 
     @HostListener('window:resize', ['$event'])
@@ -96,6 +103,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
     }
 
+    fabClick(label) {
+        if (label === 'Add Chart') {
+            this.addChart();
+        } else if (label === 'Add Variable') {
+            this.addVariable();
+        }
+    }
+
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
@@ -120,7 +135,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.chartService.edit(result).subscribe( resp => {
+                this.chartService.edit(result).subscribe(resp => {
                     for (const ix in this.charts) {
                         if (this.charts[ix].id === resp.id) {
                             this.charts[ix] = resp;
@@ -148,6 +163,56 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
     }
 
+    addVariable() {
+        const dialogRef = this.dialog.open(VariableDialogComponent, {
+            width: '600px',
+            data: {variable: {dashboard_id: this.dashboardId}}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.variableService.add(result).subscribe(resp => {
+                    this.dashboard.variables.push(resp);
+                    this.dashboard.variables.sort((a, b) => a.name.localeCompare(b.name));
+                    this.loadDatasets();
+                });
+            }
+        });
+    }
+
+    editVariable(variable) {
+        const dialogRef = this.dialog.open(VariableDialogComponent, {
+            width: '600px',
+            data: {variable: variable}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.variableService.edit(result).subscribe(resp => {
+                    for (const ix in this.dashboard.variables) {
+                        if (this.dashboard.variables[ix].id === resp.id) {
+                            this.dashboard.variables[ix] = resp;
+                            this.loadDatasets();
+                            break;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    deleteVariable(variable) {
+        this.variableService.delete(variable).subscribe(resp => {
+            for (const ix in this.dashboard.variables) {
+                if (this.dashboard.variables[ix].id === variable.id) {
+                    this.dashboard.variables.splice(+ix, 1);
+                    this.loadDatasets();
+                    break;
+                }
+            }
+        });
+    }
+
     createButtons(chart) {
         const self = this;
         d3.select('div.' + chart.selector)
@@ -172,8 +237,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         d3.selectAll('div.svg-container').remove();
         for (const chart of this.charts) {
             let query = chart.query;
-            query = query.replace(':range:', this.range[this.view])
-                .replace(':group_by:', this.group_by[this.view]);
+            query = this.formatQuery(query);
 
             this.chartService.getChartData(query).subscribe(resp => {
                 const dataset = [];
@@ -199,6 +263,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 }
             });
         }
+    }
+
+    formatQuery(query) {
+        query = query.replace(/:range:/g, this.range[this.view]);
+        query = query.replace(/:group_by:/g, this.group_by[this.view]);
+
+        for (const variable of this.dashboard.variables) {
+            const re = new RegExp(variable.name, 'g');
+            query = query.replace(re, variable.value);
+        }
+
+        return query;
     }
 
     xScale(dataset) {

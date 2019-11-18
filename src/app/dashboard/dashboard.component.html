@@ -5,6 +5,7 @@
                 <mat-card-title>{{dashboard?.title}}</mat-card-title>
                 <mat-card-subtitle>{{dashboard?.description}}</mat-card-subtitle>
             </mat-card-content>
+
             <mat-toolbar class="no-shadow">
                 <mat-toolbar-row>
                     <div fxShow="false" fxShow.gt-xs>
@@ -29,6 +30,7 @@
                     <span fxFlex fxHide="false" fxHide.gt-xs></span>
                 </mat-toolbar-row>
             </mat-toolbar>
+
             <mat-card-content>
                 <div class="d3-chart" #chart></div>
 
@@ -37,7 +39,38 @@
                 </confirmation>
 
             </mat-card-content>
+
+            <mat-card-content>
+                <mat-card-title style="width: 100%;">Variables</mat-card-title>
+
+                <div>
+                    <div fxLayout="row">
+                        <div fxFlex="30" class="mat-header-cell">id</div>
+                        <div fxFlex="50" class="mat-header-cell">Value</div>
+                        <div fxFlex="20" class="mat-header-cell"></div>
+                    </div>
+
+                    <div fxLayout="row" class="mat-row" *ngFor="let variable of dashboard?.variables">
+                        <div fxFlex="30" class="mat-cell">{{variable.name}}</div>
+                        <div fxFlex="50" class="mat-cell">{{variable.value}}</div>
+                        <div fxFlex="20" class="mat-cell">
+                            <button mat-button color="danger" (click)="deleteVarConfirm.show()" title="Delete"
+                                    class="pull-right hover-action">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                            <confirmation #deleteVarConfirm [title]="'Delete variable'"
+                                          (onAccept)="deleteVariable(variable)">
+                            </confirmation>
+                            <button mat-button (click)="editVariable(variable)" title="Edit"
+                                    class="pull-right hover-action">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial (buttonClick)="addChart()" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

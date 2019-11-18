@@ -1,0 +1,16 @@
+<div fxLayout="row" class="mat-row">
+    <div fxFlex="30" class="mat-cell">{{variable.name}}</div>
+    <div fxFlex="50" class="mat-cell">{{variable.value}}</div>
+    <div fxFlex="20" class="mat-cell">
+        <button mat-button color="danger" (click)="deleteVarConfirm.show()" title="Delete"
+                class="pull-right hover-action">
+            <mat-icon>delete</mat-icon>
+        </button>
+        <confirmation #deleteVarConfirm [title]="'Delete variable'">
+        </confirmation>
+        <button mat-button title="Edit"
+                class="pull-right hover-action">
+            <mat-icon>edit</mat-icon>
+        </button>
+    </div>
+</div>
