@@ -6,7 +6,7 @@ import {Chart, ChartGroupBy, ChartTypes} from '../../_models/chart';
 @Component({
     selector: 'app-chart-dialog',
     templateUrl: './chart.dialog.component.html',
-    styleUrls: ['./chart.component.css']
+  styleUrls: ['./../dashboard.component.scss']
 })
 export class ChartDialogComponent implements OnInit {
 
