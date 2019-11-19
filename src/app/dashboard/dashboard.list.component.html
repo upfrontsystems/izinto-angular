@@ -14,9 +14,9 @@
                         </button>
                         <confirmation #deleteConfirm [title]="'Delete dashboard'"
                                       [content]="'Are you sure you wish to permanently delete this dashboard?'"
-                                      (onAccept)="delete(dashboard)">
+                                      (onAccept)="deleteDashboard(dashboard)">
                         </confirmation>
-                        <button mat-menu-item class="pull-right" color="accent" (click)="edit(dashboard)" title="Edit">
+                        <button mat-menu-item class="pull-right" color="accent" (click)="editDashboard(dashboard)" title="Edit">
                             <mat-icon>edit</mat-icon>
                             <span>Edit</span>
                         </button>
@@ -31,4 +31,4 @@
         </div>
     </div>
 </ng-container>
-<app-fab-speed-dial (buttonClick)="add()" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

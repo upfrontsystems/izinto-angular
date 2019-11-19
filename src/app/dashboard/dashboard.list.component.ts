@@ -5,6 +5,8 @@ import {DashboardService} from '../_services/dashboard.service';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
+import {CollectionService} from '../_services/collection.service';
+import {CollectionDialogComponent} from '../collection/collection.dialog.component';
 
 
 @Component({
@@ -19,12 +21,17 @@ export class DashboardListComponent implements OnInit {
         {
             icon: 'add',
             label: 'Add Dashboard',
+        },
+        {
+            icon: 'add',
+            label: 'Add Collection'
         }
     ];
 
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
                 public dialog: MatDialog,
+                private collectionService: CollectionService,
                 private dashboardService: DashboardService) { }
 
     ngOnInit() {
@@ -38,7 +45,15 @@ export class DashboardListComponent implements OnInit {
         });
     }
 
-    add() {
+    fabClick(label) {
+        if (label === 'Add Dashboard') {
+            this.addDashboard();
+        } else if (label === 'Add Collection') {
+            this.addCollection();
+        }
+    }
+
+    addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',
             data: {dashboard: {}}
@@ -53,7 +68,7 @@ export class DashboardListComponent implements OnInit {
         });
     }
 
-    edit(dashboard) {
+    editDashboard(dashboard) {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',
             data: {dashboard: dashboard}
@@ -73,7 +88,7 @@ export class DashboardListComponent implements OnInit {
         });
     }
 
-    delete(dashboard) {
+    deleteDashboard(dashboard) {
         this.dashboardService.delete(dashboard).subscribe(resp => {
             for (const ix in this.dashboards) {
                 if (this.dashboards[ix].id === dashboard.id) {
@@ -83,4 +98,19 @@ export class DashboardListComponent implements OnInit {
             }
         });
     }
+
+    addCollection() {
+        const dialogRef = this.dialog.open(CollectionDialogComponent, {
+            width: '600px',
+            data: {collection: {}}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.collectionService.add(result).subscribe(resp => {
+                });
+            }
+        });
+    }
+
 }

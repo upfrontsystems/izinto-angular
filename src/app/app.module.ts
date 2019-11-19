@@ -18,6 +18,8 @@ import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
 import {AdminComponent} from './admin/admin.component';
 import { AlertNotificationComponent } from './shared/alert/alert.component';
+import { CollectionComponent } from './collection/collection.component';
+import { CollectionDialogComponent } from './collection/collection.dialog.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
@@ -54,6 +56,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         AppHeaderComponent,
         AppBlankComponent,
         AppSidebarComponent,
+        CollectionComponent,
+        CollectionDialogComponent,
         ConfirmationComponent,
         ConfirmationDialogComponent,
         DashboardComponent,
@@ -86,6 +90,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ],
     entryComponents: [
         ChartDialogComponent,
+        CollectionDialogComponent,
         ConfirmationDialogComponent,
         DashboardDialogComponent,
         UserDialogComponent,

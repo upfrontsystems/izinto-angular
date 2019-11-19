@@ -16,7 +16,6 @@ import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
-import {VariableDialogComponent} from './variable/variable.dialog.component';
 import {VariableService} from '../_services/variable.service';
 
 
