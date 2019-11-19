@@ -178,26 +178,31 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .replace(':group_by:', this.group_by[this.view]);
 
             this.chartService.getChartData(query).subscribe(resp => {
-                const dataset = [];
                 if (resp['results'][0].hasOwnProperty('series')) {
-                    for (const record of resp['results'][0]['series'][0]['values']) {
-                        const rec = new Record(),
-                            val = record[1];
-                        rec.date = new Date(record[0]);
-                        rec.unit = chart.unit;
-                        rec.value = Math.round(val);
-                        if (val !== null) {
-                            dataset.push(rec);
+                    const datasets = [];
+                    for (const series of resp['results'][0]['series']) {
+                        const dataset = [];
+                        for (const record of series['values']) {
+                            const rec = new Record(),
+                                val = record[1];
+                            rec.date = new Date(record[0]);
+                            rec.unit = chart.unit;
+                            rec.value = Math.round(val);
+                            if (val !== null) {
+                                dataset.push(rec);
+                            }
                         }
+                        dataset.sort();
+                        datasets.push(dataset);
+                        this.datasets.push(dataset);
                     }
-                }
-                this.datasets.push(dataset);
-                if (chart.type === 'Line') {
-                    this.lineChart(chart, dataset);
-                } else if (chart.type === 'Bar') {
-                    this.barChart(chart, dataset);
-                } else if (chart.type === 'Wind Arrow') {
-                    this.windArrows(chart, dataset);
+                    if (chart.type === 'Line') {
+                        this.lineChart(chart, datasets);
+                    } else if (chart.type === 'Bar') {
+                        this.barChart(chart, datasets);
+                    } else if (chart.type === 'Wind Arrow') {
+                        this.windArrows(chart, datasets);
+                    }
                 }
             }, err => {
                 const dataset = [];
@@ -358,12 +363,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return d3TimeFormat.timeFormat(fmt);
     }
 
-    barChart(chart, dataset) {
+    arrayUnique(array) {
+        const a = array.concat();
+        for (let i = 0; i < a.length; ++i) {
+            for (let j = i + 1; j < a.length; ++j) {
+                if (a[i] === a[j]) {
+                    a.splice(j--, 1);
+                }
+            }
+        }
+        return a;
+    }
+
+    barChart(chart, datasets) {
         const width = this.innerWidth,
             height = this.innerHeight,
-            xScale = this.xScale(dataset),
-            yScale = this.yScale(dataset),
-            gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-this.innerWidth);
+            merged = this.arrayUnique([].concat.apply([], datasets)).sort((a, b) => a.date - b.date),
+            xScale = this.xScale(merged),
+            yScale = this.yScale(merged),
+            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth);
 
         this.scales.push(xScale);
         let svg = d3.select('svg.' + chart.selector + ' > g'),
@@ -423,48 +441,52 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
                 .remove());
 
-        const update = barChart.selectAll('rect.' + chart.selector).data(dataset);
-        update.exit().remove();
+        datasets.forEach((dataset, index) => {
+            const bar_selector = 'rect.' + chart.selector + '-' + index,
+                bandwidth = xScale.bandwidth() / datasets.length,
+                update = barChart.selectAll(bar_selector).data(dataset);
+            update.exit().remove();
+            barChart.selectAll(bar_selector).transition()
+                .attr('x', (d: any) => xScale(d.date) + bandwidth * index)
+                .attr('y', function (d: Record) {
+                    return height - yScale(d.value);
+                })
+                .attr('width', xScale.bandwidth() / 2)
+                .attr('height', function (d: Record) {
+                    return yScale(d.value);
+                });
+            update.enter().append('rect')
+                .attr('class', bar_selector)
+                .attr('x', (d: any) => xScale(d.date) + bandwidth * index)
+                .attr('y', function (d: Record) {
+                    return height - yScale(d.value);
+                })
+                .attr('width', xScale.bandwidth() / 2)
+                .attr('height', function (d: Record) {
+                    return yScale(d.value);
+                })
+                .attr('fill', function (d: Record) {
+                    if (chart.fillFunc) {
+                        return chart.fillFunc(d.value);
+                    } else {
+                        return chart.color.split(',')[index];
+                    }
+                });
 
-        barChart.selectAll('rect.' + chart.selector).transition()
-            .attr('x', (d: any) => xScale(d.date))
-            .attr('y', function (d: Record) {
-                return height - yScale(d.value);
-            })
-            .attr('width', xScale.bandwidth())
-            .attr('height', function (d: Record) {
-                return yScale(d.value);
-            });
-
-        update.enter().append('rect')
-            .attr('class', chart.selector)
-            .attr('x', (d: any) => xScale(d.date))
-            .attr('y', function (d: Record) {
-                return height - yScale(d.value);
-            })
-            .attr('width', width / (dataset.length * 1.2))
-            .attr('height', function (d: Record) {
-                return yScale(d.value);
-            })
-            .attr('fill', function (d: Record) {
-                if (chart.fillFunc) {
-                    return chart.fillFunc(d.value);
-                } else {
-                    return chart.color;
-                }
-            });
-
+        });
         this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
     }
 
-    lineChart(chart, dataset) {
+    lineChart(chart, datasets) {
+
         const width = this.innerWidth,
             height = this.innerHeight,
-            gridLines = d3Axis.axisLeft(this.gridScale(dataset)).ticks(4).tickSize(-width),
-            xScale = this.xScale(dataset),
-            yScale = this.yScale(dataset, [
-                d3Array.max<Date>(dataset.map(d => d.value)),
-                d3Array.min<Date>(dataset.map(d => d.value))]);
+            merged = this.arrayUnique([].concat.apply([], datasets)).sort((a, b) => a.date - b.date),
+            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-width),
+            xScale = this.xScale(merged),
+            yScale = this.yScale(merged, [
+                d3Array.max<Date>(merged.map(d => d.value)),
+                d3Array.min<Date>(merged.map(d => d.value))]);
 
         this.scales.push(xScale);
 
@@ -494,25 +516,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
                 .attr('class', 'grid');
-            const linechart = svg.append('g').attr('class', 'line-chart');
-            linechart.append('path')
-                .datum(dataset)
-                .attr('fill', 'none')
-                .style('stroke', chart.color)
-                .style('stroke-width', '2px')
-                .attr('class', 'line')
-                .attr('d', line);
-            linechart.append('text')
-                .attr('class', 'section-label')
-                .attr('x', 0)
-                .attr('y', -40)
-                .attr('dy', '0.8em')
-                .attr('fill', 'black')
-                .text(chart.title);
+            datasets.forEach((dataset, index) => {
+                const linechart = svg.append('g').attr('class', 'line-chart-' + index);
+                linechart.append('path')
+                    .datum(dataset)
+                    .attr('fill', 'none')
+                    .style('stroke', chart.color.split(',')[index])
+                    .style('stroke-width', '2px')
+                    .attr('class', 'line')
+                    .attr('d', line);
+                linechart.append('text')
+                    .attr('class', 'section-label')
+                    .attr('x', 0)
+                    .attr('y', -40)
+                    .attr('dy', '0.8em')
+                    .attr('fill', 'black')
+                    .text(chart.title);
+            });
         } else {
-            svg.select('g.line-chart path.line')
-                .transition(trans)
-                .attr('d', line(dataset));
+            datasets.forEach((dataset, index) => {
+                svg.select('g.line-chart-' + index + ' path.line')
+                    .transition(trans)
+                    .attr('d', line(dataset));
+            });
         }
 
         const tickFormat = this.tickFormat(),
@@ -543,58 +569,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             .call(g => g.select('.domain')
                 .remove());
 
-        if (create && dataset.length > 0) {
+        if (create && datasets.length > 0) {
             this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
         }
-
-        if (width < 600 || dataset.length > 30) {
-            svg.selectAll('circle').remove();
-            return;
-        }
-
-        const blankdot = svg.selectAll('circle.blankdot').data(dataset);
-        blankdot.exit().remove();
-        svg.selectAll('circle.blankdot')
-            .attr('cx', function (d: any) {
-                return xScale(d.date) + xScale.bandwidth() / 2;
-            })
-            .attr('cy', function (d: Record) {
-                return yScale(d.value);
-            });
-
-        blankdot.enter().append('circle')
-            .attr('class', 'blankdot')
-            .attr('fill', 'white')
-            .attr('stroke', '')
-            .attr('cx', function (d: any) {
-                return xScale(d.date) + xScale.bandwidth() / 2;
-            })
-            .attr('cy', function (d: Record) {
-                return yScale(d.value);
-            })
-            .attr('r', 7);
-
-        const dot = svg.selectAll('circle.dot').data(dataset);
-        dot.exit().remove();
-        svg.selectAll('circle.dot')
-            .attr('cx', function (d: any) {
-                return xScale(d.date) + xScale.bandwidth() / 2;
-            })
-            .attr('cy', function (d: Record) {
-                return yScale(d.value);
-            });
-
-        dot.enter().append('circle')
-            .attr('class', 'dot')
-            .attr('fill', '#3A7FA3')
-            .attr('stroke', '')
-            .attr('cx', function (d: any) {
-                return xScale(d.date) + xScale.bandwidth() / 2;
-            })
-            .attr('cy', function (d: Record) {
-                return yScale(d.value);
-            })
-            .attr('r', 5);
 
     }
 
