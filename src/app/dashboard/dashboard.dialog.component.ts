@@ -2,6 +2,7 @@ import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Dashboard} from '../_models/dashboard';
+import {VariableDialogComponent} from './variable/variable.dialog.component';
 
 @Component({
     selector: 'app-dashboard-dialog',
@@ -36,6 +37,38 @@ export class DashboardDialogComponent implements OnInit {
     }
 
     onFormChanges(): void {
+    }
+
+    addVariable() {
+        const variable = {id: undefined, name: '', value: '', dashboard_id: this.dashboard.id};
+        this.dashboard.variables.push(variable);
+    }
+
+    variableAdded(variable) {
+        for (const ix in this.dashboard.variables) {
+            if (this.dashboard.variables[ix].id === undefined) {
+                this.dashboard.variables[ix] = variable;
+                break;
+            }
+        }
+    }
+
+    variableEdited(variable) {
+        for (const ix in this.dashboard.variables) {
+            if (this.dashboard.variables[ix].id === variable.id) {
+                this.dashboard.variables[ix] = variable;
+                break;
+            }
+        }
+    }
+
+    variableDeleted(variable) {
+        for (const ix in this.dashboard.variables) {
+            if (this.dashboard.variables[ix].id === variable.id) {
+                this.dashboard.variables.splice(+ix, 1);
+                break;
+            }
+        }
     }
 
     formValid() {

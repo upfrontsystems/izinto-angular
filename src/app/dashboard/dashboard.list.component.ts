@@ -40,7 +40,7 @@ export class DashboardListComponent implements OnInit {
 
     add() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '550px',
+            width: '600px',
             data: {dashboard: {}}
         });
 
@@ -55,7 +55,7 @@ export class DashboardListComponent implements OnInit {
 
     edit(dashboard) {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '550px',
+            width: '600px',
             data: {dashboard: dashboard}
         });
 

@@ -40,36 +40,6 @@
 
             </mat-card-content>
 
-            <mat-card-content>
-                <mat-card-title style="width: 100%;">Variables</mat-card-title>
-
-                <div>
-                    <div fxLayout="row">
-                        <div fxFlex="30" class="mat-header-cell">id</div>
-                        <div fxFlex="50" class="mat-header-cell">Value</div>
-                        <div fxFlex="20" class="mat-header-cell"></div>
-                    </div>
-
-                    <div fxLayout="row" class="mat-row" *ngFor="let variable of dashboard?.variables">
-                        <div fxFlex="30" class="mat-cell">{{variable.name}}</div>
-                        <div fxFlex="50" class="mat-cell">{{variable.value}}</div>
-                        <div fxFlex="20" class="mat-cell">
-                            <button mat-button color="danger" (click)="deleteVarConfirm.show()" title="Delete"
-                                    class="pull-right hover-action">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                            <confirmation #deleteVarConfirm [title]="'Delete variable'"
-                                          (onAccept)="deleteVariable(variable)">
-                            </confirmation>
-                            <button mat-button (click)="editVariable(variable)" title="Edit"
-                                    class="pull-right hover-action">
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </mat-card-content>
-
         </mat-card>
     </div>
 </div>

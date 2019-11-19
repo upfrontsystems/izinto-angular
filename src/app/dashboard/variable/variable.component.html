@@ -1,16 +1,45 @@
-<div fxLayout="row" class="mat-row">
+<div *ngIf="!editing && !adding" class="variable-line-item">
     <div fxFlex="30" class="mat-cell">{{variable.name}}</div>
-    <div fxFlex="50" class="mat-cell">{{variable.value}}</div>
-    <div fxFlex="20" class="mat-cell">
-        <button mat-button color="danger" (click)="deleteVarConfirm.show()" title="Delete"
-                class="pull-right hover-action">
-            <mat-icon>delete</mat-icon>
+    <div fxFlex="40" class="mat-cell">{{variable.value}}</div>
+    <div fxFlex="30" class="mat-cell">
+        <button class="pull-right mat-error mat-button hover-action" (click)="deleteVarConfirm.show()"
+                title="Delete">
+            <span>Delete</span>
         </button>
-        <confirmation #deleteVarConfirm [title]="'Delete variable'">
+        <confirmation #deleteVarConfirm [title]="'Delete variable'"
+                      (onAccept)="deleteVariable()">
         </confirmation>
-        <button mat-button title="Edit"
-                class="pull-right hover-action">
-            <mat-icon>edit</mat-icon>
+        <button class="pull-right mat-button hover-action" (click)="editing = true;" title="Edit">
+            <span>Edit</span>
         </button>
     </div>
+</div>
+
+<div *ngIf="editing || adding">
+
+    <form [formGroup]="form" autocomplete="off">
+        <div fxLayout="row wrap">
+
+            <div fxFlex="30" class="p-r-20">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="" [formControl]="form.get('name')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="40">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="" [formControl]="form.get('value')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="mat-cell">
+                <button class="mat-button pull-right m-t-10" (click)="submit()">
+                    <span>Submit</span>
+                </button>
+            </div>
+
+        </div>
+    </form>
 </div>

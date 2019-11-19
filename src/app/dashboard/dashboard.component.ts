@@ -49,10 +49,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         {
             icon: 'add',
             label: 'Add Chart',
-        },
-        {
-            icon: 'add',
-            label: 'Add Variable'
         }
     ];
 
@@ -106,8 +102,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     fabClick(label) {
         if (label === 'Add Chart') {
             this.addChart();
-        } else if (label === 'Add Variable') {
-            this.addVariable();
         }
     }
 
@@ -162,56 +156,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
-        });
-    }
-
-    addVariable() {
-        const dialogRef = this.dialog.open(VariableDialogComponent, {
-            width: '600px',
-            data: {variable: {dashboard_id: this.dashboardId}}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.variableService.add(result).subscribe(resp => {
-                    this.dashboard.variables.push(resp);
-                    this.dashboard.variables.sort((a, b) => a.name.localeCompare(b.name));
-                    this.loadDatasets();
-                });
-            }
-        });
-    }
-
-    editVariable(variable) {
-        const dialogRef = this.dialog.open(VariableDialogComponent, {
-            width: '600px',
-            data: {variable: variable}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.variableService.edit(result).subscribe(resp => {
-                    for (const ix in this.dashboard.variables) {
-                        if (this.dashboard.variables[ix].id === resp.id) {
-                            this.dashboard.variables[ix] = resp;
-                            this.loadDatasets();
-                            break;
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    deleteVariable(variable) {
-        this.variableService.delete(variable).subscribe(resp => {
-            for (const ix in this.dashboard.variables) {
-                if (this.dashboard.variables[ix].id === variable.id) {
-                    this.dashboard.variables.splice(+ix, 1);
-                    this.loadDatasets();
-                    break;
-                }
-            }
         });
     }
 
