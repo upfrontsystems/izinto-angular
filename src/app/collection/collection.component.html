@@ -6,6 +6,12 @@
                 <mat-card-subtitle>{{collection?.description}}</mat-card-subtitle>
             </mat-card-content>
 
+            <mat-card-content>
+                <h4>Dashboards</h4>
+                <app-dashboard-list [dashboards]="collection?.dashboards"></app-dashboard-list>
+            </mat-card-content>
+
         </mat-card>
     </div>
 </div>
+<app-fab-speed-dial (buttonClick)="addDashboard()" [fabButtons]="fabButtons"></app-fab-speed-dial>

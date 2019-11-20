@@ -17,6 +17,17 @@
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field>
+                    <mat-select [formControl]="form.get('users')" placeholder="Users" [multiple]="true" #userSelect>
+                        <ngx-mat-select-search [formControl]="usersFilterCtrl"></ngx-mat-select-search>
+                        <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                            {{user.fullname}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="dashboard.id">
                 <h4 style="width: 100%;">Variables</h4>
 
@@ -29,7 +40,8 @@
 
                     <div fxLayout="row" class="mat-row" *ngFor="let variable of dashboard?.variables">
                         <app-variable fxFlex="100" [variable]="variable" (added)="variableAdded($event)"
-                         (edited)="variableEdited($event)"  (deleted)="variableDeleted($event)"></app-variable>
+                                      (edited)="variableEdited($event)"
+                                      (deleted)="variableDeleted($event)"></app-variable>
                     </div>
 
                     <button mat-stroked-button color="primary" (click)="addVariable()">Add Variable</button>

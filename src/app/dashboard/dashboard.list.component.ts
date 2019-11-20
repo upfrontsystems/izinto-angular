@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { Dashboard } from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
@@ -6,7 +6,6 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';
-import {CollectionDialogComponent} from '../collection/collection.dialog.component';
 
 
 @Component({
@@ -16,17 +15,7 @@ import {CollectionDialogComponent} from '../collection/collection.dialog.compone
 })
 export class DashboardListComponent implements OnInit {
 
-    dashboards: Dashboard[];
-    fabButtons = [
-        {
-            icon: 'add',
-            label: 'Add Dashboard',
-        },
-        {
-            icon: 'add',
-            label: 'Add Collection'
-        }
-    ];
+    @Input() dashboards: Dashboard[];
 
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
@@ -43,14 +32,6 @@ export class DashboardListComponent implements OnInit {
         this.dashboardService.getDashboards({user_id: true}).subscribe(resp => {
             this.dashboards = resp;
         });
-    }
-
-    fabClick(label) {
-        if (label === 'Add Dashboard') {
-            this.addDashboard();
-        } else if (label === 'Add Collection') {
-            this.addCollection();
-        }
     }
 
     addDashboard() {
@@ -98,19 +79,4 @@ export class DashboardListComponent implements OnInit {
             }
         });
     }
-
-    addCollection() {
-        const dialogRef = this.dialog.open(CollectionDialogComponent, {
-            width: '600px',
-            data: {collection: {}}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.collectionService.add(result).subscribe(resp => {
-                });
-            }
-        });
-    }
-
 }

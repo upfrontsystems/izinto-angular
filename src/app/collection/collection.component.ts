@@ -4,6 +4,8 @@ import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material';
 import {Collection} from '../_models/collection';
 import {CollectionService} from '../_services/collection.service';
+import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
+import {DashboardService} from '../_services/dashboard.service';
 
 @Component({
   selector: 'app-collection',
@@ -14,12 +16,18 @@ export class CollectionComponent implements OnInit {
 
     collectionId: number;
     collection: Collection;
-
+    fabButtons = [
+        {
+            icon: 'add',
+            label: 'Add Dashboard'
+        }
+    ];
 
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
                 public dialog: MatDialog,
-                private collectionService: CollectionService) {
+                private collectionService: CollectionService,
+                private dashboardService: DashboardService) {
     }
 
     ngOnInit() {
@@ -34,4 +42,20 @@ export class CollectionComponent implements OnInit {
             this.collection = resp;
         });
     }
+
+    addDashboard() {
+        const dialogRef = this.dialog.open(DashboardDialogComponent, {
+            width: '600px',
+            data: {dashboard: {collection_id: this.collection.id}}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.dashboardService.add(result).subscribe(resp => {
+                    this.collection.dashboards.push(resp);
+                });
+            }
+        });
+    }
+
 }

@@ -8,6 +8,9 @@ import {AppBlankComponent} from './layouts/blank/blank.component';
 import {UserComponent} from './user/user.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardListComponent} from './dashboard/dashboard.list.component';
+import {HomeComponent} from './home/home.component';
+import {CollectionListComponent} from './collection/collection.list.component';
+import {CollectionComponent} from './collection/collection.component';
 
 const appRoutes: Routes = [
     {
@@ -17,8 +20,12 @@ const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: '/dashboards',
+                redirectTo: '/home',
                 pathMatch: 'full'
+            },
+            {
+                path: 'home',
+                component: HomeComponent
             },
             {
                 path: 'dashboards',
@@ -27,6 +34,14 @@ const appRoutes: Routes = [
             {
                 path: 'dashboards/:id',
                 component: DashboardComponent
+            },
+            {
+                path: 'collections',
+                component: CollectionListComponent
+            },
+            {
+                path: 'collections/:id',
+                component: CollectionComponent
             },
             {
                 path: 'admin',

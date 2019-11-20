@@ -9,6 +9,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 import {FullComponent} from './layouts/full/full.component';
 import {AppRoutes} from './app.routing';
@@ -20,6 +21,7 @@ import {AdminComponent} from './admin/admin.component';
 import { AlertNotificationComponent } from './shared/alert/alert.component';
 import { CollectionComponent } from './collection/collection.component';
 import { CollectionDialogComponent } from './collection/collection.dialog.component';
+import { CollectionListComponent } from './collection/collection.list.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
@@ -60,6 +62,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CollectionDialogComponent,
         ConfirmationComponent,
         ConfirmationDialogComponent,
+        CollectionListComponent,
         DashboardComponent,
         DashboardDialogComponent,
         DashboardListComponent,
@@ -84,6 +87,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         GraphQLModule,
         HttpClientModule,
         PerfectScrollbarModule,
+        NgxMatSelectSearchModule,
         ReactiveFormsModule,
         SharedModule,
         NgMultiSelectDropDownModule.forRoot(),
