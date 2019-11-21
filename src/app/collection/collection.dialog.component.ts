@@ -8,15 +8,14 @@ import {UserService} from '../_services/user.service';
 import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-collection-dialog',
-  templateUrl: './collection.dialog.component.html',
-  styleUrls: ['./collection.component.css']
+    selector: 'app-collection-dialog',
+    templateUrl: './collection.dialog.component.html',
+    styleUrls: ['./collection.component.css']
 })
 export class CollectionDialogComponent implements OnInit {
 
     protected users: User[] = [];
     public userCtrl: FormControl = new FormControl();
-    public usersFilterCtrl: FormControl = new FormControl();
     public filteredUsers: ReplaySubject<User[]> = new ReplaySubject<User[]>(1);
 
     @ViewChild('userSelect') multiSelect: MatSelect;
@@ -42,6 +41,7 @@ export class CollectionDialogComponent implements OnInit {
             id: this.collection.id,
             title: this.collection.title,
             description: this.collection.description,
+            usersFilter: ''
         };
         this.form = this.fb.group(formData);
 
@@ -52,7 +52,7 @@ export class CollectionDialogComponent implements OnInit {
     }
 
     onFormChanges(): void {
-                this.usersFilterCtrl.valueChanges
+        this.form.controls.usersFilter.valueChanges
             .pipe(takeUntil(this._onDestroy))
             .subscribe(() => {
                 this.filterUsers();
@@ -72,7 +72,7 @@ export class CollectionDialogComponent implements OnInit {
             return;
         }
         // get the search keyword
-        let search = this.usersFilterCtrl.value;
+        let search = this.form.controls.usersFilter.value;
         if (!search) {
             this.filteredUsers.next(this.users.slice());
             return;

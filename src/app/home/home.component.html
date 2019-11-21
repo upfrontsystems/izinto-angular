@@ -1,5 +1,7 @@
-﻿<app-collection-list></app-collection-list>
+﻿<app-collection-list [collections]="collections" (edited)="collectionEdited($event)"
+                    (deleted)="collectionDeleted($event)"></app-collection-list>
 
-<app-dashboard-list></app-dashboard-list>
+<app-dashboard-list [dashboards]="dashboards" (edited)="dashboardEdited($event)"
+                    (deleted)="dashboardDeleted($event)"></app-dashboard-list>
 
 <app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

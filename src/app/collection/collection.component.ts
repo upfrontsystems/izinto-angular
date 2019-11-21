@@ -58,4 +58,21 @@ export class CollectionComponent implements OnInit {
         });
     }
 
+    dashboardEdited(dashboard) {
+        for (const ix in this.collection.dashboards) {
+            if (this.collection.dashboards[ix].id === dashboard.id) {
+                this.collection.dashboards[ix] = dashboard;
+                break;
+            }
+        }
+    }
+
+    dashboardDeleted(dashboard) {
+        for (const ix in this.collection.dashboards) {
+            if (this.collection.dashboards[ix].id === dashboard.id) {
+                this.collection.dashboards.splice(+ix, 1);
+                break;
+            }
+        }
+    }
 }
