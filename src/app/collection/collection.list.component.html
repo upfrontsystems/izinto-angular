@@ -16,7 +16,8 @@
                                       [content]="'Are you sure you wish to permanently delete this collection?'"
                                       (onAccept)="deleteCollection(collection)">
                         </confirmation>
-                        <button mat-menu-item class="pull-right" color="accent" (click)="editCollection(collection)" title="Edit">
+                        <button mat-menu-item class="pull-right" color="accent" (click)="editCollection(collection)"
+                                title="Edit">
                             <mat-icon>edit</mat-icon>
                             <span>Edit</span>
                         </button>
@@ -24,7 +25,7 @@
 
                     <mat-card-actions></mat-card-actions>
                     <mat-icon class="list-icon">library_books</mat-icon>
-                    <mat-card-title><a [routerLink]="[collection.id]">{{collection.title}}</a></mat-card-title>
+                    <mat-card-title><a [routerLink]="['/collections', collection.id]">{{collection.title}}</a></mat-card-title>
                     <mat-card-subtitle>{{collection.description}}</mat-card-subtitle>
 
                 </mat-card-content>

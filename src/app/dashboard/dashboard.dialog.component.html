@@ -20,7 +20,11 @@
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field>
                     <mat-select [formControl]="form.get('users')" placeholder="Users" [multiple]="true" #userSelect>
-                        <ngx-mat-select-search [formControl]="usersFilterCtrl"></ngx-mat-select-search>
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
+                                placeholderLabel="Search users" noEntriesFoundLabel="No users found">
+                            </ngx-mat-select-search>
+                        </mat-option>
                         <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
                             {{user.fullname}}
                         </mat-option>
