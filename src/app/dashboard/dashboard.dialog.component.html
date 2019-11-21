@@ -32,19 +32,19 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="dashboard.id">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <h4 style="width: 100%;">Variables</h4>
 
                 <div>
-                    <div fxLayout="row">
+                    <div fxLayout="row" class="p-l-10">
                         <div fxFlex="30" class="mat-header-cell">id</div>
                         <div fxFlex="40" class="mat-header-cell">Value</div>
                         <div fxFlex="30" class="mat-header-cell"></div>
                     </div>
 
-                    <div fxLayout="row" class="mat-row" *ngFor="let variable of dashboard?.variables">
-                        <app-variable fxFlex="100" [variable]="variable" (added)="variableAdded($event)"
-                                      (edited)="variableEdited($event)"
+                    <div fxLayout="row" class="mat-row p-l-10" *ngFor="let variable of dashboard?.variables; let ix = index">
+                        <app-variable fxFlex="100" [variable]="variable" [index]="ix"
+                                      (added)="variableAdded($event)" (edited)="variableEdited($event)"
                                       (deleted)="variableDeleted($event)"></app-variable>
                     </div>
 

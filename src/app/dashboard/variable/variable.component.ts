@@ -14,6 +14,7 @@ export class VariableComponent implements OnInit {
     editing = false;
     adding = false;
     @Input() variable: Variable;
+    @Input() index: number;
     @Output() edited: EventEmitter<Variable> = new EventEmitter();
     @Output() added: EventEmitter<Variable> = new EventEmitter();
     @Output() deleted: EventEmitter<Variable> = new EventEmitter();
@@ -28,7 +29,8 @@ export class VariableComponent implements OnInit {
             id: this.variable.id,
             name: this.variable.name,
             value: this.variable.value,
-            dashboard_id: this.variable.dashboard_id
+            dashboard_id: this.variable.dashboard_id,
+            index: this.index
         });
     }
 
@@ -41,21 +43,17 @@ export class VariableComponent implements OnInit {
     }
 
     addVariable() {
-        this.variableService.add(this.form.value).subscribe(resp => {
-            this.added.emit(resp);
-        });
+        const formData = this.form.value;
+        this.added.emit(formData);
+        this.variable = formData;
+        this.adding = false;
     }
 
     editVariable() {
-        this.variableService.edit(this.form.value).subscribe(resp => {
-            this.edited.emit(resp);
-        });
+        this.edited.emit(this.form.value);
     }
 
     deleteVariable() {
-        this.variableService.delete(this.variable).subscribe(resp => {
-            this.deleted.emit(this.variable);
-        });
+        this.deleted.emit(this.form.value);
     }
-
 }

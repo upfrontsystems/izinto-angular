@@ -41,7 +41,8 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
             title: this.dashboard.title,
             description: this.dashboard.description,
             collection_id: this.dashboard.collection_id,
-            users: [this.dashboard.users]
+            users: [this.dashboard.users],
+            variables: [this.dashboard.variables]
         };
         this.form = this.fb.group(formData);
         this.filteredUsers.next(this.dashboard.users);
@@ -86,27 +87,28 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         this.dashboard.variables.push(variable);
     }
 
-    variableAdded(variable) {
+    variableAdded(form) {
         for (const ix in this.dashboard.variables) {
-            if (this.dashboard.variables[ix].id === undefined) {
-                this.dashboard.variables[ix] = variable;
+            if (ix === form.index) {
+                form.id = 0;
+                this.dashboard.variables[ix] = form;
                 break;
             }
         }
     }
 
-    variableEdited(variable) {
+    variableEdited(form) {
         for (const ix in this.dashboard.variables) {
-            if (this.dashboard.variables[ix].id === variable.id) {
-                this.dashboard.variables[ix] = variable;
+            if (ix === form.index) {
+                this.dashboard.variables[ix] = form;
                 break;
             }
         }
     }
 
-    variableDeleted(variable) {
+    variableDeleted(form) {
         for (const ix in this.dashboard.variables) {
-            if (this.dashboard.variables[ix].id === variable.id) {
+            if (this.dashboard.variables[ix].id === form.index) {
                 this.dashboard.variables.splice(+ix, 1);
                 break;
             }
@@ -119,6 +121,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
 
     submit() {
         const form = this.form.value;
+        form.variables = this.dashboard.variables;
         this.dialogRef.close(form);
     }
 
