@@ -11,6 +11,7 @@ import {DashboardListComponent} from './dashboard/dashboard.list.component';
 import {HomeComponent} from './home/home.component';
 import {CollectionListComponent} from './collection/collection.list.component';
 import {CollectionComponent} from './collection/collection.component';
+import {DashboardSettingsComponent} from './dashboard/dashboard-settings/dashboard.settings.component';
 
 const appRoutes: Routes = [
     {
@@ -34,6 +35,10 @@ const appRoutes: Routes = [
             {
                 path: 'dashboards/:id',
                 component: DashboardComponent
+            },
+            {
+                path: 'dashboards/:id/settings',
+                component: DashboardSettingsComponent
             },
             {
                 path: 'collections',

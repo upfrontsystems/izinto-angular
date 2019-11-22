@@ -82,39 +82,6 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         });
     }
 
-    addVariable() {
-        const variable = {id: undefined, name: '', value: '', dashboard_id: this.dashboard.id};
-        this.dashboard.variables.push(variable);
-    }
-
-    variableAdded(form) {
-        for (const ix in this.dashboard.variables) {
-            if (ix === form.index) {
-                form.id = 0;
-                this.dashboard.variables[ix] = form;
-                break;
-            }
-        }
-    }
-
-    variableEdited(form) {
-        for (const ix in this.dashboard.variables) {
-            if (ix === form.index) {
-                this.dashboard.variables[ix] = form;
-                break;
-            }
-        }
-    }
-
-    variableDeleted(form) {
-        for (const ix in this.dashboard.variables) {
-            if (this.dashboard.variables[ix].id === form.index) {
-                this.dashboard.variables.splice(+ix, 1);
-                break;
-            }
-        }
-    }
-
     formValid() {
         return this.form.valid;
     }

@@ -43,17 +43,20 @@ export class VariableComponent implements OnInit {
     }
 
     addVariable() {
-        const formData = this.form.value;
-        this.added.emit(formData);
-        this.variable = formData;
-        this.adding = false;
+        this.variableService.add(this.form.value).subscribe(resp => {
+            this.added.emit(resp);
+        });
     }
 
     editVariable() {
-        this.edited.emit(this.form.value);
+        this.variableService.edit(this.form.value).subscribe(resp => {
+            this.edited.emit(resp);
+        });
     }
 
     deleteVariable() {
-        this.deleted.emit(this.form.value);
+        this.variableService.delete(this.variable).subscribe(resp => {
+            this.deleted.emit(this.variable);
+        });
     }
 }

@@ -108,7 +108,6 @@ export class HomeComponent implements OnInit {
     }
 
     dashboardEdited(dashboard) {
-        console.log(dashboard);
         for (const ix in this.dashboards) {
             if (this.dashboards[ix].id === dashboard.id) {
                 this.dashboards[ix] = dashboard;

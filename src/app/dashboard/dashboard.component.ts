@@ -51,12 +51,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
     ];
 
-    constructor(private route: ActivatedRoute,
-                private http: HttpClient,
-                public dialog: MatDialog,
-                private chartService: ChartService,
-                private dashboardService: DashboardService,
-                private variableService: VariableService) {
+    constructor(protected route: ActivatedRoute,
+                protected http: HttpClient,
+                protected dialog: MatDialog,
+                protected chartService: ChartService,
+                protected dashboardService: DashboardService) {
     }
 
     @HostListener('window:resize', ['$event'])

@@ -25,6 +25,7 @@ import { CollectionListComponent } from './collection/collection.list.component'
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
+import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard.settings.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
 import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
@@ -66,6 +67,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         DashboardComponent,
         DashboardDialogComponent,
         DashboardListComponent,
+        DashboardSettingsComponent,
         ChartComponent,
         ChartDialogComponent,
         FabSpeedDialComponent,

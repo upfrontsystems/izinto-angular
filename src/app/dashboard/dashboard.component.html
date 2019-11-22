@@ -2,8 +2,14 @@
     <div fxFlex="100">
         <mat-card>
             <mat-card-content>
+                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']">
+                    <mat-icon>settings</mat-icon>
+                </a>
+
                 <mat-card-title>{{dashboard?.title}}</mat-card-title>
                 <mat-card-subtitle>{{dashboard?.description}}</mat-card-subtitle>
+
+
             </mat-card-content>
 
             <mat-toolbar class="no-shadow">
