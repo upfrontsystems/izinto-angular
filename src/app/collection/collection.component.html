@@ -9,7 +9,7 @@
             <mat-card-content>
                 <h4>Dashboards</h4>
                 <app-dashboard-list [dashboards]="collection?.dashboards" (edited)="dashboardEdited($event)"
-                    (deleted)="dashboardDeleted($event)"></app-dashboard-list>
+                    (deleted)="dashboardDeleted($event)" (reordered)="dashboardReordered($event)"></app-dashboard-list>
             </mat-card-content>
 
         </mat-card>

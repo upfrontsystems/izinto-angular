@@ -1,8 +1,15 @@
+<div cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
 <ng-container *ngFor="let dashboard of dashboards">
-    <div fxLayout="row">
+    <div fxLayout="row"
+    cdkDrag [cdkDragData]="dashboard" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
         <div fxFlex="100%">
-            <mat-card>
-                <mat-card-content>
+            <mat-card fxLayout="row">
+                <div fxFlex="5">
+                    <button mat-button class="h-100" cdkDragHandle *ngIf="collectionId" title="Reposition dashboard">
+                        <mat-icon>swap_vert</mat-icon>
+                    </button>
+                </div>
+                <mat-card-content fxFlex>
                     <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
                         <mat-icon>more_horiz</mat-icon>
                     </button>
@@ -32,3 +39,4 @@
         </div>
     </div>
 </ng-container>
+</div>

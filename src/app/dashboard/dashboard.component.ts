@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('id');
+            this.dashboardId = +params.get('dashboard_id');
             this.getDashboard();
             this.getCharts();
             // Initialise transition

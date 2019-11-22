@@ -24,7 +24,7 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('id');
+            this.dashboardId = +params.get('dashboard_id');
             this.getDashboard();
         });
     }

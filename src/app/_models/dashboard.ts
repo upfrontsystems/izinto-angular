@@ -6,6 +6,7 @@ export class Dashboard {
     title: string;
     description: string;
     collection_id: number;
+    order: number;
     users: User[];
     variables: Variable[];
 }

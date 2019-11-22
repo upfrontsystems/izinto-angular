@@ -30,4 +30,8 @@ export class DashboardService {
     delete(dashboard) {
         return this.http.delete(`api/dashboard/` + dashboard.id);
     }
+
+    reorderDashboard(dashboard) {
+        return this.http.put('api/dashboard/' + dashboard.id + '/reorder', dashboard);
+    }
 }

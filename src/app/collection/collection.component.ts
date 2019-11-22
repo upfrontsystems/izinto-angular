@@ -6,6 +6,7 @@ import {Collection} from '../_models/collection';
 import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
 import {DashboardService} from '../_services/dashboard.service';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-collection',
@@ -32,7 +33,7 @@ export class CollectionComponent implements OnInit {
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
-            this.collectionId = +params.get('id');
+            this.collectionId = +params.get('collection_id');
             this.getCollection();
         });
     }
@@ -46,7 +47,7 @@ export class CollectionComponent implements OnInit {
     addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',
-            data: {dashboard: {collection_id: this.collection.id}}
+            data: {dashboard: {collection_id: this.collection.id, users: []}}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -75,4 +76,31 @@ export class CollectionComponent implements OnInit {
             }
         }
     }
+
+    dashboardReordered(event) {
+        const oldOrder = event.item.data.order;
+        const index = event.currentIndex;
+        const change = index < event.previousIndex ? 1 : -1;
+        const dashboard = event.item.data;
+
+        let newOrder = this.collection.dashboards[index].order;
+        if (newOrder === oldOrder) {
+            newOrder += index > event.previousIndex ? 1 : -1;
+        }
+        if (index > event.previousIndex) {
+            for (const dash of this.collection.dashboards.slice(event.previousIndex, index + 1)) {
+                dash.order += change;
+            }
+        } else {
+            for (const dash of this.collection.dashboards.slice(index, event.previousIndex)) {
+                dash.order += change;
+            }
+        }
+
+        dashboard.order = newOrder;
+        this.dashboardService.reorderDashboard(dashboard).subscribe(resp => {
+            moveItemInArray(this.collection.dashboards, event.previousIndex, event.currentIndex);
+        });
+    }
+
 }

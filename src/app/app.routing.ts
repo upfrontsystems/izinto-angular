@@ -21,23 +21,19 @@ const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: '/home',
+                component: HomeComponent,
                 pathMatch: 'full'
-            },
-            {
-                path: 'home',
-                component: HomeComponent
             },
             {
                 path: 'dashboards',
                 component: DashboardListComponent
             },
             {
-                path: 'dashboards/:id',
+                path: 'dashboards/:dashboard_id',
                 component: DashboardComponent
             },
             {
-                path: 'dashboards/:id/settings',
+                path: 'dashboards/:dashboard_id/settings',
                 component: DashboardSettingsComponent
             },
             {
@@ -45,8 +41,16 @@ const appRoutes: Routes = [
                 component: CollectionListComponent
             },
             {
-                path: 'collections/:id',
+                path: 'collections/:collection_id',
                 component: CollectionComponent
+            },
+            {
+                path: 'collections/:collection_id/dashboards/:dashboard_id',
+                component: DashboardComponent
+            },
+            {
+                path: 'collections/:collection_id/dashboards/:dashboard_id/settings',
+                component: DashboardSettingsComponent
             },
             {
                 path: 'admin',
