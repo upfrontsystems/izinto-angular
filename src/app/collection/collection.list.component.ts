@@ -42,4 +42,8 @@ export class CollectionListComponent {
             this.deleted.emit(collection);
         });
     }
+
+    copyCollection(collection) {
+        this.collectionService.copy(collection);
+    }
 }

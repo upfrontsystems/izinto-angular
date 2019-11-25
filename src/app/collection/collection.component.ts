@@ -36,6 +36,18 @@ export class CollectionComponent implements OnInit {
             this.collectionId = +params.get('collection_id');
             this.getCollection();
         });
+
+        if (this.dashboardService.canPaste()) {
+            this.fabButtons.push({icon: 'paste', label: 'Paste Dashboard'});
+        }
+    }
+
+    fabClick(label) {
+        if (label === 'Add Dashboard') {
+            this.addDashboard();
+        } else if (label === 'Paste Dashboard') {
+            this.pasteDashboard();
+        }
     }
 
     getCollection() {
@@ -103,4 +115,9 @@ export class CollectionComponent implements OnInit {
         });
     }
 
+    pasteDashboard() {
+        this.dashboardService.paste(this.collection.id).subscribe(resp => {
+            this.collection.dashboards.push(resp);
+        });
+    }
 }

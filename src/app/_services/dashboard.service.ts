@@ -31,7 +31,23 @@ export class DashboardService {
         return this.http.delete(`api/dashboard/` + dashboard.id);
     }
 
+    // store copy of dashboard in local storage
+    copy(dashboard) {
+        localStorage.setItem('dashboard', JSON.stringify(dashboard));
+    }
+
+    paste(collection_id) {
+        // set collection id dashboard is pasted into
+        const dashboard = JSON.parse(localStorage.getItem('dashboard'));
+        dashboard.collection_id = collection_id;
+        return this.http.post<Dashboard>('/api/dashboards/paste', dashboard);
+    }
+
     reorderDashboard(dashboard) {
         return this.http.put('api/dashboard/' + dashboard.id + '/reorder', dashboard);
+    }
+
+    canPaste(): boolean {
+        return localStorage.getItem('dashboard') !== undefined;
     }
 }

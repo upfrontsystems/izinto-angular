@@ -34,6 +34,13 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.getCollections();
         this.getDashboards();
+
+        if (this.dashboardService.canPaste()) {
+            this.fabButtons.push({icon: 'paste', label: 'Paste Dashboard'});
+        }
+        if (this.collectionService.canPaste()) {
+            this.fabButtons.push({icon: 'paste', label: 'Paste Collection'});
+        }
     }
 
     getDashboards() {
@@ -55,9 +62,12 @@ export class HomeComponent implements OnInit {
             this.addDashboard();
         } else if (label === 'Add Collection') {
             this.addCollection();
+        } else if (label === 'Paste Dashboard') {
+            this.pasteDashboard();
+        } else if (label === 'Paste Collection') {
+            this.pasteCollection();
         }
     }
-
 
     addCollection() {
         const dialogRef = this.dialog.open(CollectionDialogComponent, {
@@ -92,6 +102,12 @@ export class HomeComponent implements OnInit {
         }
     }
 
+    pasteCollection() {
+        this.collectionService.paste().subscribe(resp => {
+            this.collections.push(resp);
+        });
+    }
+
     addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',
@@ -124,4 +140,11 @@ export class HomeComponent implements OnInit {
             }
         }
     }
+
+    pasteDashboard() {
+        this.dashboardService.paste(null).subscribe(resp => {
+            this.dashboards.push(resp);
+        });
+    }
+
 }

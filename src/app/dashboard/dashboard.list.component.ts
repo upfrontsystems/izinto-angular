@@ -69,4 +69,7 @@ export class DashboardListComponent implements OnInit {
         this.reordered.emit(event);
     }
 
+    copyDashboard(dashboard) {
+        this.dashboardService.copy(dashboard);
+    }
 }
