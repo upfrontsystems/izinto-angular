@@ -9,9 +9,9 @@ import {DashboardService} from '../_services/dashboard.service';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'app-collection',
-  templateUrl: './collection.component.html',
-  styleUrls: ['./collection.component.css']
+    selector: 'app-collection',
+    templateUrl: './collection.component.html',
+    styleUrls: ['./collection.component.css']
 })
 export class CollectionComponent implements OnInit {
 
@@ -21,6 +21,9 @@ export class CollectionComponent implements OnInit {
         {
             icon: 'add',
             label: 'Add Dashboard'
+        }, {
+            icon: 'collections',
+            label: 'Paste Dashboard'
         }
     ];
 
@@ -36,10 +39,6 @@ export class CollectionComponent implements OnInit {
             this.collectionId = +params.get('collection_id');
             this.getCollection();
         });
-
-        if (this.dashboardService.canPaste()) {
-            this.fabButtons.push({icon: 'paste', label: 'Paste Dashboard'});
-        }
     }
 
     fabClick(label) {
@@ -118,6 +117,7 @@ export class CollectionComponent implements OnInit {
     pasteDashboard() {
         this.dashboardService.paste(this.collection.id).subscribe(resp => {
             this.collection.dashboards.push(resp);
+            this.dashboardService.clearCopied();
         });
     }
 }

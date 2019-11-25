@@ -47,7 +47,11 @@ export class DashboardService {
         return this.http.put('api/dashboard/' + dashboard.id + '/reorder', dashboard);
     }
 
+    clearCopied() {
+        localStorage.removeItem('dashboard');
+    }
+
     canPaste(): boolean {
-        return localStorage.getItem('dashboard') !== undefined;
+        return localStorage.getItem('dashboard') !== null;
     }
 }

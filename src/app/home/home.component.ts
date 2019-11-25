@@ -21,6 +21,14 @@ export class HomeComponent implements OnInit {
         {
             icon: 'add',
             label: 'Add Collection',
+        },
+        {
+            icon: 'collections',
+            label: 'Paste Dashboard'
+        },
+        {
+            icon: 'collections_bookmark',
+            label: 'Paste Collection'
         }
     ];
 
@@ -34,13 +42,6 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.getCollections();
         this.getDashboards();
-
-        if (this.dashboardService.canPaste()) {
-            this.fabButtons.push({icon: 'paste', label: 'Paste Dashboard'});
-        }
-        if (this.collectionService.canPaste()) {
-            this.fabButtons.push({icon: 'paste', label: 'Paste Collection'});
-        }
     }
 
     getDashboards() {
@@ -105,6 +106,7 @@ export class HomeComponent implements OnInit {
     pasteCollection() {
         this.collectionService.paste().subscribe(resp => {
             this.collections.push(resp);
+            this.collectionService.clearCopied();
         });
     }
 
@@ -144,7 +146,7 @@ export class HomeComponent implements OnInit {
     pasteDashboard() {
         this.dashboardService.paste(null).subscribe(resp => {
             this.dashboards.push(resp);
+            this.dashboardService.clearCopied();
         });
     }
-
 }

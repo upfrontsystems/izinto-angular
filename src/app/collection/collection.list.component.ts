@@ -5,6 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material';
 import {CollectionService} from '../_services/collection.service';
 import {CollectionDialogComponent} from './collection.dialog.component';
+import {AlertService} from '../_services/alert.service';
 
 @Component({
   selector: 'app-collection-list',
@@ -20,6 +21,7 @@ export class CollectionListComponent {
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
                 public dialog: MatDialog,
+                protected alertService: AlertService,
                 private collectionService: CollectionService) { }
 
     editCollection(collection) {
@@ -45,5 +47,6 @@ export class CollectionListComponent {
 
     copyCollection(collection) {
         this.collectionService.copy(collection);
+        this.alertService.success('Collection copied', false, 2000);
     }
 }

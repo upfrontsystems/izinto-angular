@@ -7,6 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {AlertService} from '../_services/alert.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class DashboardListComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
                 public dialog: MatDialog,
+                protected alertService: AlertService,
                 private collectionService: CollectionService,
                 private dashboardService: DashboardService) { }
 
@@ -71,5 +73,6 @@ export class DashboardListComponent implements OnInit {
 
     copyDashboard(dashboard) {
         this.dashboardService.copy(dashboard);
+        this.alertService.success('Dashboard copied', false, 2000);
     }
 }

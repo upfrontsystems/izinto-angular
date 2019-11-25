@@ -39,7 +39,11 @@ export class CollectionService {
         return this.http.post<Collection>('/api/collections/paste', localStorage.getItem('collection'));
     }
 
+    clearCopied() {
+        localStorage.removeItem('collection');
+    }
+
     canPaste(): boolean {
-        return localStorage.getItem('collection') !== undefined;
+        return localStorage.getItem('collection') !== null;
     }
 }

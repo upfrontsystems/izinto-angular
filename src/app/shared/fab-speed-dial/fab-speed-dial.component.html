@@ -15,21 +15,23 @@
 </div>
 <div class="fab-container" *ngIf="fabButtons.length > 1">
     <button *ngIf="!text" mat-fab color="primary" class="fab-toggler"
-          (click)="onToggleFab()">
+            (click)="onToggleFab()">
         <i class="material-icons" [@fabToggler]="{value: state}">add</i>
     </button>
     <button *ngIf="text" mat-fab class="fab-toggler">
         {{text}}
     </button>
     <div [@speedDialStagger]="buttons.length">
-        <span *ngFor="let btn of buttons">
-            <span class="tooltip" style="opacity: 1;">{{btn.label}}</span>
-            <button (click)="onButtonClick(btn.label)"
-                    mat-fab
-                    class="fab-secondary"
-                    color="secondary">
-                <i class="material-icons">{{btn.icon}}</i>
-            </button>
-        </span>
+        <ng-container *ngFor="let btn of buttons">
+            <span *ngIf="showButton(btn)">
+                <span class="tooltip" style="opacity: 1;">{{btn.label}}</span>
+                <button (click)="onButtonClick(btn.label)"
+                        mat-fab
+                        class="fab-secondary"
+                        color="secondary">
+                    <i class="material-icons">{{btn.icon}}</i>
+                </button>
+            </span>
+        </ng-container>
     </div>
 </div>

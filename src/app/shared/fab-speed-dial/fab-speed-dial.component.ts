@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { fabSpeedDialAnimations } from './fab-speed-dial.animations';
+import {Collection} from '../../_models/collection';
+import {CollectionService} from '../../_services/collection.service';
+import {DashboardService} from '../../_services/dashboard.service';
 
 @Component({
     selector: 'app-fab-speed-dial',
@@ -19,7 +22,8 @@ export class FabSpeedDialComponent {
     state = 'inactive';
     buttons = [];
 
-    constructor() { }
+    constructor(protected collectionService: CollectionService,
+                protected dashboardService: DashboardService) { }
 
     showItems() {
         this.state = 'active';
@@ -38,5 +42,15 @@ export class FabSpeedDialComponent {
     onButtonClick(buttonId) {
         this.buttonClick.next(buttonId);
         this.hideItems();
+    }
+
+    showButton(button) {
+        if (button.label === 'Paste Dashboard') {
+            return this.dashboardService.canPaste();
+        }
+        if (button.label === 'Paste Collection') {
+            return this.collectionService.canPaste();
+        }
+        return true;
     }
 }
