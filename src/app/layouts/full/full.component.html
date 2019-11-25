@@ -1,7 +1,8 @@
 <!-- ============================================================== -->
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
-<div class="main-container" [dir]="dir" [ngClass]="{'minisidebar': minisidebar, 'boxed': boxed, 'danger': danger, 'blue': blue, 'green': green, 'dark': dark, 'sidebar-opened': sidebarOpened, 'sidebar-closed': !sidebarOpened }">
+<div class="main-container" [dir]="dir"
+     [ngClass]="{'minisidebar': minisidebar, 'boxed': boxed, 'danger': danger, 'blue': blue, 'green': green, 'dark': dark, 'sidebar-opened': sidebarOpened, 'sidebar-closed': !sidebarOpened }">
     <!-- ============================================================== -->
     <!-- Topbar - style you can find in header.scss -->
     <!-- ============================================================== -->
@@ -40,27 +41,29 @@
     <!-- ============================================================== -->
     <!-- End Topbar - style you can find in pages.scss -->
     <!-- ============================================================== -->
-    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 0 : 0" [ngClass]="{'minisidebar': minisidebar}">
+    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 0 : 0"
+                           [ngClass]="{'minisidebar': minisidebar}">
         <!-- ============================================================== -->
         <!-- Sidebar - style you can find in sidebar.scss -->
         <!-- ============================================================== -->
-        <mat-sidenav #snav id="snav" [mode]="mobileQuery.matches ? 'side' : 'over'" fixedTopGap="0" [opened]="mobileQuery.matches"
-            [disableClose]="mobileQuery.matches" (open)="sidebarOpened = true" (close)="sidebarOpened = false">
+        <mat-sidenav #snav id="snav" [mode]="mobileQuery.matches ? 'side' : 'over'" fixedTopGap="0"
+                     [opened]="mobileQuery.matches"
+                     [disableClose]="mobileQuery.matches" (open)="sidebarOpened = true" (close)="sidebarOpened = false">
             <app-sidebar></app-sidebar>
         </mat-sidenav>
         <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->
         <!-- ============================================================== -->
         <mat-sidenav-content class="page-wrapper">
-            
-                <div class="page-content">
 
-                    <router-outlet>
-                        <app-alert></app-alert>
-                    </router-outlet>
+            <div class="page-content">
 
-                </div>
-            
+                <router-outlet>
+                    <app-alert></app-alert>
+                </router-outlet>
+
+            </div>
+
         </mat-sidenav-content>
         <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->

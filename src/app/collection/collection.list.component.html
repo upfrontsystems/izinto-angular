@@ -29,7 +29,9 @@
 
                     <mat-card-actions></mat-card-actions>
                     <mat-icon class="list-icon">library_books</mat-icon>
-                    <mat-card-title><a [routerLink]="['/collections', collection.id]">{{collection.title}}</a></mat-card-title>
+                    <mat-card-title><a class="link-title" [routerLink]="['/collections', collection.id]">
+                        {{collection.title}}
+                    </a></mat-card-title>
                     <mat-card-subtitle>{{collection.description}}</mat-card-subtitle>
 
                 </mat-card-content>

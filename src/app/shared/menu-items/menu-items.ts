@@ -32,7 +32,7 @@ const MENUITEMS = [
     icon: 'av_timer'
   },
   {
-    state: 'dashboards',
+    state: '/',
     name: 'Dashboards',
     type: 'link',
     icon: 'insert_chart'

@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit {
 
     getDashboards() {
         // list all dashboards of this user
-        this.dashboardService.getDashboards({user_id: true}).subscribe(resp => {
+        this.dashboardService.getDashboards({user_id: true, collection_id: ''}).subscribe(resp => {
             this.dashboards = resp;
         });
     }
