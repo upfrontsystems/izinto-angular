@@ -10,6 +10,7 @@ import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {FullComponent} from './layouts/full/full.component';
 import {AppRoutes} from './app.routing';
@@ -19,24 +20,24 @@ import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
 import {AdminComponent} from './admin/admin.component';
 import { AlertNotificationComponent } from './shared/alert/alert.component';
+import {AlertService} from './_services/alert.service';
 import {ChartComponent} from './dashboard/chart/chart.component';
+import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
+import {ChartListComponent} from './dashboard/chart/chart.list.component';
 import { CollectionComponent } from './collection/collection.component';
 import { CollectionDialogComponent } from './collection/collection.dialog.component';
 import { CollectionListComponent } from './collection/collection.list.component';
+import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard.settings.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
-import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
 import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.component';
 import {MaterialModule} from './material.module';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {ErrorInterceptor} from './_helpers/error.interceptor';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
-import {AlertService} from './_services/alert.service';
 import {SpinnerService} from './_services/spinner.service';
 import {HomeComponent} from './home/home.component';
 import {SharedModule} from './shared/shared.module';
@@ -72,6 +73,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         DashboardSettingsComponent,
         ChartComponent,
         ChartDialogComponent,
+        ChartListComponent,
         FabSpeedDialComponent,
         FullComponent,
         HomeComponent,
