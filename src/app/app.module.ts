@@ -42,6 +42,7 @@ import {SpinnerService} from './_services/spinner.service';
 import {HomeComponent} from './home/home.component';
 import {SharedModule} from './shared/shared.module';
 import { SingleStatComponent } from './dashboard/single-stat/single.stat.component';
+import {SingleStatListComponent} from './dashboard/single-stat/single.stat.list.component';
 import { SingleStatDialogComponent } from './dashboard/single-stat/single.stat.dialog.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
@@ -78,6 +79,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         FullComponent,
         HomeComponent,
         SingleStatComponent,
+        SingleStatListComponent,
         SingleStatDialogComponent,
         SpinnerComponent,
         UserComponent,

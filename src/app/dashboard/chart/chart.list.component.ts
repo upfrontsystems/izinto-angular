@@ -26,9 +26,9 @@ export class ChartListComponent implements OnInit, OnChanges {
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
     @Input() variables: Variable[];
+    @Input() view: string;
 
     private charts: Chart[] = [];
-    private view = 'month';
     private dataSets = [];
     private scales = [];
 
@@ -56,6 +56,8 @@ export class ChartListComponent implements OnInit, OnChanges {
         if (changes.addedChart && changes.addedChart.currentValue) {
             const chart = changes.addedChart.currentValue;
             this.charts.push(chart);
+            this.loadDataSets();
+        } else if (changes.view && changes.view.currentValue) {
             this.loadDataSets();
         }
     }
@@ -623,10 +625,5 @@ export class ChartListComponent implements OnInit, OnChanges {
                 arrowWidth = this.innerWidth / dataset.length;
             this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
         }
-    }
-
-    updateView(view) {
-        this.view = view;
-        this.loadDataSets();
     }
 }

@@ -9,6 +9,7 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStatService} from '../_services/single.stat.service';
+import {SingleStat} from '../_models/single.stat';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class DashboardComponent implements OnInit {
     dashboardId: number;
     dashboard: Dashboard;
     addedChart: Chart;
+    addedSingleStat: SingleStat;
+    view = 'month';
     fabButtons = [
         {
             icon: 'add',
@@ -87,8 +90,13 @@ export class DashboardComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.singleStatService.add(result).subscribe(resp => {
+                    this.addedSingleStat = resp;
                 });
             }
         });
+    }
+
+    updateView(view) {
+        this.view = view;
     }
 }

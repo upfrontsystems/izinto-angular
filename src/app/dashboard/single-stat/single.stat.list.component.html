@@ -1,0 +1,12 @@
+<div fxLayout="row wrap">
+    <div fxFlex="25" *ngFor="let record of dataSets">
+        <button mat-icon-button (click)="editSingleStat(record)">
+            <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="deleteSingleStat(record)">
+            <mat-icon>delete</mat-icon>
+        </button>
+        <p>{{record.text}}</p>
+        <p>{{record.value}}</p>
+    </div>
+</div>
