@@ -1,0 +1,47 @@
+<h1 mat-dialog-title>{{state}} Single Stat</h1>
+<div mat-dialog-content>
+    <form [formGroup]="form" autocomplete="off">
+        <div fxLayout="row wrap">
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Title" [formControl]="form.get('title')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Query" [formControl]="form.get('query')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput type="number" placeholder="Decimals" [formControl]="form.get('decimals')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Thresholds" [formControl]="form.get('thresholds')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Colours" [formControl]="form.get('colors')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <span fxFlex></span>
+    <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
+    <button class="pull-right" mat-button (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
+</div>

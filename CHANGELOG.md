@@ -9,4 +9,5 @@ All notable changes to this project will be documented in this file. See [standa
 * [#14](https://github.com/upfrontsystems/izinto-angular/issues/14) add collections
 * [#14](https://github.com/upfrontsystems/izinto-angular/issues/14) add dashboards in collections reorder
 * [#14](https://github.com/upfrontsystems/izinto-angular/issues/14) add pasting dashboards and collections
+* [#17](https://github.com/upfrontsystems/izinto-angular/issues/17) add single stat
 

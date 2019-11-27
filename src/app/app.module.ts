@@ -19,6 +19,7 @@ import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
 import {AdminComponent} from './admin/admin.component';
 import { AlertNotificationComponent } from './shared/alert/alert.component';
+import {ChartComponent} from './dashboard/chart/chart.component';
 import { CollectionComponent } from './collection/collection.component';
 import { CollectionDialogComponent } from './collection/collection.dialog.component';
 import { CollectionListComponent } from './collection/collection.list.component';
@@ -39,7 +40,8 @@ import {AlertService} from './_services/alert.service';
 import {SpinnerService} from './_services/spinner.service';
 import {HomeComponent} from './home/home.component';
 import {SharedModule} from './shared/shared.module';
-import {ChartComponent} from './dashboard/chart/chart.component';
+import { SingleStatComponent } from './dashboard/single-stat/single.stat.component';
+import { SingleStatDialogComponent } from './dashboard/single-stat/single.stat.dialog.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
@@ -73,6 +75,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         FabSpeedDialComponent,
         FullComponent,
         HomeComponent,
+        SingleStatComponent,
+        SingleStatDialogComponent,
         SpinnerComponent,
         UserComponent,
         UserDialogComponent,
@@ -99,6 +103,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CollectionDialogComponent,
         ConfirmationDialogComponent,
         DashboardDialogComponent,
+        SingleStatDialogComponent,
         UserDialogComponent,
         VariableDialogComponent
     ],

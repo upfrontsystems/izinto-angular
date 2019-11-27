@@ -5,6 +5,7 @@ import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
 import {DashboardService} from '../../_services/dashboard.service';
+import {SingleStatService} from '../../_services/single.stat.service';
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -17,8 +18,9 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
                 protected http: HttpClient,
                 public dialog: MatDialog,
                 protected chartService: ChartService,
-                protected dashboardService: DashboardService) {
-        super(route, http, dialog, chartService, dashboardService);
+                protected dashboardService: DashboardService,
+                protected singleStatService: SingleStatService) {
+        super(route, http, dialog, chartService, dashboardService, singleStatService);
     }
 
 

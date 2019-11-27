@@ -1,0 +1,45 @@
+<div *ngIf="!editing && !adding" class="line-item">
+    <div fxFlex="30" class="mat-cell">{{singleStat.name}}</div>
+    <div fxFlex="40" class="mat-cell">{{singleStat.value}}</div>
+    <div fxFlex="30" class="mat-cell">
+        <button class="pull-right mat-error mat-button hover-action" (click)="deleteVarConfirm.show()"
+                title="Delete">
+            <span>Delete</span>
+        </button>
+        <confirmation #deleteVarConfirm [title]="'Delete singleStat'"
+                      (onAccept)="deleteSingleStat()">
+        </confirmation>
+        <button class="pull-right mat-button hover-action" (click)="editing = true;" title="Edit">
+            <span>Edit</span>
+        </button>
+    </div>
+</div>
+
+<div *ngIf="editing || adding">
+
+    <form [formGroup]="form" autocomplete="off">
+        <div fxLayout="row wrap">
+
+            <div fxFlex="30" class="p-r-20">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="" [formControl]="form.get('name')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="40">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="" [formControl]="form.get('value')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="mat-cell">
+                <button class="mat-button pull-right m-t-10" (click)="submit()">
+                    <span>Submit</span>
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>

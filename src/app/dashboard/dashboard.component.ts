@@ -16,7 +16,8 @@ import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
-import {VariableService} from '../_services/variable.service';
+import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
+import {SingleStatService} from '../_services/single.stat.service';
 
 
 @Component({
@@ -48,14 +49,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         {
             icon: 'add',
             label: 'Add Chart',
+        },
+        {
+            icon: 'add',
+            label: 'Add Single Stat',
         }
-    ];
+        ];
 
     constructor(protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected chartService: ChartService,
-                protected dashboardService: DashboardService) {
+                protected dashboardService: DashboardService,
+                protected singleStatService: SingleStatService) {
     }
 
     @HostListener('window:resize', ['$event'])
@@ -100,6 +106,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     fabClick(label) {
         if (label === 'Add Chart') {
             this.addChart();
+        } else if (label === 'Add Single Stat') {
+            this.addSingleStat();
         }
     }
 
@@ -154,6 +162,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
+        });
+    }
+
+    addSingleStat() {
+        const dialogRef = this.dialog.open(SingleStatDialogComponent, {
+            width: '600px',
+            data: {singleStat: {dashboard_id: this.dashboardId}},
+            disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.singleStatService.add(result).subscribe(resp => {
+                });
+            }
         });
     }
 
