@@ -27,19 +27,18 @@ export class ChartListComponent implements OnInit, OnChanges {
     @Input() addedChart: Chart;
     @Input() variables: Variable[];
     @Input() view: string;
+    @Input() dateRange: string;
 
     private charts: Chart[] = [];
     private dataSets = [];
     private scales = [];
 
+    private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private chartHeight = 200;
     private chartWidth = 1200;
     private innerWidth = 0;
     private innerHeight = 0;
     public windowWidth: any;
-
-    private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
-    private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
     private margin = {top: 50, right: 20, bottom: 20, left: 40};
 
     constructor(protected http: HttpClient,
@@ -57,7 +56,7 @@ export class ChartListComponent implements OnInit, OnChanges {
             const chart = changes.addedChart.currentValue;
             this.charts.push(chart);
             this.loadDataSets();
-        } else if (changes.view && changes.view.currentValue) {
+        } else if (changes.dateRange && changes.dateRange.currentValue) {
             this.loadDataSets();
         }
     }
@@ -187,7 +186,7 @@ export class ChartListComponent implements OnInit, OnChanges {
     }
 
     formatQuery(query) {
-        query = query.replace(/:range:/g, this.range[this.view]);
+        query = query.replace(/:range:/g, this.dateRange);
         query = query.replace(/:group_by:/g, this.group_by[this.view]);
 
         for (const variable of this.variables) {

@@ -19,11 +19,11 @@ export class SingleStatListComponent implements OnInit, OnChanges {
     @Input() addedSingleStat: SingleStat;
     @Input() variables: Variable[];
     @Input() view: string;
+    @Input() dateRange: string;
 
     private singleStats: SingleStat[] = [];
     private dataSets = [];
     private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
-    private range = {'hour': '1h', 'day': '1d', 'week': '7d', 'month': '30d'};
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
@@ -36,7 +36,7 @@ export class SingleStatListComponent implements OnInit, OnChanges {
             const stat = changes.addedSingleStat.currentValue;
             this.singleStats.push(stat);
             this.loadDataSets();
-        } else if (changes.view && changes.view.currentValue) {
+        } else if (changes.dateRange && changes.dateRange.currentValue) {
             this.loadDataSets();
         }
     }
@@ -122,7 +122,7 @@ export class SingleStatListComponent implements OnInit, OnChanges {
     }
 
     formatQuery(query) {
-        query = query.replace(/:range:/g, this.range[this.view]);
+        query = query.replace(/:range:/g, this.dateRange);
         query = query.replace(/:group_by:/g, this.group_by[this.view]);
 
         for (const variable of this.variables) {

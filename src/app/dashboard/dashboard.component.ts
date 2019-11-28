@@ -23,7 +23,16 @@ export class DashboardComponent implements OnInit {
     dashboard: Dashboard;
     addedChart: Chart;
     addedSingleStat: SingleStat;
-    view = 'month';
+    dateView = 'month';
+    private range = {'hour': {'count': 1, 'unit': 'h'},
+        'day': {'count': 1, 'unit': 'd'},
+        'week': {'count': 7, 'unit': 'd'},
+        'month': {'count': 30, 'unit': 'd'}
+    };
+    dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'MMMM y'};
+    dateRange = '30d';
+    dateRangeCounter = 1;
+    dateSelect: Date;
     fabButtons = [
         {
             icon: 'add',
@@ -48,6 +57,9 @@ export class DashboardComponent implements OnInit {
             this.dashboardId = +params.get('dashboard_id');
             this.getDashboard();
         });
+
+        const date = new Date();
+        this.dateSelect = new Date(date.setDate(date.getDate() - 30));
     }
 
     getDashboard() {
@@ -97,6 +109,30 @@ export class DashboardComponent implements OnInit {
     }
 
     updateView(view) {
-        this.view = view;
+        this.dateView = view;
+        this.dateRangeCounter = 1;
+        this.setDateRange();
+    }
+
+    updateDateCounter(count) {
+        console.log(count)
+        if (this.dateRangeCounter + count < 1) {
+            return;
+        }
+
+        this.dateRangeCounter += count;
+        this.setDateRange();
+    }
+
+    setDateRange() {
+        const dateCount = this.dateRangeCounter * this.range[this.dateView].count;
+        this.dateRange = dateCount + this.range[this.dateView].unit;
+
+        const date = new Date();
+        if (this.dateView === 'hour') {
+            this.dateSelect = new Date(date.setHours(date.getHours() - dateCount));
+        } else {
+            this.dateSelect = new Date(date.setDate(date.getDate() - dateCount));
+        }
     }
 }

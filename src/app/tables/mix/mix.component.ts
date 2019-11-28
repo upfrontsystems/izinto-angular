@@ -79,8 +79,8 @@ export class MixComponent implements AfterViewInit {
   }
 
   /**
-   * Set the paginator and sort after the view init since this component will
-   * be able to query its view for the initialized paginator and sort.
+   * Set the paginator and sort after the dateView init since this component will
+   * be able to query its dateView for the initialized paginator and sort.
    */
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;

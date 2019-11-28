@@ -36,8 +36,8 @@ export class SortableComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
 
   /**
-   * Set the sort after the view init since this component will
-   * be able to query its view for the initialized sort.
+   * Set the sort after the dateView init since this component will
+   * be able to query its dateView for the initialized sort.
    */
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
