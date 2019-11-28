@@ -30,6 +30,7 @@ export class SingleStatDialogComponent implements OnInit {
             title: this.singleStat.title,
             query: this.singleStat.query,
             decimals: this.singleStat.decimals,
+            format: this.singleStat.format,
             thresholds: this.singleStat.thresholds,
             colors: this.singleStat.colors,
             dashboard_id: this.singleStat.dashboard_id,

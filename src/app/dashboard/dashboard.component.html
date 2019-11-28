@@ -37,13 +37,13 @@
 
             <mat-card-content>
 
-                <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat"
+                <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat" [view]="view"
                                 [variables]="dashboard.variables"></app-single-stat-list>
             </mat-card-content>
 
             <mat-card-content>
 
-                <app-chart-list [dashboardId]="dashboardId" [addedChart]="addedChart"
+                <app-chart-list [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="view"
                                 [variables]="dashboard.variables"></app-chart-list>
             </mat-card-content>
 

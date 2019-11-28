@@ -1,12 +1,29 @@
-<div fxLayout="row wrap">
-    <div fxFlex="25" *ngFor="let record of dataSets">
-        <button mat-icon-button (click)="editSingleStat(record)">
-            <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button (click)="deleteSingleStat(record)">
-            <mat-icon>delete</mat-icon>
-        </button>
-        <p>{{record.text}}</p>
-        <p>{{record.value}}</p>
-    </div>
+<div fxLayout="row wrap" fxLayoutAlign="center">
+    <mat-card fxFlex="25" fxFlex.xs="100" *ngFor="let record of dataSets">
+        <mat-card-content>
+
+            <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
+                <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #itemMenu="matMenu">
+                <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
+                        title="Delete">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                </button>
+                <confirmation #deleteConfirm [title]="'Delete'"
+                              [content]="'Are you sure you wish to permanently delete this item?'"
+                              (onAccept)="deleteSingleStat(record)">
+                </confirmation>
+                <button mat-menu-item class="pull-right" color="accent" (click)="editSingleStat(record)" title="Edit">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                </button>
+            </mat-menu>
+
+            <h4 class="m-t-10">{{record.text}}</h4>
+            <p [style.color]="record.color">{{record.valueString}}</p>
+
+        </mat-card-content>
+    </mat-card>
 </div>

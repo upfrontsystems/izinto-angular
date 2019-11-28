@@ -12,14 +12,21 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Query" [formControl]="form.get('query')"
-                           autocomplete="off">
+                    <mat-label>Query</mat-label>
+                    <textarea matInput [formControl]="form.get('query')" cdkTextareaAutosize></textarea>
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <input matInput type="number" placeholder="Decimals" [formControl]="form.get('decimals')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Format" [formControl]="form.get('format')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
