@@ -67,7 +67,7 @@ export class DashboardListComponent implements OnInit {
         if (this.dashboards[index].id === dashboard.id) {
             return;
         }
-        
+
         this.reordered.emit(event);
     }
 

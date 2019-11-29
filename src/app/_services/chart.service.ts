@@ -57,4 +57,8 @@ export class ChartService {
         return this.http.delete(`api/chart/` + chart.id);
     }
 
+    reorder(chart) {
+        return this.http.put('api/chart/' + chart.id + '/reorder', chart);
+    }
+
 }
