@@ -12,4 +12,5 @@ All notable changes to this project will be documented in this file. See [standa
 * [#17](https://github.com/upfrontsystems/izinto-angular/issues/17) add single stat
 * [#18](https://github.com/upfrontsystems/izinto-angular/issues/18) add date range
 * [#19](https://github.com/upfrontsystems/izinto-angular/issues/19) add ordering to chart
+* [#20](https://github.com/upfrontsystems/izinto-angular/issues/19) add data source page
 

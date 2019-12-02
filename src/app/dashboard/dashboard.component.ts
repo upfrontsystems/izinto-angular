@@ -115,7 +115,6 @@ export class DashboardComponent implements OnInit {
     }
 
     updateDateCounter(count) {
-        console.log(count)
         if (this.dateRangeCounter + count < 1) {
             return;
         }

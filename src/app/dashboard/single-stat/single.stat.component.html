@@ -1,6 +1,5 @@
 <div *ngIf="!editing && !adding" class="line-item">
-    <div fxFlex="30" class="mat-cell">{{singleStat.name}}</div>
-    <div fxFlex="40" class="mat-cell">{{singleStat.value}}</div>
+    <div fxFlex="30" class="mat-cell">{{singleStat.title}}</div>
     <div fxFlex="30" class="mat-cell">
         <button class="pull-right mat-error mat-button hover-action" (click)="deleteVarConfirm.show()"
                 title="Delete">
@@ -22,14 +21,14 @@
 
             <div fxFlex="30" class="p-r-20">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="" [formControl]="form.get('name')"
+                    <input matInput placeholder="" [formControl]="form.get('title')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex="40">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="" [formControl]="form.get('value')"
+                    <input matInput placeholder="" [formControl]="form.get('query')"
                            autocomplete="off">
                 </mat-form-field>
             </div>

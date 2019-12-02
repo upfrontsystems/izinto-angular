@@ -7,4 +7,5 @@
     colors: string;
     dashboard_id: number;
     format: string;
+    data_source_id: number;
 }

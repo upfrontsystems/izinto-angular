@@ -1,8 +1,7 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
 import {Chart} from '../../_models/chart';
 import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
-import * as d3Trans from 'd3-transition';
 import {Variable} from '../../_models/variable';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 
@@ -11,7 +10,7 @@ import {moveItemInArray} from '@angular/cdk/drag-drop';
     templateUrl: './chart.list.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class ChartListComponent implements OnInit {
+export class ChartListComponent implements OnInit, OnChanges {
 
     @ViewChild('chart') private chartContainer: ElementRef;
     @ViewChild('deleteConfirm') private deleteConfirm: any;
@@ -26,10 +25,14 @@ export class ChartListComponent implements OnInit {
                 protected chartService: ChartService) {
     }
 
+    ngOnChanges(changes) {
+        if (changes.addedChart && changes.addedChart.currentValue) {
+            this.chartAdded(changes.addedChart.currentValue);
+        }
+    }
+
     ngOnInit() {
         this.getCharts();
-        // Initialise transition
-        d3Trans.transition().duration(750);
     }
 
     getCharts() {
@@ -54,6 +57,10 @@ export class ChartListComponent implements OnInit {
                 break;
             }
         }
+    }
+
+    chartAdded(chart) {
+        this.charts.push(chart);
     }
 
     reorderChart(event) {

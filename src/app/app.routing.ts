@@ -12,6 +12,7 @@ import {HomeComponent} from './home/home.component';
 import {CollectionListComponent} from './collection/collection.list.component';
 import {CollectionComponent} from './collection/collection.component';
 import {DashboardSettingsComponent} from './dashboard/dashboard-settings/dashboard.settings.component';
+import {DataSourceComponent} from './data-source/data.source.component';
 
 const appRoutes: Routes = [
     {
@@ -61,6 +62,10 @@ const appRoutes: Routes = [
                 path: 'users',
                 component: UserComponent,
                 data: {roles: [Role.Administrator]}
+            },
+            {
+                path: 'datasources',
+                component: DataSourceComponent
             }]
     },
     {

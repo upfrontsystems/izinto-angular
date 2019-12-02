@@ -37,6 +37,12 @@
                 Users
             </button>
         </mat-menu>
+        <mat-menu #settings="matMenu" class="mymegamenu">
+            <button mat-menu-item [routerLink]="['/datasources']">
+                <mat-icon>table_chart</mat-icon>
+                Data Sources
+            </button>
+        </mat-menu>
     </mat-toolbar>
     <!-- ============================================================== -->
     <!-- End Topbar - style you can find in pages.scss -->

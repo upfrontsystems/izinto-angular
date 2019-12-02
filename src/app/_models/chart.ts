@@ -13,5 +13,6 @@ export class Chart {
     type: ChartType;
     group_by: string;
     query: string;
+    data_source_id: number;
     fillFunc?: Function;
 }

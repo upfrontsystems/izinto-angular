@@ -1,6 +1,19 @@
+<button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
+    <mat-icon>more_horiz</mat-icon>
+</button>
+<mat-menu #itemMenu="matMenu">
+    <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
+            title="Delete">
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+    </button>
+    <confirmation #deleteConfirm [title]="'Delete chart'" (onAccept)="deleteChart()"
+                  [content]="'Are you sure you wish to permanently delete this chart?'">
+    </confirmation>
+    <button mat-menu-item class="pull-right" color="accent" (click)="editChart()" title="Edit">
+        <mat-icon>edit</mat-icon>
+        <span>Edit</span>
+    </button>
+</mat-menu>
+
 <div class="d3-chart" #chart></div>
-
-<confirmation #deleteConfirm [title]="'Delete chart'"
-              [content]="'Are you sure you wish to permanently delete this chart?'">
-</confirmation>
-

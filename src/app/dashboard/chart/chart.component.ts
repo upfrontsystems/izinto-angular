@@ -21,7 +21,6 @@ import {MatDialog} from '@angular/material';
 export class ChartComponent implements OnInit, OnChanges {
 
     @ViewChild('chart') private chartContainer: ElementRef;
-    @ViewChild('deleteConfirm') private deleteConfirm: any;
     @Input() chart: Chart;
     @Input() variables: Variable[];
     @Input() view: string;
@@ -59,7 +58,6 @@ export class ChartComponent implements OnInit, OnChanges {
         // Initialise transition
         d3Trans.transition().duration(750);
         this.setChartWidth();
-
     }
 
     setChartWidth() {
@@ -70,10 +68,10 @@ export class ChartComponent implements OnInit, OnChanges {
         this.loadDataSet();
     }
 
-    editChart(chart) {
+    editChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: chart},
+            data: {chart: this.chart},
             disableClose: true
         });
 
@@ -86,31 +84,10 @@ export class ChartComponent implements OnInit, OnChanges {
         });
     }
 
-    deleteChart(chart) {
-        this.deleteConfirm.show();
-        this.deleteConfirm.onAccept.subscribe(event => {
-            this.chartService.delete(chart).subscribe(resp => {
-                this.deleted.emit(chart);
-            });
+    deleteChart() {
+        this.chartService.delete(this.chart).subscribe(resp => {
+            this.deleted.emit(this.chart);
         });
-    }
-
-    createButtons(chart) {
-        const self = this;
-        d3.select('div.' + chart.selector)
-            .append('button')
-            .text('Delete')
-            .attr('class', 'mat-button pull-right mat-error delete' + chart.id)
-            .on('click', function () {
-                self.deleteChart(chart);
-            });
-        d3.select('div.' + chart.selector)
-            .append('button')
-            .text('Edit')
-            .attr('class', 'mat-button pull-right edit' + chart.id)
-            .on('click', function () {
-                self.editChart(chart);
-            });
     }
 
     loadDataSet() {
@@ -344,8 +321,6 @@ export class ChartComponent implements OnInit, OnChanges {
         if (create) {
             d3.selectAll('div.' + chart.selector).remove();
             d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
-            // add edit and delete buttons
-            this.createButtons(chart);
 
             svg = d3.select('div.' + chart.selector)
                 .append('svg')
@@ -458,8 +433,6 @@ export class ChartComponent implements OnInit, OnChanges {
             trans: any = 1000;
         if (create) {
             d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
-            // add edit and delete buttons
-            this.createButtons(chart);
 
             svg = d3.select('div.' + chart.selector)
                 .append('svg')
@@ -527,26 +500,6 @@ export class ChartComponent implements OnInit, OnChanges {
             this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
         }
 
-    }
-
-    calcPoint(input) {
-        const j = input % 8,
-            _input = Math.round(input / 8) || 0 % 4,
-            cardinal = ['north', 'east', 'south', 'west'],
-            pointDesc = ['1', '1 by 2', '1-C', 'C by 1', 'C', 'C by 2', '2-C', '2 by 1'],
-            str1 = cardinal[_input],
-            str2 = cardinal[(_input + 1) % 4],
-            strC = (str1 === cardinal[0] || str1 === cardinal[2]) ? str1 + str2 : str2 + str1;
-        return pointDesc[j].replace('1', str1).replace('2', str2).replace('C', strC);
-    }
-
-    getShortName(name) {
-        return name.replace(/north/g, 'N')
-            .replace(/east/g, 'E')
-            .replace(/south/g, 'S')
-            .replace(/west/g, 'W')
-            .replace(/by/g, 'b')
-            .replace(/[\s-]/g, '');
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {

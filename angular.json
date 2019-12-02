@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "material": {
+    "izinto-angular": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -61,18 +61,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "material:build"
+            "browserTarget": "izinto-angular:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "material:build:production"
+              "browserTarget": "izinto-angular:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "material:build"
+            "browserTarget": "izinto-angular:build"
           }
         },
         "test": {
@@ -120,8 +120,8 @@
         }
       }
     },
-    "material-e2e": {
-      "root": "",
+    "izinto-angular-e2e": {
+      "root": "e2e",
       "sourceRoot": "",
       "projectType": "application",
       "architect": {
@@ -129,7 +129,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "material:serve"
+            "devServerTarget": "izinto-angular:serve"
           }
         },
         "lint": {
@@ -146,7 +146,7 @@
       }
     }
   },
-  "defaultProject": "material",
+  "defaultProject": "izinto-angular",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

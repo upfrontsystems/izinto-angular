@@ -12,7 +12,6 @@ import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import {FullComponent} from './layouts/full/full.component';
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
 import {AppBlankComponent} from './layouts/blank/blank.component';
@@ -32,14 +31,17 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard.settings.component';
+import { DataSourceComponent } from './data-source/data.source.component';
+import { DataSourceDialogComponent } from './data-source/data.source.dialog.component';
+import {ErrorInterceptor} from './_helpers/error.interceptor';
 import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.component';
+import {FullComponent} from './layouts/full/full.component';
+import {HomeComponent} from './home/home.component';
 import {MaterialModule} from './material.module';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
-import {ErrorInterceptor} from './_helpers/error.interceptor';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
 import {SpinnerService} from './_services/spinner.service';
-import {HomeComponent} from './home/home.component';
 import {SharedModule} from './shared/shared.module';
 import { SingleStatComponent } from './dashboard/single-stat/single.stat.component';
 import {SingleStatListComponent} from './dashboard/single-stat/single.stat.list.component';
@@ -72,6 +74,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         DashboardDialogComponent,
         DashboardListComponent,
         DashboardSettingsComponent,
+        DataSourceComponent,
         ChartComponent,
         ChartDialogComponent,
         ChartListComponent,
@@ -85,7 +88,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         UserComponent,
         UserDialogComponent,
         VariableComponent,
-        VariableDialogComponent
+        VariableDialogComponent,
+        DataSourceDialogComponent
     ],
     imports: [
         AppRoutes,
@@ -107,6 +111,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         CollectionDialogComponent,
         ConfirmationDialogComponent,
         DashboardDialogComponent,
+        DataSourceDialogComponent,
         SingleStatDialogComponent,
         UserDialogComponent,
         VariableDialogComponent
