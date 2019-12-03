@@ -24,11 +24,11 @@ export class DashboardService {
     }
 
     edit(dashboard) {
-        return this.http.put<Dashboard>(`api/dashboard/` + dashboard.id, dashboard);
+        return this.http.put<Dashboard>(`/api/dashboard/` + dashboard.id, dashboard);
     }
 
     delete(dashboard) {
-        return this.http.delete(`api/dashboard/` + dashboard.id);
+        return this.http.delete(`/api/dashboard/` + dashboard.id);
     }
 
     // store copy of dashboard in local storage
@@ -44,7 +44,7 @@ export class DashboardService {
     }
 
     reorderDashboard(dashboard) {
-        return this.http.put('api/dashboard/' + dashboard.id + '/reorder', dashboard);
+        return this.http.put('/api/dashboard/' + dashboard.id + '/reorder', dashboard);
     }
 
     clearCopied() {

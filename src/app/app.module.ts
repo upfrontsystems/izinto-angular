@@ -51,6 +51,7 @@ import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
 import { VariableComponent } from './dashboard/variable/variable.component';
 import { VariableDialogComponent } from './dashboard/variable/variable.dialog.component';
+import { QueryBaseComponent } from './dashboard/query.base.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -89,7 +90,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         UserDialogComponent,
         VariableComponent,
         VariableDialogComponent,
-        DataSourceDialogComponent
+        DataSourceDialogComponent,
+        QueryBaseComponent
     ],
     imports: [
         AppRoutes,

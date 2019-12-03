@@ -2,6 +2,7 @@ import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SingleStat} from '../../_models/single.stat';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {DataSource} from '../../_models/data.source';
 
 @Component({
     selector: 'app-single-stat-dialog',
@@ -12,6 +13,7 @@ export class SingleStatDialogComponent implements OnInit {
 
     public form: FormGroup;
     singleStat: SingleStat;
+    dataSources: DataSource[];
     state: string;
 
     constructor(
@@ -23,6 +25,7 @@ export class SingleStatDialogComponent implements OnInit {
 
     ngOnInit() {
         this.singleStat = this.data.singleStat;
+        this.dataSources = this.data.dataSources;
         this.state = this.singleStat.id ? 'Edit' : 'Add';
 
         this.form = this.fb.group({
@@ -34,6 +37,7 @@ export class SingleStatDialogComponent implements OnInit {
             thresholds: this.singleStat.thresholds,
             colors: this.singleStat.colors,
             dashboard_id: this.singleStat.dashboard_id,
+            data_source_id: this.singleStat.data_source_id
         });
 
         this.onFormChanges();

@@ -10,6 +10,8 @@ import {ActivatedRoute} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStatService} from '../_services/single.stat.service';
 import {SingleStat} from '../_models/single.stat';
+import {DataSource} from '../_models/data.source';
+import {DataSourceService} from '../_services/data.source.service';
 
 
 @Component({
@@ -21,6 +23,7 @@ export class DashboardComponent implements OnInit {
 
     dashboardId: number;
     dashboard: Dashboard;
+    dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
     dateView = 'month';
@@ -46,6 +49,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(protected route: ActivatedRoute,
                 protected http: HttpClient,
+                protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
@@ -53,6 +57,8 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.getDataSources();
+
         this.route.paramMap.subscribe(params => {
             this.dashboardId = +params.get('dashboard_id');
             this.getDashboard();
@@ -68,6 +74,12 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    getDataSources() {
+        this.dataSourceService.getAll({}).subscribe(resp => {
+            this.dataSources = resp;
+        });
+    }
+
     fabClick(label) {
         if (label === 'Add Chart') {
             this.addChart();
@@ -79,7 +91,7 @@ export class DashboardComponent implements OnInit {
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: {dashboard_id: this.dashboardId}},
+            data: {chart: {dashboard_id: this.dashboardId}, dataSources: this.dataSources},
             disableClose: true
         });
 
@@ -95,7 +107,7 @@ export class DashboardComponent implements OnInit {
     addSingleStat() {
         const dialogRef = this.dialog.open(SingleStatDialogComponent, {
             width: '600px',
-            data: {singleStat: {dashboard_id: this.dashboardId}},
+            data: {singleStat: {dashboard_id: this.dashboardId}, dataSources: this.dataSources},
             disableClose: true
         });
 

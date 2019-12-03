@@ -9,8 +9,8 @@ export class JwtInterceptor implements HttpInterceptor {
     constructor(private authenticationService: AuthenticationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // do not replace headers for request to query
-        if (request.url.startsWith('/query')) {
+        // do not replace headers for requests not to api proxy
+        if (!(request.url.startsWith('/api') || request.url.startsWith('api'))) {
             return next.handle(request);
         }
 

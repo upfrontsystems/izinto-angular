@@ -12,13 +12,6 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <mat-label>Query</mat-label>
-                    <textarea matInput [formControl]="form.get('query')" cdkTextareaAutosize></textarea>
-                </mat-form-field>
-            </div>
-
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
                     <input matInput type="number" placeholder="Decimals" [formControl]="form.get('decimals')"
                            autocomplete="off">
                 </mat-form-field>
@@ -42,6 +35,24 @@
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="Colours" [formControl]="form.get('colors')"
                            autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <mat-label>Query</mat-label>
+                    <textarea matInput [formControl]="form.get('query')" cdkTextareaAutosize></textarea>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field>
+                    <mat-label>Data Source</mat-label>
+                    <mat-select [formControl]="form.get('data_source_id')">
+                        <mat-option *ngFor="let source of dataSources" [value]="source.id">
+                            {{source.name}}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
         </div>

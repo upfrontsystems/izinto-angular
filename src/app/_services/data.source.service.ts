@@ -23,10 +23,10 @@ export class DataSourceService {
     }
 
     edit(dataSource) {
-        return this.http.put<DataSource>(`api/data_source/` + dataSource.id, dataSource);
+        return this.http.put<DataSource>(`/api/data_source/` + dataSource.id, dataSource);
     }
 
     delete(dataSource) {
-        return this.http.delete(`api/data_source/` + dataSource.id);
+        return this.http.delete(`/api/data_source/` + dataSource.id);
     }
 }

@@ -12,32 +12,28 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
+import {DataSource} from '../../_models/data.source';
+import {QueryBaseComponent} from '../query.base.component';
 
 @Component({
     selector: 'app-chart',
     templateUrl: './chart.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class ChartComponent implements OnInit, OnChanges {
+export class ChartComponent extends QueryBaseComponent implements OnInit, OnChanges {
 
-    @ViewChild('chart') private chartContainer: ElementRef;
     @Input() chart: Chart;
-    @Input() variables: Variable[];
-    @Input() view: string;
-    @Input() dateRange: string;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
-
     private dataSet = [];
     private scales = [];
 
-    private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
     private chartHeight = 200;
     private chartWidth = 1200;
     private innerWidth = 0;
     private innerHeight = 0;
     public windowWidth: any;
-    private margin = {top: 50, right: 20, bottom: 20, left: 40};
+    private margin = {top: 50, right: 50, bottom: 20, left: 40};
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -46,6 +42,7 @@ export class ChartComponent implements OnInit, OnChanges {
 
     constructor(protected dialog: MatDialog,
                 protected chartService: ChartService) {
+        super();
     }
 
     ngOnChanges(changes) {
@@ -71,7 +68,7 @@ export class ChartComponent implements OnInit, OnChanges {
     editChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: this.chart},
+            data: {chart: this.chart, dataSources: this.dataSources},
             disableClose: true
         });
 
@@ -95,9 +92,9 @@ export class ChartComponent implements OnInit, OnChanges {
         this.scales = [];
         d3.selectAll('div.svg-container').remove();
         let query = this.chart.query;
-        query = this.formatQuery(query);
+        query = this.formatQuery(query, this.chart.data_source);
 
-        this.chartService.getChartData(query).subscribe(resp => {
+        this.chartService.getChartData(query, this.chart.data_source).subscribe(resp => {
             if (resp['results'][0].hasOwnProperty('series')) {
                 const dataSet = [];
                 for (const series of resp['results'][0]['series']) {
@@ -136,18 +133,6 @@ export class ChartComponent implements OnInit, OnChanges {
         });
     }
 
-    formatQuery(query) {
-        query = query.replace(/:range:/g, this.dateRange);
-        query = query.replace(/:group_by:/g, this.group_by[this.view]);
-
-        for (const variable of this.variables) {
-            const re = new RegExp(variable.name, 'g');
-            query = query.replace(re, variable.value);
-        }
-
-        return query;
-    }
-
     xScale(dataset) {
         const x = d3Scale.scaleBand().range([0, this.innerWidth]).padding(0.1);
         x.domain(dataset.map(function (d) {
@@ -169,7 +154,6 @@ export class ChartComponent implements OnInit, OnChanges {
             .domain([ymin, ymax])
             .range([this.innerHeight, 0]);
     }
-
 
     markerLine(svg, color, markerHeight = 160) {
 
@@ -320,7 +304,7 @@ export class ChartComponent implements OnInit, OnChanges {
         const create = svg.empty();
         if (create) {
             d3.selectAll('div.' + chart.selector).remove();
-            d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
+            d3.select('div.d3-chart.chart' + chart.id).append('div').attr('class', 'svg-container ' + chart.selector);
 
             svg = d3.select('div.' + chart.selector)
                 .append('svg')
@@ -432,7 +416,7 @@ export class ChartComponent implements OnInit, OnChanges {
         const create = svg.empty(),
             trans: any = 1000;
         if (create) {
-            d3.select('div.d3-chart').append('div').attr('class', 'svg-container ' + chart.selector);
+            d3.select('div.d3-chart.chart' + chart.id).append('div').attr('class', 'svg-container ' + chart.selector);
 
             svg = d3.select('div.' + chart.selector)
                 .append('svg')

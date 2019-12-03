@@ -23,10 +23,10 @@ export class VariableService {
     }
 
     edit(variable) {
-        return this.http.put<Variable>(`api/variable/` + variable.id, variable);
+        return this.http.put<Variable>(`/api/variable/` + variable.id, variable);
     }
 
     delete(variable) {
-        return this.http.delete(`api/variable/` + variable.id);
+        return this.http.delete(`/api/variable/` + variable.id);
     }
 }

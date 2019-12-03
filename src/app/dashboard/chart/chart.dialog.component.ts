@@ -2,6 +2,8 @@ import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Chart, ChartGroupBy, ChartTypes} from '../../_models/chart';
+import {DataSourceService} from '../../_services/data.source.service';
+import {DataSource} from '../../_models/data.source';
 
 @Component({
     selector: 'app-chart-dialog',
@@ -14,6 +16,7 @@ export class ChartDialogComponent implements OnInit {
     chart: Chart;
     chartTypes = ChartTypes;
     groupBy = ChartGroupBy;
+    dataSources: DataSource[];
     state: string;
 
     constructor(
@@ -25,6 +28,7 @@ export class ChartDialogComponent implements OnInit {
 
     ngOnInit() {
         this.chart = this.data.chart;
+        this.dataSources = this.data.dataSources;
         this.state = this.chart.id ? 'Edit' : 'Add';
 
         const formData = {
@@ -37,7 +41,8 @@ export class ChartDialogComponent implements OnInit {
             color: this.chart.color,
             type: this.chart.type,
             group_by: this.chart.group_by,
-            query: this.chart.query
+            query: this.chart.query,
+            data_source_id: this.chart.data_source_id
         };
         this.form = this.fb.group(formData);
 

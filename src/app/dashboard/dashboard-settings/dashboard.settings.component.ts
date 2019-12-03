@@ -6,6 +6,7 @@ import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {SingleStatService} from '../../_services/single.stat.service';
+import {DataSourceService} from '../../_services/data.source.service';
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -16,11 +17,12 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
 
     constructor(protected route: ActivatedRoute,
                 protected http: HttpClient,
+                protected dataSourceService: DataSourceService,
                 public dialog: MatDialog,
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
-        super(route, http, dialog, chartService, dashboardService, singleStatService);
+        super(route, http, dataSourceService, dialog, chartService, dashboardService, singleStatService);
     }
 
 

@@ -8,7 +8,8 @@
             </div>
             <div fxFlex="95">
                 <app-chart [chart]="chart" [view]="view" [dateRange]="dateRange" [variables]="variables"
-                    (edited)="chartEdited($event)" (deleted)="chartDeleted($event)"></app-chart>
+                           [dataSources]="dataSources" (edited)="chartEdited($event)"
+                           (deleted)="chartDeleted($event)"></app-chart>
             </div>
         </div>
     </div>

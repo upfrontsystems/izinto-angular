@@ -10,18 +10,17 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 })
 export class DataSourceDialogComponent implements OnInit {
     public form: FormGroup;
-    dataSource: DataSource;
     state: string;
+    dataSourceTypes = ['InfluxDB'];
 
     constructor(
         public dialogRef: MatDialogRef<DataSourceDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
-        @Inject(MAT_DIALOG_DATA) public data: any) {
+        @Inject(MAT_DIALOG_DATA) public dataSource: DataSource) {
     }
 
     ngOnInit() {
-        this.dataSource = this.data.dataSource;
         this.state = this.dataSource.id ? 'Edit' : 'Add';
 
         this.form = this.fb.group({

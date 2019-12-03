@@ -4,6 +4,7 @@ import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
 import {Variable} from '../../_models/variable';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {DataSource} from '../../_models/data.source';
 
 @Component({
     selector: 'app-chart-list',
@@ -17,6 +18,7 @@ export class ChartListComponent implements OnInit, OnChanges {
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
     @Input() variables: Variable[];
+    @Input() dataSources: DataSource[];
     @Input() view: string;
     @Input() dateRange: string;
     private charts: Chart[] = [];

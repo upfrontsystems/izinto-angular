@@ -19,10 +19,10 @@ export class UserService {
     }
 
     edit(user) {
-        return this.http.put<User>(`api/user/${user.id}`, user);
+        return this.http.put<User>(`/api/user/${user.id}`, user);
     }
 
     delete(user) {
-        return this.http.delete(`api/user/${user.id}`);
+        return this.http.delete(`/api/user/${user.id}`);
     }
 }

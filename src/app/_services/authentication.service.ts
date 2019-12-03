@@ -82,7 +82,7 @@ export class AuthenticationService {
     }
 
     getAllRoles() {
-        return this.http.get<Role[]>(`api/auth/roles`);
+        return this.http.get<Role[]>(`/api/auth/roles`);
     }
 
     getToken() {

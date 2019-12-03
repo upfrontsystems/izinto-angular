@@ -23,11 +23,11 @@ export class CollectionService {
     }
 
     edit(collection) {
-        return this.http.put<Collection>(`api/collection/` + collection.id, collection);
+        return this.http.put<Collection>(`/api/collection/` + collection.id, collection);
     }
 
     delete(collection) {
-        return this.http.delete(`api/collection/` + collection.id);
+        return this.http.delete(`/api/collection/` + collection.id);
     }
 
     // store copy of dashboard in local storage

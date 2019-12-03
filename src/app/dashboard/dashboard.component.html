@@ -45,13 +45,15 @@
             <mat-card-content>
 
                 <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat" [view]="dateView"
-                                      [dateRange]="dateRange" [variables]="dashboard.variables"></app-single-stat-list>
+                                      [dateRange]="dateRange" [variables]="dashboard.variables"
+                                      [dataSources]="dataSources"></app-single-stat-list>
             </mat-card-content>
 
             <mat-card-content>
 
                 <app-chart-list [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
-                                [dateRange]="dateRange" [variables]="dashboard.variables"></app-chart-list>
+                                [dateRange]="dateRange" [variables]="dashboard.variables"
+                                [dataSources]="dataSources"></app-chart-list>
             </mat-card-content>
 
         </mat-card>

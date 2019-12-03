@@ -23,10 +23,10 @@ export class SingleStatService {
     }
 
     edit(singleStat) {
-        return this.http.put<SingleStat>(`api/single_stat/` + singleStat.id, singleStat);
+        return this.http.put<SingleStat>(`/api/single_stat/` + singleStat.id, singleStat);
     }
 
     delete(singleStat) {
-        return this.http.delete(`api/single_stat/` + singleStat.id);
+        return this.http.delete(`/api/single_stat/` + singleStat.id);
     }
 }

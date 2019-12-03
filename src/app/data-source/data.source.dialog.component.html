@@ -11,9 +11,13 @@
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+                <mat-form-field>
                     <mat-label>Type</mat-label>
-                    <input matInput placeholder="Type" matInput [formControl]="form.get('type')">
+                    <mat-select [formControl]="form.get('type')">
+                        <mat-option *ngFor="let type of dataSourceTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
 
@@ -26,15 +30,15 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Username" [formControl]="form.get('username')"
-                           autocomplete="off">
+                    <input matInput placeholder="Username"
+                           [formControl]="form.get('username')" autocomplete="new-password">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Password" [formControl]="form.get('password')"
-                           autocomplete="off">
+                    <input matInput type="password" placeholder="Password"
+                           [formControl]="form.get('password')" autocomplete="new-password">
                 </mat-form-field>
             </div>
 

@@ -7,28 +7,26 @@ import {SingleStatService} from '../../_services/single.stat.service';
 import {SingleStatDialogComponent} from './single.stat.dialog.component';
 import {ChartService} from '../../_services/chart.service';
 import {Record} from '../../_models/record';
+import {DataSource} from '../../_models/data.source';
+import {QueryBaseComponent} from '../query.base.component';
 
 @Component({
     selector: 'app-single-stat-list',
     templateUrl: './single.stat.list.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class SingleStatListComponent implements OnInit, OnChanges {
+export class SingleStatListComponent extends QueryBaseComponent implements OnInit, OnChanges {
 
     @Input() dashboardId: number;
     @Input() addedSingleStat: SingleStat;
-    @Input() variables: Variable[];
-    @Input() view: string;
-    @Input() dateRange: string;
-
     private singleStats: SingleStat[] = [];
     private dataSets = [];
-    private group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected chartService: ChartService,
                 protected singleStatService: SingleStatService) {
+        super();
     }
 
     ngOnChanges(changes) {
@@ -62,7 +60,7 @@ export class SingleStatListComponent implements OnInit, OnChanges {
         }
         const dialogRef = this.dialog.open(SingleStatDialogComponent, {
             width: '600px',
-            data: {singleStat: singleStat},
+            data: {singleStat: singleStat, dataSources: this.dataSources},
             disableClose: true
         });
 
@@ -97,9 +95,9 @@ export class SingleStatListComponent implements OnInit, OnChanges {
         this.dataSets = [];
         for (const singleStat of this.singleStats) {
             let query = singleStat.query;
-            query = this.formatQuery(query);
+            query = this.formatQuery(query, singleStat.data_source);
 
-            this.chartService.getChartData(query).subscribe(resp => {
+            this.chartService.getChartData(query, singleStat.data_source).subscribe(resp => {
                 const rec = new Record();
                 rec.id = singleStat.id;
                 rec.text = singleStat.title;
@@ -119,18 +117,6 @@ export class SingleStatListComponent implements OnInit, OnChanges {
                 this.dataSets.push(rec);
             });
         }
-    }
-
-    formatQuery(query) {
-        query = query.replace(/:range:/g, this.dateRange);
-        query = query.replace(/:group_by:/g, this.group_by[this.view]);
-
-        for (const variable of this.variables) {
-            const re = new RegExp(variable.name, 'g');
-            query = query.replace(re, variable.value);
-        }
-
-        return query;
     }
 
     formatValue(stat: SingleStat, value) {
