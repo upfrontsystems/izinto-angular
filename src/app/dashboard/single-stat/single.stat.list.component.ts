@@ -20,7 +20,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
     @Input() dashboardId: number;
     @Input() addedSingleStat: SingleStat;
     private singleStats: SingleStat[] = [];
-    private dataSets = [];
+    private dataSets = {};
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
@@ -92,8 +92,9 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
     }
 
     loadDataSets() {
-        this.dataSets = [];
+        this.dataSets = {};
         for (const singleStat of this.singleStats) {
+            this.dataSets[singleStat.id] = new Record();
             let query = singleStat.query;
             query = this.formatQuery(query, singleStat.data_source);
 
@@ -109,12 +110,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
                     rec.valueString = this.formatValue(singleStat, val);
                     rec.color = this.thresholdColor(singleStat, val);
                 }
-                this.dataSets.push(rec);
-            }, error => {
-                const rec = new Record();
-                rec.id = singleStat.id;
-                rec.text = singleStat.title;
-                this.dataSets.push(rec);
+                this.dataSets[singleStat.id] = rec;
             });
         }
     }

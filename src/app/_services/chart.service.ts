@@ -10,11 +10,13 @@ import {DataSource} from '../_models/data.source';
 })
 export class ChartService {
 
+    private queryURL = '/query?q=';
+
     constructor(private http: HttpClient) {
     }
 
     getDevices(dataSource: DataSource) {
-        const url = dataSource.url + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
+        const url = dataSource.url + this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
             'FROM \"measurement\" WITH KEY = \"dev_id\"');
 
         const httpOptions = {
@@ -42,7 +44,7 @@ export class ChartService {
     }
 
     getChartData(query, dataSource: DataSource) {
-        const url = dataSource.url + encodeURIComponent(query);
+        const url = dataSource.url + this.queryURL + encodeURIComponent(query);
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',

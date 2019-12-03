@@ -1,5 +1,5 @@
 <div fxLayout="row wrap" fxLayoutAlign="center">
-    <mat-card fxFlex="25" fxFlex.xs="100" *ngFor="let record of dataSets">
+    <mat-card fxFlex="25" fxFlex.xs="100" *ngFor="let stat of singleStats">
         <mat-card-content>
 
             <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
@@ -13,16 +13,16 @@
                 </button>
                 <confirmation #deleteConfirm [title]="'Delete'"
                               [content]="'Are you sure you wish to permanently delete this item?'"
-                              (onAccept)="deleteSingleStat(record)">
+                              (onAccept)="deleteSingleStat(stat)">
                 </confirmation>
-                <button mat-menu-item class="pull-right" color="accent" (click)="editSingleStat(record)" title="Edit">
+                <button mat-menu-item class="pull-right" color="accent" (click)="editSingleStat(stat)" title="Edit">
                     <mat-icon>edit</mat-icon>
                     <span>Edit</span>
                 </button>
             </mat-menu>
 
-            <h4 class="m-t-10">{{record.text}}</h4>
-            <p [style.color]="record.color" class="stat-value">{{record.valueString}}</p>
+            <h4 class="m-t-10">{{stat.title}}</h4>
+            <p [style.color]="dataSets[stat.id].color" class="stat-value">{{dataSets[stat.id].valueString}}</p>
 
         </mat-card-content>
     </mat-card>

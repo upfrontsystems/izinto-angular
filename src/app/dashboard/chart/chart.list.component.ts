@@ -44,12 +44,8 @@ export class ChartListComponent implements OnInit, OnChanges {
     }
 
     chartEdited(chart) {
-        for (const ix in this.charts) {
-            if (this.charts[ix].id === chart.id) {
-                this.charts[ix] = chart;
-                break;
-            }
-        }
+        this.charts = [];
+        this.getCharts();
     }
 
     chartDeleted(chart) {
@@ -62,7 +58,8 @@ export class ChartListComponent implements OnInit, OnChanges {
     }
 
     chartAdded(chart) {
-        this.charts.push(chart);
+        this.charts = [];
+        this.getCharts();
     }
 
     reorderChart(event) {
@@ -95,7 +92,8 @@ export class ChartListComponent implements OnInit, OnChanges {
 
         chart.index = newIndex;
         this.chartService.reorder(chart).subscribe(resp => {
-            moveItemInArray(this.charts, event.previousIndex, event.currentIndex);
+            this.charts = [];
+            this.getCharts();
         });
     }
 }
