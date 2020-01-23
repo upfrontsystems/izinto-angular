@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {DataSource} from '../_models/data.source';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataSourceService {
+    private queryURL = '/query?q=';
 
     constructor(private http: HttpClient) {
     }
@@ -28,5 +29,34 @@ export class DataSourceService {
 
     delete(dataSource) {
         return this.http.delete(`/api/data_source/` + dataSource.id);
+    }
+
+    loadDataQuery(dataSoureId, query) {
+        const query_params = this.queryURL + encodeURIComponent(query);
+        return this.http.get(`/api/data_source/${dataSoureId}/query`, {params: {'query': query_params}});
+    }
+
+    getDevices(dataSource: DataSource) {
+        const url = dataSource.url + this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
+            'FROM \"measurement\" WITH KEY = \"dev_id\"');
+
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
+            })
+        };
+
+        return this.http.get(url, httpOptions);
+    }
+
+    selectDevice(url, dataSource: DataSource) {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
+            })
+        };
+        return this.http.get(url, httpOptions);
     }
 }

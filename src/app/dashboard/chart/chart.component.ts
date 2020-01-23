@@ -14,6 +14,7 @@ import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
 import {DataSource} from '../../_models/data.source';
 import {QueryBaseComponent} from '../query.base.component';
+import {DataSourceService} from '../../_services/data.source.service';
 
 @Component({
     selector: 'app-chart',
@@ -41,6 +42,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     constructor(protected dialog: MatDialog,
+                protected dataSourceService: DataSourceService,
                 protected chartService: ChartService) {
         super();
     }
@@ -94,7 +96,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let query = this.chart.query;
         query = this.formatQuery(query, this.chart.data_source);
 
-        this.chartService.getChartData(query, this.chart.data_source).subscribe(resp => {
+        this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'][0].hasOwnProperty('series')) {
                 const dataSet = [];
                 for (const series of resp['results'][0]['series']) {

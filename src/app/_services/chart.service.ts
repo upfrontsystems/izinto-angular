@@ -10,49 +10,11 @@ import {DataSource} from '../_models/data.source';
 })
 export class ChartService {
 
-    private queryURL = '/query?q=';
-
     constructor(private http: HttpClient) {
-    }
-
-    getDevices(dataSource: DataSource) {
-        const url = dataSource.url + this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
-            'FROM \"measurement\" WITH KEY = \"dev_id\"');
-
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
-            })
-        };
-
-        return this.http.get(url, httpOptions);
-    }
-
-    selectDevice(url, dataSource: DataSource) {
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
-            })
-        };
-        return this.http.get(url, httpOptions);
     }
 
     getCharts(filters): Observable<Chart[]> {
         return this.http.get<Chart[]>(`/api/charts`, {params: filters});
-    }
-
-    getChartData(query, dataSource: DataSource) {
-        const url = dataSource.url + this.queryURL + encodeURIComponent(query);
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
-            })
-        };
-
-        return this.http.get(url, httpOptions);
     }
 
     getById(id) {
@@ -74,5 +36,4 @@ export class ChartService {
     reorder(chart) {
         return this.http.put('/api/chart/' + chart.id + '/reorder', chart);
     }
-
 }
