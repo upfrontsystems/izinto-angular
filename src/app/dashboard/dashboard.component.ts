@@ -113,9 +113,7 @@ export class DashboardComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.singleStatService.add(result).subscribe(resp => {
-                    this.addedSingleStat = resp;
-                });
+                this.addedSingleStat = result;
             }
         });
     }

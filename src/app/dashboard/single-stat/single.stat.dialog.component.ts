@@ -1,8 +1,9 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingleStat} from '../../_models/single.stat';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {DataSource} from '../../_models/data.source';
+import {SingleStatService} from '../../_services/single.stat.service';
 
 @Component({
     selector: 'app-single-stat-dialog',
@@ -17,6 +18,7 @@ export class SingleStatDialogComponent implements OnInit {
     state: string;
 
     constructor(
+        private singleStatService: SingleStatService,
         public dialogRef: MatDialogRef<SingleStatDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
@@ -30,14 +32,14 @@ export class SingleStatDialogComponent implements OnInit {
 
         this.form = this.fb.group({
             id: this.singleStat.id,
-            title: this.singleStat.title,
-            query: this.singleStat.query,
+            title: new FormControl(this.singleStat.title, [Validators.required]),
+            query: new FormControl(this.singleStat.query, [Validators.required]),
             decimals: this.singleStat.decimals,
             format: this.singleStat.format,
             thresholds: this.singleStat.thresholds,
             colors: this.singleStat.colors,
             dashboard_id: this.singleStat.dashboard_id,
-            data_source_id: this.singleStat.data_source_id
+            data_source_id: new FormControl(this.singleStat.data_source_id, [Validators.required])
         });
 
         this.onFormChanges();
@@ -50,9 +52,26 @@ export class SingleStatDialogComponent implements OnInit {
         return this.form.valid;
     }
 
+    // update single state before closing dialog
     submit() {
         const form = this.form.value;
-        this.dialogRef.close(form);
+        if (this.singleStat.id) {
+            this.editSingleStat(form);
+        } else {
+            this.addSingleStat(form);
+        }
+    }
+
+    addSingleStat(form) {
+        this.singleStatService.add(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
+    }
+
+    editSingleStat(form) {
+        this.singleStatService.edit(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
     }
 
     onNoClick(): void {

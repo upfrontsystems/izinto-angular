@@ -64,15 +64,13 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.singleStatService.edit(result).subscribe(resp => {
-                    for (const ix in this.singleStats) {
-                        if (this.singleStats[ix].id === resp.id) {
-                            this.singleStats[ix] = resp;
-                            this.loadDataSets();
-                            break;
-                        }
+                for (const ix in this.singleStats) {
+                    if (this.singleStats[ix].id === result.id) {
+                        this.singleStats[ix] = result;
+                        this.loadDataSets();
+                        break;
                     }
-                });
+                }
             }
         });
     }
