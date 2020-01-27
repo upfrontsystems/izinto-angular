@@ -30,11 +30,12 @@
                         </button>
                     </div>
                     <div fxFlex class="p-l-20">
-                        <button mat-icon-button (click)="updateDateCounter(-1)">
+                        <button mat-icon-button (click)="updateDateCounter(1)">
                             <mat-icon>keyboard_arrow_left</mat-icon>
                         </button>
-                        <span class="font-16">{{dateSelect | date : dateFormat[dateView]}}</span>
-                        <button mat-icon-button (click)="updateDateCounter(1)">
+                        <span class="font-16">{{dateSelect | date : dateFormat[dateView]}} - </span>
+                        <span class="font-16"> {{endDate | date : dateFormat[dateView]}}</span>
+                        <button mat-icon-button (click)="updateDateCounter(-1)">
                             <mat-icon>keyboard_arrow_right</mat-icon>
                         </button>
                     </div>
