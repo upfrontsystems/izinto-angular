@@ -1,11 +1,12 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Collection} from '../_models/collection';
 import {MAT_DIALOG_DATA, MatDialogRef, MatSelect} from '@angular/material';
 import {User} from '../_models/user';
 import {ReplaySubject, Subject} from 'rxjs';
 import {UserService} from '../_services/user.service';
 import {take, takeUntil} from 'rxjs/operators';
+import {CollectionService} from '../_services/collection.service';
 
 @Component({
     selector: 'app-collection-dialog',
@@ -29,6 +30,7 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
         private renderer: Renderer2,
         private fb: FormBuilder,
         private userService: UserService,
+        private collectionService: CollectionService,
         @Inject(MAT_DIALOG_DATA) public data: any) {
     }
 
@@ -38,7 +40,7 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
 
         const formData = {
             id: this.collection.id,
-            title: this.collection.title,
+            title: new FormControl(this.collection.title, [Validators.required]),
             description: this.collection.description,
             users: [this.collection.users]
         };
@@ -86,7 +88,23 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
 
     submit() {
         const form = this.form.value;
-        this.dialogRef.close(form);
+        if (this.collection.id) {
+            this.editCollection(form);
+        } else {
+            this.addCollection(form);
+        }
+    }
+
+    addCollection(form) {
+        this.collectionService.add(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
+    }
+
+    editCollection(form) {
+        this.collectionService.edit(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
     }
 
     onNoClick(): void {

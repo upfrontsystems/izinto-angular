@@ -78,9 +78,7 @@ export class HomeComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.collectionService.add(result).subscribe(resp => {
-                    this.collections.push(resp);
-                });
+                this.collections.push(result);
             }
         });
     }
@@ -118,9 +116,7 @@ export class HomeComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.dashboardService.add(result).subscribe(resp => {
-                    this.dashboards.push(resp);
-                });
+                this.dashboards.push(result);
             }
         });
     }

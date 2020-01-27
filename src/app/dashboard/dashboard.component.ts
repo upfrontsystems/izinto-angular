@@ -97,9 +97,7 @@ export class DashboardComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.chartService.add(result).subscribe(resp => {
-                    this.addedChart = resp;
-                });
+                this.addedChart = result;
             }
         });
     }

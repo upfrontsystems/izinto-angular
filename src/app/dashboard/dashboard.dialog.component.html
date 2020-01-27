@@ -38,5 +38,6 @@
 <div mat-dialog-actions>
     <span fxFlex></span>
     <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
-    <button class="pull-right" mat-button (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
+    <button class="pull-right" mat-button [disabled]="!formValid()"
+            (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
 </div>

@@ -44,9 +44,7 @@ export class DashboardListComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.dashboardService.edit(result).subscribe( resp => {
-                    this.edited.emit(resp);
-                });
+                this.edited.emit(result);
             }
         });
     }

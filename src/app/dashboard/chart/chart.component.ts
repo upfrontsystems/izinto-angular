@@ -76,9 +76,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.chartService.edit(result).subscribe(resp => {
-                    this.edited.emit(result);
-                });
+                this.edited.emit(result);
             }
         });
     }

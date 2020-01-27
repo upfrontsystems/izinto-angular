@@ -2,8 +2,8 @@ import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Chart, ChartGroupBy, ChartTypes} from '../../_models/chart';
-import {DataSourceService} from '../../_services/data.source.service';
 import {DataSource} from '../../_models/data.source';
+import {ChartService} from '../../_services/chart.service';
 
 @Component({
     selector: 'app-chart-dialog',
@@ -20,6 +20,7 @@ export class ChartDialogComponent implements OnInit {
     state: string;
 
     constructor(
+        private chartService: ChartService,
         public dialogRef: MatDialogRef<ChartDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
@@ -34,7 +35,7 @@ export class ChartDialogComponent implements OnInit {
         const formData = {
             id: this.chart.id,
             dashboard_id: this.chart.dashboard_id,
-            title: this.chart.title,
+            title: new FormControl(this.chart.title, [Validators.required]),
             index: this.chart.index,
             selector: this.chart.selector,
             unit: this.chart.unit,
@@ -58,7 +59,23 @@ export class ChartDialogComponent implements OnInit {
 
     submit() {
         const form = this.form.value;
-        this.dialogRef.close(form);
+        if (this.chart.id) {
+            this.editChart(form);
+        } else {
+            this.addChart(form);
+        }
+    }
+
+    addChart(form) {
+        this.chartService.add(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
+    }
+
+    editChart(form) {
+        this.chartService.edit(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
     }
 
     onNoClick(): void {

@@ -1,11 +1,12 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef, MatSelect} from '@angular/material';
 import {Dashboard} from '../_models/dashboard';
 import {User} from '../_models/user';
 import {ReplaySubject, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {UserService} from '../_services/user.service';
+import {DashboardService} from '../_services/dashboard.service';
 
 @Component({
     selector: 'app-dashboard-dialog',
@@ -29,6 +30,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         private renderer: Renderer2,
         private fb: FormBuilder,
         private userService: UserService,
+        private dashboardService: DashboardService,
         @Inject(MAT_DIALOG_DATA) public data: any) {
     }
 
@@ -38,7 +40,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
 
         const formData = {
             id: this.dashboard.id,
-            title: this.dashboard.title,
+            title: new FormControl(this.dashboard.title, [Validators.required]),
             description: this.dashboard.description,
             collection_id: this.dashboard.collection_id,
             users: [this.dashboard.users],
@@ -89,7 +91,23 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
     submit() {
         const form = this.form.value;
         form.variables = this.dashboard.variables;
-        this.dialogRef.close(form);
+        if (this.dashboard.id) {
+            this.editDashboard(form);
+        } else {
+            this.addDashboard(form);
+        }
+    }
+
+    addDashboard(form) {
+        this.dashboardService.add(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
+    }
+
+    editDashboard(form) {
+        this.dashboardService.edit(form).subscribe(resp => {
+            this.dialogRef.close(resp);
+        });
     }
 
     onNoClick(): void {

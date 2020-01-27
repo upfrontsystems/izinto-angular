@@ -56,10 +56,8 @@ export class DataSourceComponent implements OnInit, AfterViewInit  {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.dataSourceService.add(result).subscribe(resp => {
-                    this.dataSources.push(resp);
-                    this.refresh();
-                });
+                this.dataSources.push(result);
+                this.refresh();
             }
         });
     }
@@ -72,15 +70,13 @@ export class DataSourceComponent implements OnInit, AfterViewInit  {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.dataSourceService.edit(result).subscribe(resp => {
-                    for (const ix in this.dataSources) {
-                        if (this.dataSources[ix].id === resp.id) {
-                            this.dataSources[ix] = resp;
-                            break;
-                        }
+                for (const ix in this.dataSources) {
+                    if (this.dataSources[ix].id === result.id) {
+                        this.dataSources[ix] = result;
+                        break;
                     }
-                    this.refresh();
-                });
+                }
+                this.refresh();
             }
         });
     }
