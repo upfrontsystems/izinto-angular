@@ -57,3 +57,21 @@ g.grid g.tick line {
     text-align: center;
     font-size: 48px;
 }
+
+.drag-handle {
+    position: absolute;
+    margin-top: 2em;
+    margin-left: -0.5em;
+    min-width: 40px !important;
+    padding-left: 5px;
+    padding-right: 5px
+}
+
+
+.chart-row .drag-handle, .chart-row .chart-actions {
+    display: none;
+}
+
+.chart-row:hover .drag-handle {
+    display: block !important;
+}

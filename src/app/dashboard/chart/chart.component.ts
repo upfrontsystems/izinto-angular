@@ -34,7 +34,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     private innerWidth = 0;
     private innerHeight = 0;
     public windowWidth: any;
-    private margin = {top: 50, right: 50, bottom: 20, left: 40};
+    private margin = {top: 50, right: 10, bottom: 20, left: 40};
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {

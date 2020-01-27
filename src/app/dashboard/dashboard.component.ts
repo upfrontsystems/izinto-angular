@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
         'week': {'count': 7, 'unit': 'd'},
         'month': {'count': 30, 'unit': 'd'}
     };
-    dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'MMMM y'};
+    dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y'};
     dateRange = '30d';
     dateRangeCounter = 1;
     dateSelect: Date;
@@ -115,7 +115,6 @@ export class DashboardComponent implements OnInit {
     updateView(view) {
         this.dateView = view;
         this.dateRangeCounter = 1;
-        this.dateRange = this.range[this.dateView].unit;
         this.setDateRange();
     }
 
@@ -130,6 +129,7 @@ export class DashboardComponent implements OnInit {
 
     setDateRange() {
         const range = this.range[this.dateView].count;
+        this.dateRange = this.dateRangeCounter * range + this.range[this.dateView].unit;
         const date = new Date();
         const end = new Date();
         if (this.dateView === 'hour') {
