@@ -10,6 +10,8 @@ import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.compon
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
 import {DataSourceService} from '../_services/data.source.service';
+import {ChartService} from '../_services/chart.service';
+import {SingleStatService} from '../_services/single.stat.service';
 
 
 @Component({
@@ -50,7 +52,9 @@ export class DashboardComponent implements OnInit {
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
-                protected dashboardService: DashboardService) {
+                protected chartService: ChartService,
+                protected dashboardService: DashboardService,
+                protected singleStatService: SingleStatService) {
     }
 
     ngOnInit() {

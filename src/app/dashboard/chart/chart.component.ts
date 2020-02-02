@@ -48,7 +48,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     ngOnChanges(changes) {
-        if (changes.dateRange && changes.dateRange.currentValue) {
+        const dateRange = changes.dateRange;
+        if (dateRange && dateRange.currentValue && !dateRange.firstChange) {
             this.loadDataSet();
         }
     }
@@ -114,21 +115,21 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     this.dataSet.push(dataset);
                 }
                 if (this.chart.type === 'Line') {
-                    this.lineChart(this.chart, dataSet);
+                    this.lineChart(dataSet);
                 } else if (this.chart.type === 'Bar') {
-                    this.barChart(this.chart, dataSet);
+                    this.barChart(dataSet);
                 } else if (this.chart.type === 'Wind Arrow') {
-                    this.windArrows(this.chart, dataSet);
+                    this.windArrows(dataSet);
                 }
             }
         }, err => {
             const dataset = [];
             if (this.chart.type === 'Line') {
-                this.lineChart(this.chart, dataset);
+                this.lineChart(dataset);
             } else if (this.chart.type === 'Bar') {
-                this.barChart(this.chart, dataset);
+                this.barChart(dataset);
             } else if (this.chart.type === 'Wind Arrow') {
-                this.windArrows(this.chart, dataset);
+                this.windArrows(dataset);
             }
         });
     }
@@ -159,7 +160,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         const focus = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
-            .attr('class', 'focus')
+            .attr('class', 'focus g' + this.chart.selector)
             .style('display', 'none');
 
         focus.append('line')
@@ -195,11 +196,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     mouseover() {
-        d3.selectAll('g.focus').style('display', null);
+        d3.selectAll('g.focus.g' + this.chart.selector).style('display', null);
     }
 
     mouseout() {
-        d3.selectAll('g.focus').style('display', 'none');
+        d3.selectAll('g.focus.g' + this.chart.selector).style('display', 'none');
     }
 
     mousemove(container, markerHeight) {
@@ -214,7 +215,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             scales = this.scales,
             newX = xcoord + this.margin.left;
 
-        d3.selectAll('g.focus').each(function (d: Record, i) {
+        d3.selectAll('g.focus.g' + this.chart.selector).each(function (d: Record, i) {
                 const dset = dsets[i],
                     scale = scales[i];
                 if (dset === undefined) {
@@ -290,7 +291,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         return a;
     }
 
-    barChart(chart, dataSet) {
+    barChart(dataSet) {
         const width = this.innerWidth,
             height = this.innerHeight,
             merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
@@ -299,23 +300,24 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth);
 
         this.scales.push(xScale);
-        let svg = d3.select('svg.' + chart.selector + ' > g'),
-            barChart = svg.select('g.' + chart.selector);
+        let svg = d3.select('svg.' + this.chart.selector + ' > g'),
+            barChart = svg.select('g.' + this.chart.selector);
         const create = svg.empty();
         if (create) {
-            d3.selectAll('div.' + chart.selector).remove();
-            d3.select('div.d3-chart.chart' + chart.id).append('div').attr('class', 'svg-container ' + chart.selector);
+            d3.selectAll('div.' + this.chart.selector).remove();
+            d3.select('div.d3-chart.chart' + this.chart.id)
+                .append('div').attr('class', 'svg-container ' + this.chart.selector);
 
-            svg = d3.select('div.' + chart.selector)
+            svg = d3.select('div.' + this.chart.selector)
                 .append('svg')
-                .attr('class', chart.selector)
+                .attr('class', this.chart.selector)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
                 .append('g')
                 .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
             svg.append('g')
                 .attr('class', 'grid');
-            barChart = svg.append('g').attr('class', chart.selector);
+            barChart = svg.append('g').attr('class', this.chart.selector);
         }
 
         svg.selectAll('text.section-label').remove();
@@ -325,7 +327,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y', -40)
             .attr('dy', '0.8em')
             .attr('fill', 'black')
-            .text(chart.title);
+            .text(this.chart.title);
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
@@ -354,8 +356,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .call(g => g.select('.domain')
                 .remove());
 
+        const fillFunc = this.chart.fillFunc;
+        const color = this.chart.color;
         dataSet.forEach((dataset, index) => {
-            const bar_selector = 'rect.' + chart.selector + '-' + index,
+            const bar_selector = 'rect.' + this.chart.selector + '-' + index,
                 bandwidth = xScale.bandwidth() / dataSet.length,
                 update = barChart.selectAll(bar_selector).data(dataset);
             update.exit().remove();
@@ -379,18 +383,18 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     return yScale(d.value);
                 })
                 .attr('fill', function (d: Record) {
-                    if (chart.fillFunc) {
-                        return chart.fillFunc(d.value);
+                    if (fillFunc) {
+                        return fillFunc(d.value);
                     } else {
-                        return chart.color.split(',')[index];
+                        return color.split(',')[index];
                     }
                 });
 
         });
-        this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
+        this.markerLine(d3.select('svg.' + this.chart.selector), this.chart.color, this.chartHeight);
     }
 
-    lineChart(chart, dataSet) {
+    lineChart(dataSet) {
 
         const width = this.innerWidth,
             height = this.innerHeight,
@@ -412,15 +416,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             }) // set the y values for the line generator
             .curve(d3Shape.curveMonotoneX); // apply smoothing to the line
 
-        let svg = d3.select('svg.' + chart.selector + ' > g');
+        let svg = d3.select('svg.' + this.chart.selector + ' > g');
         const create = svg.empty(),
             trans: any = 1000;
         if (create) {
-            d3.select('div.d3-chart.chart' + chart.id).append('div').attr('class', 'svg-container ' + chart.selector);
+            d3.select('div.d3-chart.chart' + this.chart.id)
+                .append('div').attr('class', 'svg-container ' + this.chart.selector);
 
-            svg = d3.select('div.' + chart.selector)
+            svg = d3.select('div.' + this.chart.selector)
                 .append('svg')
-                .attr('class', chart.selector)
+                .attr('class', this.chart.selector)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
                 .append('g')
@@ -432,7 +437,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 linechart.append('path')
                     .datum(dataset)
                     .attr('fill', 'none')
-                    .style('stroke', chart.color.split(',')[index])
+                    .style('stroke', this.chart.color.split(',')[index])
                     .style('stroke-width', '2px')
                     .attr('class', 'line')
                     .attr('d', line);
@@ -442,7 +447,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     .attr('y', -40)
                     .attr('dy', '0.8em')
                     .attr('fill', 'black')
-                    .text(chart.title);
+                    .text(this.chart.title);
             });
         } else {
             dataSet.forEach((dataset, index) => {
@@ -453,7 +458,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }
 
         const tickFormat = this.tickFormat(),
-            interval = this.xAxisInterval(width, chart.group_by);
+            interval = this.xAxisInterval(width, this.chart.group_by);
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
@@ -481,7 +486,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .remove());
 
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.' + chart.selector), chart.color, this.chartHeight);
+            this.markerLine(d3.select('svg.' + this.chart.selector), this.chart.color, this.chartHeight);
         }
 
     }
@@ -513,17 +518,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
     }
 
-    windArrows(chart, dataset) {
+    windArrows(dataset) {
         // use the bar chart as base for the chart
-        this.barChart(chart, dataset);
+        this.barChart(dataset);
 
         // remove the bars
-        const bars = d3.select('svg.' + chart.selector + ' > g').select('g.' + chart.selector);
+        const bars = d3.select('svg.' + this.chart.selector + ' > g').select('g.' + this.chart.selector);
         bars.remove();
 
-        let svg = d3.select('svg.' + chart.selector + ' > g.wind-arrows');
+        let svg = d3.select('svg.' + this.chart.selector + ' > g.wind-arrows');
         svg.remove();
-        svg = d3.select('svg.' + chart.selector)
+        svg = d3.select('svg.' + this.chart.selector)
             .append('g')
             .attr('class', 'wind-arrows')
             .attr('transform', 'translate(' + this.margin.left + ',0)');
