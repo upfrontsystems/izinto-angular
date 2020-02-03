@@ -37,7 +37,6 @@ export class ChartDialogComponent implements OnInit {
             dashboard_id: this.chart.dashboard_id,
             title: new FormControl(this.chart.title, [Validators.required]),
             index: this.chart.index,
-            selector: this.chart.selector,
             unit: this.chart.unit,
             color: this.chart.color,
             type: this.chart.type,
