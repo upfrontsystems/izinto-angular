@@ -29,12 +29,12 @@
                             <mat-icon>view_day</mat-icon>
                         </button>
                     </div>
-                    <div fxFlex class="p-l-20">
+                    <div fxFlex class="date-navigator">
                         <button mat-icon-button (click)="updateDateCounter(1)">
                             <mat-icon>keyboard_arrow_left</mat-icon>
                         </button>
-                        <span class="font-16">{{dateSelect | date : dateFormat[dateView]}} - </span>
-                        <span class="font-16"> {{endDate | date : dateFormat[dateView]}}</span>
+                        <span class="date-text">{{dateSelect | date : getDateFormat()}} - </span>
+                        <span class="date-text"> {{endDate | date : getDateFormat()}}</span>
                         <button mat-icon-button (click)="updateDateCounter(-1)">
                             <mat-icon>keyboard_arrow_right</mat-icon>
                         </button>

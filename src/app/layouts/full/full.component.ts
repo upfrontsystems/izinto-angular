@@ -34,7 +34,7 @@ export class FullComponent implements OnDestroy, AfterViewInit {
     boxed: boolean;
     danger: boolean;
     showHide: boolean;
-    sidebarOpened;
+    sidebarOpened = false;
 
     public config: PerfectScrollbarConfigInterface = {};
     private _mobileQueryListener: () => void;

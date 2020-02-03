@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
@@ -12,6 +12,7 @@ import {DataSource} from '../_models/data.source';
 import {DataSourceService} from '../_services/data.source.service';
 import {ChartService} from '../_services/chart.service';
 import {SingleStatService} from '../_services/single.stat.service';
+import {MediaMatcher} from '@angular/cdk/layout';
 
 
 @Component({
@@ -21,6 +22,7 @@ import {SingleStatService} from '../_services/single.stat.service';
 })
 export class DashboardComponent implements OnInit {
 
+    mobileQuery: MediaQueryList;
     dashboardId: number;
     dashboard: Dashboard;
     dataSources: DataSource[];
@@ -32,7 +34,8 @@ export class DashboardComponent implements OnInit {
         'week': {'count': 7, 'unit': 'd'},
         'month': {'count': 30, 'unit': 'd'}
     };
-    dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y'};
+    dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y',
+                  'mobile': {'hour': 'd MMMM h:mm a', 'day': 'dd/MM/yy', 'week': 'dd/MM/yy', 'month': 'dd/MM/yy'}};
     dateRange = '30d';
     dateRangeCounter = 1;
     dateSelect: Date;
@@ -48,16 +51,24 @@ export class DashboardComponent implements OnInit {
         }
     ];
 
-    constructor(protected route: ActivatedRoute,
+    private readonly _mobileQueryListener: () => void;
+
+    constructor(changeDetectorRef: ChangeDetectorRef,
+                media: MediaMatcher,
+                protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
+        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+        this.mobileQuery.addListener(this._mobileQueryListener);
     }
 
     ngOnInit() {
+
         this.getDataSources();
 
         this.route.paramMap.subscribe(params => {
@@ -114,6 +125,14 @@ export class DashboardComponent implements OnInit {
                 this.addedSingleStat = result;
             }
         });
+    }
+
+    getDateFormat() {
+        if (this.mobileQuery.matches) {
+            return this.dateFormat[this.dateView];
+        } else {
+            return this.dateFormat.mobile[this.dateView];
+        }
     }
 
     updateView(view) {

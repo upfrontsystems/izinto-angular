@@ -25,12 +25,7 @@ export interface Menu {
 }
 
 const MENUITEMS = [
-  {
-    state: '',
-    name: 'Personal',
-    type: 'saperator',
-    icon: 'av_timer'
-  },
+
   {
     state: '/',
     name: 'Dashboards',
