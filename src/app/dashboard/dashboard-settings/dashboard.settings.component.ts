@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {DashboardComponent} from '../dashboard.component';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
@@ -7,6 +7,7 @@ import {ChartService} from '../../_services/chart.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {SingleStatService} from '../../_services/single.stat.service';
 import {DataSourceService} from '../../_services/data.source.service';
+import {MediaMatcher} from '@angular/cdk/layout';
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -15,14 +16,16 @@ import {DataSourceService} from '../../_services/data.source.service';
 })
 export class DashboardSettingsComponent extends DashboardComponent implements OnInit {
 
-    constructor(protected route: ActivatedRoute,
+    constructor(changeDetectorRef: ChangeDetectorRef,
+                media: MediaMatcher,
+                protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
                 public dialog: MatDialog,
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
-        super(route, http, dataSourceService, dialog, chartService, dashboardService, singleStatService);
+        super(changeDetectorRef, media, route, http, dataSourceService, dialog, chartService, dashboardService, singleStatService);
     }
 
 
