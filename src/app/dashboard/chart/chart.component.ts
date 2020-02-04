@@ -1,9 +1,8 @@
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {Chart} from '../../_models/chart';
 import * as d3Trans from 'd3-transition';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
-import {Variable} from '../../_models/variable';
 import * as d3 from 'd3-selection';
 import {Record} from '../../_models/record';
 import * as d3Scale from 'd3-scale';
@@ -12,7 +11,6 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
-import {DataSource} from '../../_models/data.source';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 
@@ -96,8 +94,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         query = this.formatQuery(query, this.chart.data_source);
 
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
-            if (resp['results'][0].hasOwnProperty('series')) {
-                const dataSet = [];
+            const dataSet = [];
+            if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 for (const series of resp['results'][0]['series']) {
                     const dataset = [];
                     for (const record of series['values']) {
@@ -114,24 +112,23 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     dataSet.push(dataset);
                     this.dataSet.push(dataset);
                 }
-                if (this.chart.type === 'Line') {
-                    this.lineChart(dataSet);
-                } else if (this.chart.type === 'Bar') {
-                    this.barChart(dataSet);
-                } else if (this.chart.type === 'Wind Arrow') {
-                    this.windArrows(dataSet);
-                }
             }
+            this.buildChart(dataSet);
         }, err => {
-            const dataset = [];
-            if (this.chart.type === 'Line') {
-                this.lineChart(dataset);
-            } else if (this.chart.type === 'Bar') {
-                this.barChart(dataset);
-            } else if (this.chart.type === 'Wind Arrow') {
-                this.windArrows(dataset);
-            }
+            this.buildChart([]);
         });
+    }
+
+    buildChart(dataset) {
+        if (this.chart.type === 'Line') {
+            this.lineChart(dataset);
+        } else if (this.chart.type === 'Bar') {
+            this.barChart(dataset);
+        } else if (this.chart.type === 'Wind Arrow') {
+            this.windArrows(dataset);
+        } else {
+            this.barChart(dataset);
+        }
     }
 
     xScale(dataset) {

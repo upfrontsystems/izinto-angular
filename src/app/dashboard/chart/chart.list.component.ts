@@ -21,7 +21,7 @@ export class ChartListComponent implements OnInit, OnChanges {
     @Input() dataSources: DataSource[];
     @Input() view: string;
     @Input() dateRange: string;
-    private charts: Chart[] = [];
+    charts: Chart[] = [];
 
     constructor(protected dialog: MatDialog,
                 protected chartService: ChartService) {
@@ -63,31 +63,13 @@ export class ChartListComponent implements OnInit, OnChanges {
     }
 
     reorderChart(event) {
-        if (!event.isPointerOverContainer) {
-            return;
-        }
-
+        const oldIndex = event.item.data.index;
         const index = event.currentIndex;
         const chart = event.item.data;
-        if (this.charts[index].id === event.item.data.id) {
-            return;
-        }
-
-        const oldIndex = event.item.data.order;
-        const change = index < event.previousIndex ? 1 : -1;
 
         let newIndex = this.charts[index].index;
         if (newIndex === oldIndex) {
             newIndex += index > event.previousIndex ? 1 : -1;
-        }
-        if (index > event.previousIndex) {
-            for (const item of this.charts.slice(event.previousIndex, index + 1)) {
-                item.index += change;
-            }
-        } else {
-            for (const item of this.charts.slice(index, event.previousIndex)) {
-                item.index += change;
-            }
         }
 
         chart.index = newIndex;

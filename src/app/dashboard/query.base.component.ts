@@ -17,6 +17,10 @@ export class QueryBaseComponent {
     }
 
     formatQuery(query, dataSource: DataSource) {
+        if (!query) {
+            return '';
+        }
+
         query = query.replace(/:range:/g, this.dateRange);
         query = query.replace(/:group_by:/g, this.group_by[this.view]);
 

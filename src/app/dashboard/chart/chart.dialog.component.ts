@@ -42,7 +42,7 @@ export class ChartDialogComponent implements OnInit {
             type: this.chart.type,
             group_by: this.chart.group_by,
             query: this.chart.query,
-            data_source_id: this.chart.data_source_id
+            data_source_id: new FormControl(this.chart.data_source_id, [Validators.required])
         };
         this.form = this.fb.group(formData);
 
