@@ -5,13 +5,17 @@ import {map} from 'rxjs/operators';
 
 import {Role} from '../_models/role';
 import {User} from '../_models/user';
+import {CollectionService} from './collection.service';
+import {DashboardService} from './dashboard.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
     private currentUserSubject: BehaviorSubject<User>;
     public currentUser: Observable<User>;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient,
+                protected collectionService: CollectionService,
+                protected dashboardService: DashboardService) {
         this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
@@ -37,6 +41,8 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
+        this.collectionService.clearCopied();
+        this.dashboardService.clearCopied();
         this.setCurrentUser(null);
     }
 
