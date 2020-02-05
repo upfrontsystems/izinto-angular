@@ -94,7 +94,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         query = this.formatQuery(query, this.chart.data_source);
 
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
-            const dataSet = [];
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 for (const series of resp['results'][0]['series']) {
                     const dataset = [];
@@ -109,25 +108,24 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         }
                     }
                     dataset.sort();
-                    dataSet.push(dataset);
                     this.dataSet.push(dataset);
                 }
             }
-            this.buildChart(dataSet);
+            this.buildChart();
         }, err => {
-            this.buildChart([]);
+            this.buildChart();
         });
     }
 
-    buildChart(dataset) {
+    buildChart() {
         if (this.chart.type === 'Line') {
-            this.lineChart(dataset);
+            this.lineChart(this.dataSet);
         } else if (this.chart.type === 'Bar') {
-            this.barChart(dataset);
+            this.barChart(this.dataSet);
         } else if (this.chart.type === 'Wind Arrow') {
-            this.windArrows(dataset);
+            this.windArrows(this.dataSet);
         } else {
-            this.barChart(dataset);
+            this.barChart(this.dataSet);
         }
     }
 
@@ -485,11 +483,36 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         if (create && dataSet.length > 0) {
             this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color, this.chartHeight);
         }
+    }
 
+    windArrows(dataset) {
+        // use the bar chart as base for the chart
+        this.barChart(dataset);
+        if (dataset.length) {
+            dataset = dataset[0];
+        }
+
+        // remove the bars
+        const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
+        bars.remove();
+
+        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
+        svg.remove();
+        svg = d3.select('svg.chart-' + this.chart.id)
+            .append('g')
+            .attr('class', 'wind-arrows')
+            .attr('transform', 'translate(' + this.margin.left + ',0)');
+
+        const arrowScale = this.xScale(dataset);
+
+        for (let i = 0; i < dataset.length; i++) {
+            const arrowX = arrowScale(dataset[i].date),
+                arrowWidth = this.innerWidth / dataset.length;
+            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
+        }
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
-
         const xint = arrowX,
             x = xint.toString(),
             x_min_3 = (xint - 3).toString(),
@@ -513,29 +536,5 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('stroke', 'black')
             .attr('stroke-width', '2px')
             .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
-    }
-
-    windArrows(dataset) {
-        // use the bar chart as base for the chart
-        this.barChart(dataset);
-
-        // remove the bars
-        const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
-        bars.remove();
-
-        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
-        svg.remove();
-        svg = d3.select('svg.chart-' + this.chart.id)
-            .append('g')
-            .attr('class', 'wind-arrows')
-            .attr('transform', 'translate(' + this.margin.left + ',0)');
-
-        const arrowScale = this.xScale(dataset);
-
-        for (let i = 0; i < dataset.length; i++) {
-            const arrowX = arrowScale(dataset[i].date),
-                arrowWidth = this.innerWidth / dataset.length;
-            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
-        }
     }
 }
