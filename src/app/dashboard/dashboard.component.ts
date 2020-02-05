@@ -36,7 +36,8 @@ export class DashboardComponent implements OnInit {
     };
     dateFormat = {'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y',
                   'mobile': {'hour': 'd MMMM h:mm a', 'day': 'dd/MM/yy', 'week': 'dd/MM/yy', 'month': 'dd/MM/yy'}};
-    dateRange = '30d';
+    // query date range from start to end
+    dateRange = 'time > now() - 30d';
     dateRangeCounter = 1;
     dateSelect: Date;
     endDate: Date;
@@ -151,16 +152,22 @@ export class DashboardComponent implements OnInit {
     }
 
     setDateRange() {
-        const range = this.range[this.dateView].count;
-        this.dateRange = this.dateRangeCounter * range + this.range[this.dateView].unit;
+        const startCount = this.dateRangeCounter * this.range[this.dateView].count;
+        const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
+
+        // format date range from start to end
+        const startRange = startCount + this.range[this.dateView].unit;
+        const endRange = endCount + this.range[this.dateView].unit;
+        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
+
         const date = new Date();
         const end = new Date();
         if (this.dateView === 'hour') {
-            this.dateSelect = new Date(date.setHours(date.getHours() - (this.dateRangeCounter * range)));
-            this.endDate = new Date(end.setHours(end.getHours() - ((this.dateRangeCounter - 1) * range)));
+            this.dateSelect = new Date(date.setHours(date.getHours() - startCount));
+            this.endDate = new Date(end.setHours(end.getHours() - endCount));
         } else {
-            this.dateSelect = new Date(date.setDate(date.getDate() - (this.dateRangeCounter * range)));
-            this.endDate = new Date(end.setDate(end.getDate() - ((this.dateRangeCounter - 1) * range)));
+            this.dateSelect = new Date(date.setDate(date.getDate() - startCount));
+            this.endDate = new Date(end.setDate(end.getDate() - endCount));
         }
     }
 }
