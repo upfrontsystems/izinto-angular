@@ -7,6 +7,7 @@ import {ReplaySubject, Subject} from 'rxjs';
 import {UserService} from '../_services/user.service';
 import {take, takeUntil} from 'rxjs/operators';
 import {CollectionService} from '../_services/collection.service';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
     selector: 'app-collection-dialog',
@@ -29,6 +30,7 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
         public dialogRef: MatDialogRef<CollectionDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
+        public authService: AuthenticationService,
         private userService: UserService,
         private collectionService: CollectionService,
         @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -64,9 +66,11 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     protected setInitialValue() {
-        this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-            this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
-        });
+        if (this.authService.hasRole('Administrator')) {
+            this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
+                this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
+            });
+        }
     }
 
     protected filterUsers(search) {

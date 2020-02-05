@@ -7,6 +7,7 @@ import {ReplaySubject, Subject} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {UserService} from '../_services/user.service';
 import {DashboardService} from '../_services/dashboard.service';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
     selector: 'app-dashboard-dialog',
@@ -29,6 +30,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         public dialogRef: MatDialogRef<DashboardDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
+        public authService: AuthenticationService,
         private userService: UserService,
         private dashboardService: DashboardService,
         @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -66,9 +68,11 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     protected setInitialValue() {
-        this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-            this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
-        });
+        if (this.authService.hasRole('Administrator')) {
+            this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
+                this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
+            });
+        }
     }
 
     protected filterUsers(search) {
