@@ -40,6 +40,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @HostListener('window:resize', ['$event'])
     onResize(event) {
         this.setChartWidth();
+        this.buildChart();
     }
 
     constructor(protected dialog: MatDialog,
@@ -59,6 +60,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         // Initialise transition
         d3Trans.transition().duration(750);
         this.setChartWidth();
+        this.loadDataSet();
     }
 
     setChartWidth() {
@@ -66,7 +68,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.chartWidth = this.windowWidth - 130;
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
-        this.loadDataSet();
     }
 
     editChart() {
@@ -132,7 +133,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }
     }
 
-    xAxisScale(dataset) {
+    xAxisScale() {
         return d3Scale.scaleTime().range([0, this.innerWidth]).domain(
             [this.startDate, this.endDate]
         );
@@ -216,25 +217,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }).right;
         const xcoord = d3.mouse(container)[0],
             dsets = this.dataSet,
-            scales = this.scales,
-            newX = xcoord + this.margin.left;
+            newX = xcoord + this.margin.left,
+            xscale = this.xAxisScale(),
+            xdate = xscale.invert(xcoord);
 
         d3.selectAll('g.focus.g-' + this.chart.id).each(function (d: Record, i) {
                 const dset = dsets[i],
-                    scale = scales[i];
-                if (dset === undefined) {
+                    j = bisectDate(dset, xdate),
+                    d0 = dset[j - 1];
+                if (d0 === undefined) {
                     return;
                 }
-                let x0 = scale.domain()[0];
-                if (typeof scale.invert === 'undefined') {
-                    const eachBand = scale.step(),
-                        index = Math.round(((xcoord - eachBand / 2) / eachBand));
-                    x0 = scale.domain()[index];
-                } else {
-                    x0 = scale.invert(xcoord);
-                }
-                const j = bisectDate(dset, x0),
-                    d0 = dset[j - 1];
                 d3.select(this)
                     .attr('transform', 'translate(' + newX + ',' + 0 + ')')
                     .style('display', null)
@@ -289,12 +282,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const width = this.innerWidth,
             height = this.innerHeight,
             merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
-            xScale = this.xScale(merged),
-            xAxisScale = this.xAxisScale(merged),
+            xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged),
             gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth);
 
-        this.scales.push(xScale);
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
         const create = svg.empty();
@@ -353,25 +344,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const color = this.chart.color;
         dataSet.forEach((dataset, index) => {
             const bar_selector = 'rect.chart-' + this.chart.id + '-' + index,
-                bandwidth = xScale.bandwidth() / dataSet.length,
+                bandwidth = width / dataset.length,
+                padding = 2,
                 update = barChart.selectAll(bar_selector).data(dataset);
-            update.exit().remove();
-            barChart.selectAll(bar_selector).transition()
-                .attr('x', (d: any) => xScale(d.date) + bandwidth * index)
-                .attr('y', function (d: Record) {
-                    return height - yScale(d.value);
-                })
-                .attr('width', xScale.bandwidth() / 2)
-                .attr('height', function (d: Record) {
-                    return yScale(d.value);
-                });
+            barChart.selectAll('rect').remove();
             update.enter().append('rect')
                 .attr('class', bar_selector)
-                .attr('x', (d: any) => xScale(d.date) + bandwidth * index)
+                .attr('x', (d: any) => xAxisScale(d.date) + bandwidth * index)
                 .attr('y', function (d: Record) {
                     return height - yScale(d.value);
                 })
-                .attr('width', xScale.bandwidth() / 2)
+                .attr('width', bandwidth - padding)
                 .attr('height', function (d: Record) {
                     return yScale(d.value);
                 })
@@ -393,17 +376,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             height = this.innerHeight,
             merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
             gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-width),
-            xScale = this.xScale(merged),
-            xAxisScale = this.xAxisScale(merged),
+            xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged, [
                 d3Array.max<Date>(merged.map(d => d.value)),
                 d3Array.min<Date>(merged.map(d => d.value))]);
 
-        this.scales.push(xScale);
-
         const line = d3Shape.line<Record>()
             .x(function (d: any): number {
-                return xScale(d.date) + xScale.bandwidth() / 2;
+                return xAxisScale(d.date);
             }) // set the x values for the line generator
             .y(function (d: Record): number {
                 return yScale(d.value);
@@ -480,33 +460,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         if (create && dataSet.length > 0) {
             this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color, this.chartHeight);
         }
-    }
 
-    windArrows(dataset) {
-        // use the bar chart as base for the chart
-        this.barChart(dataset);
-        if (dataset.length) {
-            dataset = dataset[0];
-        }
-
-        // remove the bars
-        const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
-        bars.remove();
-
-        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
-        svg.remove();
-        svg = d3.select('svg.chart-' + this.chart.id)
-            .append('g')
-            .attr('class', 'wind-arrows')
-            .attr('transform', 'translate(' + this.margin.left + ',0)');
-
-        const arrowScale = this.xScale(dataset);
-
-        for (let i = 0; i < dataset.length; i++) {
-            const arrowX = arrowScale(dataset[i].date),
-                arrowWidth = this.innerWidth / dataset.length;
-            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
-        }
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
@@ -533,5 +487,32 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('stroke', 'black')
             .attr('stroke-width', '2px')
             .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
+    }
+
+    windArrows(dataset) {
+        // use the bar chart as base for the chart
+        this.barChart(dataset);
+        if (dataset.length) {
+            dataset = dataset[0];
+        }
+
+        // remove the bars
+        const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
+        bars.remove();
+
+        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
+        svg.remove();
+        svg = d3.select('svg.chart-' + this.chart.id)
+            .append('g')
+            .attr('class', 'wind-arrows')
+            .attr('transform', 'translate(' + this.margin.left + ',0)');
+
+        const arrowScale = this.xAxisScale();
+
+        for (let i = 0; i < dataset.length; i++) {
+            const arrowX = arrowScale(dataset[i].date),
+                arrowWidth = this.innerWidth / dataset.length;
+            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
+        }
     }
 }
