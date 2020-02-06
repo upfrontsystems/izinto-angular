@@ -66,7 +66,7 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     protected setInitialValue() {
-        if (this.authService.hasRole('Administrator')) {
+        if (this.userSelect) {
             this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
                 this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
             });

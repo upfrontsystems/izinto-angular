@@ -17,7 +17,8 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="authService.hasRole('Administrator')">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
+                 *ngIf="authService.hasRole('Administrator') && !dashboard.collection_id">
                 <mat-form-field>
                     <mat-select [formControl]="form.get('users')" placeholder="Users" [multiple]="true" #userSelect>
                         <mat-option>
