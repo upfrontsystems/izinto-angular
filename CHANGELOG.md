@@ -17,4 +17,5 @@ All notable changes to this project will be documented in this file. See [standa
 * [#30](https://github.com/upfrontsystems/izinto-angular/issues/30) handle start and end range query
 * [#32](https://github.com/upfrontsystems/izinto-angular/issues/32) wind arrow chart working
 * [#24](https://github.com/upfrontsystems/izinto-angular/issues/24) remove setting user access to dashboards in collections
+* [#27](https://github.com/upfrontsystems/izinto-angular/issues/27) resize charts without reloading data
 
