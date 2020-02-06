@@ -8,6 +8,7 @@ import {Record} from '../../_models/record';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3TimeFormat from 'd3-time-format';
+import * as d3Time from 'd3-time';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
@@ -22,6 +23,8 @@ import {DataSourceService} from '../../_services/data.source.service';
 export class ChartComponent extends QueryBaseComponent implements OnInit, OnChanges {
 
     @Input() chart: Chart;
+    @Input() startDate: Date;
+    @Input() endDate: Date;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     private dataSet = [];
@@ -127,6 +130,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         } else {
             this.barChart(this.dataSet);
         }
+    }
+
+    xAxisScale(dataset) {
+        return d3Scale.scaleTime().range([0, this.innerWidth]).domain(
+            [this.startDate, this.endDate]
+        );
     }
 
     xScale(dataset) {
@@ -241,27 +250,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         );
     }
 
-    xAxisInterval(width, group_by = '1d') {
-        let interval = 1;
-        if (width < 800) {
-            interval = 4;
-        } else if (width < 1200) {
-            interval = 2;
-        }
-        if (this.view === 'hour') {
-            interval = 5;
-        }
+    xAxisInterval(width) {
+        const interval = width / 50;
 
         if (this.view === 'hour') {
             return interval;
         } else if (this.view === 'day') {
-            return interval;
-        } else if (this.view === 'week' || this.view === 'month') {
-            if (group_by === '1d') {
-                return interval;
-            } else if (group_by === '1h') {
-                return 24 * interval;
-            }
+            return interval > 24 && 24 || interval;
+        } else if (this.view === 'week') {
+            return interval > 7 && 7 || interval;
+        } else if (this.view === 'month') {
+            return interval > 30 && 30 || interval;
         }
         return interval;
     }
@@ -291,6 +290,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             height = this.innerHeight,
             merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
             xScale = this.xScale(merged),
+            xAxisScale = this.xAxisScale(merged),
             yScale = this.yScale(merged),
             gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth);
 
@@ -331,10 +331,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale)
-                .tickValues(xScale.domain().filter(function (d, i) {
-                    return !(i % interval);
-                }))
+            .call(d3Axis.axisBottom(xAxisScale)
+                .ticks(interval)
                 .tickFormat(function (d: any) {
                     return tickFormat(d);
                 })
@@ -396,6 +394,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
             gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-width),
             xScale = this.xScale(merged),
+            xAxisScale = this.xAxisScale(merged),
             yScale = this.yScale(merged, [
                 d3Array.max<Date>(merged.map(d => d.value)),
                 d3Array.min<Date>(merged.map(d => d.value))]);
@@ -452,18 +451,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             });
         }
 
-        const tickFormat = this.tickFormat(),
-            interval = this.xAxisInterval(width, this.chart.group_by);
+        const interval = this.xAxisInterval(width);
+        const tickFormat = this.tickFormat();
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3Axis.axisBottom(xScale)
-                .tickValues(xScale.domain().filter(function (d, i) {
-                    return !(i % interval);
-                }))
+            .call(d3Axis.axisBottom(xAxisScale)
+                .ticks(interval)
                 .tickFormat(function (d: any) {
                     return tickFormat(d);
                 })

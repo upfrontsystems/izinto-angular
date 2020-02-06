@@ -21,6 +21,8 @@ export class ChartListComponent implements OnInit, OnChanges {
     @Input() dataSources: DataSource[];
     @Input() view: string;
     @Input() dateRange: string;
+    @Input() startDate: Date;
+    @Input() endDate: Date;
     charts: Chart[] = [];
 
     constructor(protected dialog: MatDialog,
