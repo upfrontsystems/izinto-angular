@@ -11,6 +11,7 @@ import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { ColorCompactModule } from 'ngx-color/compact';
 
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
@@ -97,6 +98,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         AppRoutes,
         BrowserModule,
         BrowserAnimationsModule,
+        ColorCompactModule,
         MaterialModule,
         FormsModule,
         FlexLayoutModule,

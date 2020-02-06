@@ -52,6 +52,10 @@ export class ChartDialogComponent implements OnInit {
     onFormChanges(): void {
     }
 
+    updateColor(event) {
+        this.form.controls.color.setValue(event.color.hex);
+    }
+
     formValid() {
         return this.form.valid;
     }

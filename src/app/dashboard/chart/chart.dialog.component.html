@@ -17,10 +17,14 @@
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+                <mat-form-field style="width: 50%">
                     <input matInput placeholder="Color" [formControl]="form.get('color')" name="color"
                            autocomplete="off">
                 </mat-form-field>
+                <div style="width: 50%;" class="pull-right">
+                    <color-compact class="pull-right" [color]="form.get('color')"
+                                   (onChangeComplete)="updateColor($event)"></color-compact>
+                </div>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
