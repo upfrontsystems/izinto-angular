@@ -372,7 +372,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 });
 
         });
-        this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
+        if (create && dataSet.length > 0) {
+            this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
+        }
     }
 
     lineChart(dataSet) {
