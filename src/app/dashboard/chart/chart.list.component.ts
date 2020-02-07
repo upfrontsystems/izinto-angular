@@ -4,9 +4,6 @@ import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
 import {Variable} from '../../_models/variable';
 import {DataSource} from '../../_models/data.source';
-import * as d3 from 'd3-selection';
-import {Record} from '../../_models/record';
-import {DataSourceService} from '../../_services/data.source.service';
 import {QueryBaseComponent} from '../query.base.component';
 
 @Component({
@@ -27,11 +24,8 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @Input() startDate: Date;
     @Input() endDate: Date;
     charts: Chart[] = [];
-    dataSets = [];
-    chartData = {};
 
     constructor(protected dialog: MatDialog,
-                protected dataSourceService: DataSourceService,
                 protected chartService: ChartService) {
         super();
     }
@@ -50,61 +44,7 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     getCharts() {
         this.chartService.getCharts({dashboard_id: this.dashboardId}).subscribe(charts => {
             this.charts = charts;
-            this.loadDataSets();
         });
-    }
-
-    loadDataSets() {
-        this.dataSets = [];
-        this.chartData = {};
-        let counter = this.charts.length;
-        d3.selectAll('div.svg-container').remove();
-
-        for (const chart of this.charts) {
-            let query = chart.query;
-            this.chartData[chart.id] = [];
-            query = this.formatQuery(query, chart.data_source);
-
-            this.dataSourceService.loadDataQuery(chart.data_source_id, query).subscribe(resp => {
-                if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
-                    const dataSets = [];
-                    for (const series of resp['results'][0]['series']) {
-                        const dataset = [];
-                        for (const record of series['values']) {
-                            const rec = new Record(),
-                                val = record[1];
-                            rec.date = new Date(record[0]);
-                            rec.unit = chart.unit;
-                            rec.value = Math.round(val);
-                            if (val !== null) {
-                                dataset.push(rec);
-                            }
-                        }
-                        dataset.sort();
-                        dataSets.push(dataset);
-                    }
-                    this.chartData[chart.id] = dataSets;
-                    counter -= 1;
-                    if (counter === 0) {
-                        this.buildDataSets();
-                    }
-                }
-            }, err => {
-                this.chartData[chart.id] = [];
-                counter -= 1;
-                     if (counter === 0) {
-                        this.buildDataSets();
-                    }
-            });
-        }
-    }
-
-    buildDataSets() {
-        const tempdata = [];
-        for (const chart of this.charts) {
-            tempdata.push(this.chartData[chart.id]);
-        }
-        this.dataSets = tempdata;
     }
 
     chartEdited(chart) {

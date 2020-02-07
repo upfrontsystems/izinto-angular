@@ -8,12 +8,12 @@ import {Record} from '../../_models/record';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3TimeFormat from 'd3-time-format';
-import * as d3Time from 'd3-time';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
+import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 
 @Component({
     selector: 'app-chart',
@@ -25,10 +25,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Input() chart: Chart;
     @Input() startDate: Date;
     @Input() endDate: Date;
-    @Input() dataSets: any;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
-    @Input() dataSet;
+    private dataSet = [];
     private scales = [];
 
     private chartHeight = 200;
@@ -46,14 +45,34 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     constructor(protected dialog: MatDialog,
                 protected dataSourceService: DataSourceService,
-                protected chartService: ChartService) {
+                protected chartService: ChartService,
+                private mouseListener: MouseListenerDirective) {
         super();
+        // update marker line on all charts
+        mouseListener.move.subscribe(event => {
+            if (event.srcElement.matches('rect')) {
+                // calculate x coordinate within chart
+                const target = event.target as HTMLElement;
+                const bounds = target.getBoundingClientRect();
+                this.mousemove(event.clientX - bounds.left);
+            }
+        });
+        mouseListener.over.subscribe(event => {
+            if (event.srcElement.matches('rect')) {
+                this.mouseover();
+            }
+        });
+        mouseListener.out.subscribe(event => {
+            if (event.srcElement.matches('rect')) {
+                this.mouseout();
+            }
+        });
     }
 
     ngOnChanges(changes) {
         const dateRange = changes.dateRange;
         if (dateRange && dateRange.currentValue && !dateRange.firstChange) {
-            this.buildChart();
+            this.loadDataSet();
         }
     }
 
@@ -61,7 +80,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         // Initialise transition
         d3Trans.transition().duration(750);
         this.setChartWidth();
-        this.buildChart();
+        this.loadDataSet();
     }
 
     setChartWidth() {
@@ -162,8 +181,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .range([this.innerHeight, 0]);
     }
 
-    markerLine(svg, color, markerHeight = 160) {
-
+    markerLine(svg, color) {
         const focus = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'focus g-' + this.chart.id)
@@ -174,7 +192,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('stroke', 'darkgray')
             .attr('stroke-width', '2px')
             .attr('y1', 0)
-            .attr('y2', markerHeight);
+            .attr('y2', this.chartHeight);
 
         focus.append('text')
             .attr('class', 'hover-text')
@@ -182,66 +200,52 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y', 45)
             .attr('fill', color);
 
-        const _this = this;
         svg.append('rect')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'overlay')
             .attr('width', this.innerWidth)
-            .attr('height', markerHeight)
+            .attr('height', this.chartHeight)
             .attr('fill', 'none')
-            .attr('pointer-events', 'all')
-            .on('mouseover', () => {
-                this.mouseover();
-            })
-            .on('mouseout', () => {
-                this.mouseout();
-            })
-            .on('mousemove', function () {
-                _this.mousemove(this, markerHeight);
-            });
+            .attr('pointer-events', 'all');
     }
 
     mouseover() {
-        d3.selectAll('g.focus.g-' + this.chart.id).style('display', null);
+        d3.select('g.focus.g-' + this.chart.id).style('display', null);
     }
 
     mouseout() {
-        d3.selectAll('g.focus.g-' + this.chart.id).style('display', 'none');
+        d3.select('g.focus.g-' + this.chart.id).style('display', 'none');
     }
 
-    mousemove(container, markerHeight) {
+    mousemove(xcoord) {
         if (this.dataSet.length === 0) {
             return;
         }
         const bisectDate = d3Array.bisector(function (d: Record) {
             return d.date;
         }).right;
-        const xcoord = d3.mouse(container)[0],
-            dsets = this.dataSets,
+
+        const markerHeight = this.chartHeight,
+            singleSet = this.dataSet[0],
             newX = xcoord + this.margin.left,
             xscale = this.xAxisScale(),
-            xdate = xscale.invert(xcoord);
+            xdate = xscale.invert(xcoord),
+            j = bisectDate(singleSet, xdate),
+            record = singleSet[j - 1];
+        if (record === undefined) {
+            return;
+        }
 
-        d3.selectAll('g.focus').each(function (d: Record, i) {
-                const dset = dsets[i],
-                    j = bisectDate(dset, xdate),
-                    d0 = dset[j - 1];
-                if (d0 === undefined) {
-                    return;
-                }
-                d3.select(this)
-                    .attr('transform', 'translate(' + newX + ',' + 0 + ')')
-                    .style('display', null)
-                    .select('text').text(function (): any {
-                    if (d0.text) {
-                        return d0.text;
-                    } else {
-                        return d0.value + ' ' + d0.unit;
-                    }
-                })
-                    .select('.x-hover-line').attr('y2', markerHeight);
+        d3.select('g.focus.g-' + this.chart.id)
+            .attr('transform', 'translate(' + newX + ',' + 0 + ')')
+            .style('display', null)
+            .select('text').text(function (): any {
+            if (record.text) {
+                return record.text;
+            } else {
+                return record.value + ' ' + record.unit;
             }
-        );
+        }).select('.x-hover-line').attr('y2', markerHeight);
     }
 
     xAxisInterval(width) {
@@ -368,7 +372,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 });
 
         });
-        this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color, this.chartHeight);
+        this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
     }
 
     lineChart(dataSet) {
@@ -459,7 +463,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .remove());
 
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color, this.chartHeight);
+            this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
         }
 
     }

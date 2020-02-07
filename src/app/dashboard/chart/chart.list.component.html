@@ -1,12 +1,12 @@
 <div cdkDropList (cdkDropListDropped)="reorderChart($event)">
-    <ng-container *ngFor="let dataSet of dataSets; let ix = index">
-        <div fxLayout="row" class="chart-row" cdkDrag [cdkDragData]="charts[ix]"
+    <ng-container *ngFor="let chart of charts">
+        <div fxLayout="row" class="chart-row" cdkDrag [cdkDragData]="chart"
              cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
             <button mat-button class="drag-handle" cdkDragHandle title="Reposition chart">
                 <mat-icon>swap_vert</mat-icon>
             </button>
-            <app-chart [chart]="charts[ix]" [view]="view" [dateRange]="dateRange" [startDate]="startDate" [endDate]="endDate"
-                       [variables]="variables" [dataSets]="dataSets" [dataSet]="dataSet"
+            <app-chart [chart]="chart" [view]="view" [dateRange]="dateRange" [startDate]="startDate" [endDate]="endDate"
+                       [variables]="variables"
                        [dataSources]="dataSources" (edited)="chartEdited($event)"
                        (deleted)="chartDeleted($event)"></app-chart>
         </div>
