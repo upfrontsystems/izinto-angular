@@ -25,9 +25,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Input() chart: Chart;
     @Input() startDate: Date;
     @Input() endDate: Date;
+    @Input() dataSets: any;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
-    private dataSet = [];
+    @Input() dataSet;
     private scales = [];
 
     private chartHeight = 200;
@@ -52,7 +53,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     ngOnChanges(changes) {
         const dateRange = changes.dateRange;
         if (dateRange && dateRange.currentValue && !dateRange.firstChange) {
-            this.loadDataSet();
+            this.buildChart();
         }
     }
 
@@ -60,7 +61,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         // Initialise transition
         d3Trans.transition().duration(750);
         this.setChartWidth();
-        this.loadDataSet();
+        this.buildChart();
     }
 
     setChartWidth() {
@@ -216,12 +217,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             return d.date;
         }).right;
         const xcoord = d3.mouse(container)[0],
-            dsets = this.dataSet,
+            dsets = this.dataSets,
             newX = xcoord + this.margin.left,
             xscale = this.xAxisScale(),
             xdate = xscale.invert(xcoord);
 
-        d3.selectAll('g.focus.g-' + this.chart.id).each(function (d: Record, i) {
+        d3.selectAll('g.focus').each(function (d: Record, i) {
                 const dset = dsets[i],
                     j = bisectDate(dset, xdate),
                     d0 = dset[j - 1];
@@ -291,7 +292,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const create = svg.empty();
         if (create) {
             d3.selectAll('div.chart-' + this.chart.id).remove();
-            d3.select('div.d3-chart.chart' + this.chart.id)
+            d3.select('div.d3-chart.chart-container-' + this.chart.id)
                 .append('div').attr('class', 'svg-container chart-' + this.chart.id);
 
             svg = d3.select('div.chart-' + this.chart.id)
@@ -394,7 +395,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const create = svg.empty(),
             trans: any = 1000;
         if (create) {
-            d3.select('div.d3-chart.chart' + this.chart.id)
+            d3.select('div.d3-chart.chart-container-' + this.chart.id)
                 .append('div').attr('class', 'svg-container chart-' + this.chart.id);
 
             svg = d3.select('div.chart-' + this.chart.id)
