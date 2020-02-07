@@ -48,6 +48,16 @@ export class SingleStatDialogComponent implements OnInit {
     onFormChanges(): void {
     }
 
+    updateColors(event) {
+        let value = this.form.controls.colors.value;
+        if (value) {
+            value += (', ' + event.color.hex);
+        } else {
+            value = event.color.hex;
+        }
+        this.form.controls.colors.setValue(value);
+    }
+
     formValid() {
         return this.form.valid;
     }

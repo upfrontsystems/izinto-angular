@@ -17,14 +17,16 @@
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 50%">
-                    <input matInput placeholder="Color" [formControl]="form.get('color')" name="color"
-                           autocomplete="off">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Colours" [formControl]="form.get('color')" autocomplete="off"
+                           spellcheck="false">
+                    <span matSuffix [matMenuTriggerFor]="colorPicker" aria-label="color-picker" class="picker-button">
+                        <mat-icon>color_lens</mat-icon>
+                    </span>
                 </mat-form-field>
-                <div style="width: 50%;" class="pull-right">
-                    <color-compact class="pull-right" [color]="form.get('color')"
-                                   (onChangeComplete)="updateColor($event)"></color-compact>
-                </div>
+                <mat-menu #colorPicker="matMenu" xPosition="before" class="color-picker-container">
+                    <color-compact (onChangeComplete)="updateColors($event)"></color-compact>
+                </mat-menu>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
@@ -74,5 +76,6 @@
     <span fxFlex></span>
     <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
     <button class="pull-right" mat-button [disabled]="!formValid()" (click)="submit()"
-            color="primary" cdkFocusInitial>Submit</button>
+            color="primary" cdkFocusInitial>Submit
+    </button>
 </div>

@@ -26,3 +26,7 @@
 a.link-title {
     color: inherit !important;
 }
+
+.color-compact div.raised-bg {
+    box-shadow: none !important;
+}

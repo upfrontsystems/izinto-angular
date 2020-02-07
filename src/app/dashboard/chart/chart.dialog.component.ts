@@ -8,7 +8,7 @@ import {ChartService} from '../../_services/chart.service';
 @Component({
     selector: 'app-chart-dialog',
     templateUrl: './chart.dialog.component.html',
-  styleUrls: ['./../dashboard.component.scss']
+    styleUrls: ['./../dashboard.component.scss']
 })
 export class ChartDialogComponent implements OnInit {
 
@@ -52,8 +52,14 @@ export class ChartDialogComponent implements OnInit {
     onFormChanges(): void {
     }
 
-    updateColor(event) {
-        this.form.controls.color.setValue(event.color.hex);
+    updateColors(event) {
+        let value = this.form.controls.color.value;
+        if (value) {
+            value += (', ' + event.color.hex);
+        } else {
+            value = event.color.hex;
+        }
+        this.form.controls.color.setValue(value);
     }
 
     formValid() {
