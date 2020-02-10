@@ -27,7 +27,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Input() endDate: Date;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
-    private dataSet = [];
+    private dataSets = [];
     private scales = [];
 
     private chartHeight = 200;
@@ -111,7 +111,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     loadDataSet() {
-        this.dataSet.length = 0;
+        this.dataSets.length = 0;
         this.scales = [];
         d3.selectAll('div.svg-container').remove();
         let query = this.chart.query;
@@ -132,7 +132,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         }
                     }
                     dataset.sort();
-                    this.dataSet.push(dataset);
+                    this.dataSets.push(dataset);
                 }
             }
             this.buildChart();
@@ -143,13 +143,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     buildChart() {
         if (this.chart.type === 'Line') {
-            this.lineChart(this.dataSet);
+            this.lineChart(this.dataSets);
         } else if (this.chart.type === 'Bar') {
-            this.barChart(this.dataSet);
+            this.barChart(this.dataSets);
         } else if (this.chart.type === 'Wind Arrow') {
-            this.windArrows(this.dataSet);
+            this.windArrows(this.dataSets);
         } else {
-            this.barChart(this.dataSet);
+            this.barChart(this.dataSets);
         }
     }
 
@@ -181,7 +181,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .range([this.innerHeight, 0]);
     }
 
-    markerLine(svg, color) {
+    markerLine(svg) {
         const focus = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'focus g-' + this.chart.id)
@@ -194,11 +194,27 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y1', 0)
             .attr('y2', this.chartHeight);
 
+        // add text label for each dataset
+        const colors = this.chart.color.split(',');
+        let yOffset = 27;
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            yOffset += 18;
+            focus.append('text')
+                .attr('class', 'hover-text dataset-' + dix)
+                .attr('x', 5)
+                .attr('y', yOffset)
+                .attr('fill', colors[dix]);
+        }
+
+        // add date label
         focus.append('text')
-            .attr('class', 'hover-text')
+            .style('font-size', '12px')
+            .style('font-style', 'italic')
+            .style('word-spacing', '5px')
+            .attr('class', 'hover-text dataset-date')
             .attr('x', 5)
-            .attr('y', 45)
-            .attr('fill', color);
+            .attr('y', yOffset + 15)
+            .attr('fill', 'grey');
 
         svg.append('rect')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
@@ -218,7 +234,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     mousemove(xcoord) {
-        if (this.dataSet.length === 0) {
+        if (this.dataSets.length === 0) {
             return;
         }
         const bisectDate = d3Array.bisector(function (d: Record) {
@@ -226,26 +242,37 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }).right;
 
         const markerHeight = this.chartHeight,
-            singleSet = this.dataSet[0],
             newX = xcoord + this.margin.left,
             xscale = this.xAxisScale(),
-            xdate = xscale.invert(xcoord),
-            j = bisectDate(singleSet, xdate),
-            record = singleSet[j - 1];
-        if (record === undefined) {
-            return;
-        }
+            xdate = xscale.invert(xcoord);
 
-        d3.select('g.focus.g-' + this.chart.id)
-            .attr('transform', 'translate(' + newX + ',' + 0 + ')')
-            .style('display', null)
-            .select('text').text(function (): any {
-            if (record.text) {
-                return record.text;
-            } else {
-                return record.value + ' ' + record.unit;
+        // update marker label for each dataset
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            const rix = bisectDate(this.dataSets[dix], xdate);
+            const record = this.dataSets[dix][rix];
+            if (record === undefined) {
+                return;
             }
-        }).select('.x-hover-line').attr('y2', markerHeight);
+
+            d3.select('g.focus.g-' + this.chart.id)
+                .attr('transform', 'translate(' + newX + ',' + 0 + ')')
+                .style('display', null)
+                .select('text.dataset-' + dix).text(function (): any {
+                    if (record.text) {
+                        return record.text;
+                    } else {
+                        return record.value + ' ' + record.unit;
+                    }
+            }).select('.x-hover-line').attr('y2', markerHeight);
+
+            // add date label at end
+            if (record.date) {
+                d3.select('g.focus.g-' + this.chart.id)
+                    .select('text.dataset-date').text(function (): any {
+                    return record.date.toLocaleString('en-ZA', {dateStyle: 'medium', timeStyle: 'short'});
+                });
+            }
+        }
     }
 
     xAxisInterval(width) {
@@ -373,7 +400,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         });
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
+            this.markerLine(d3.select('svg.chart-' + this.chart.id));
         }
     }
 
@@ -465,7 +492,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .remove());
 
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.chart-' + this.chart.id), this.chart.color);
+            this.markerLine(d3.select('svg.chart-' + this.chart.id));
         }
 
     }
