@@ -126,7 +126,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             val = record[1];
                         rec.date = new Date(record[0]);
                         rec.unit = this.chart.unit;
-                        rec.value = Math.round(val);
+                        rec.value = val;
                         if (val !== null) {
                             dataset.push(rec);
                         }
@@ -243,7 +243,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const markerHeight = this.chartHeight,
             newX = xcoord + this.margin.left,
             xscale = this.xAxisScale(),
-            xdate = xscale.invert(xcoord);
+            xdate = xscale.invert(xcoord),
+            decimals = this.chart.decimals;
 
         // update marker label for each dataset
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
@@ -260,7 +261,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     if (record.text) {
                         return record.text;
                     } else {
-                        return record.value + ' ' + record.unit;
+                        return record.value.toFixed(decimals) + ' ' + record.unit;
                     }
             }).select('.x-hover-line').attr('y2', markerHeight);
 

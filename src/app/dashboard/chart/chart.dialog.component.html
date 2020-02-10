@@ -31,6 +31,13 @@
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
+                    <input matInput type="number" placeholder="Decimals" min="0" [formControl]="form.get('decimals')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
                     <mat-label>Group By</mat-label>
                     <mat-select [formControl]="form.get('group_by')">
                         <mat-option *ngFor="let group of groupBy" [value]="group">

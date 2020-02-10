@@ -11,6 +11,7 @@ export class Chart {
     index: number;
     unit: string;
     color: string;
+    decimals: number;
     type: ChartType;
     group_by: string;
     query: string;

@@ -39,6 +39,7 @@ export class ChartDialogComponent implements OnInit {
             index: this.chart.index,
             unit: this.chart.unit,
             color: this.chart.color,
+            decimals: (this.chart.decimals || 2),
             type: this.chart.type,
             group_by: this.chart.group_by,
             query: this.chart.query,
