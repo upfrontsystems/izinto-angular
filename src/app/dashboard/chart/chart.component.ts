@@ -209,7 +209,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         // add date label
         focus.append('text')
             .style('font-size', '12px')
-            .style('font-style', 'italic')
             .style('word-spacing', '5px')
             .attr('class', 'hover-text dataset-date')
             .attr('x', 5)
