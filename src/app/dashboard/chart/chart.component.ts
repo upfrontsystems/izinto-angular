@@ -251,7 +251,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         // update marker label for each dataset
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            const rix = bisectDate(this.dataSets[dix], xdate);
+            const rix = bisectDate(this.dataSets[dix], xdate) - 1;
+
             const record = this.dataSets[dix][rix];
             if (record === undefined) {
                 return;
