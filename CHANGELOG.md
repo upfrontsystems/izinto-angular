@@ -20,4 +20,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#27](https://github.com/upfrontsystems/izinto-angular/issues/27) resize charts without reloading data
 * [#36](https://github.com/upfrontsystems/izinto-angular/issues/36) handle multiple dataset labels
 * [#35](https://github.com/upfrontsystems/izinto-angular/issues/35) add decimals for rounding chart labels
-
+* [#38](https://github.com/upfrontsystems/izinto-angular/issues/38) add group by dropdown

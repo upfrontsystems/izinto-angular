@@ -34,6 +34,8 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             this.loadDataSets();
         } else if (changes.dateRange && changes.dateRange.currentValue) {
             this.loadDataSets();
+        } else if (changes.groupBy && changes.groupBy.currentValue && !changes.groupBy.firstChange) {
+            this.loadDataSets();
         }
     }
 

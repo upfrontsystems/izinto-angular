@@ -11,7 +11,8 @@ export class QueryBaseComponent {
     @Input() variables: Variable[];
     @Input() dataSources: DataSource[];
     @Input() dateRange: string;
-    group_by = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
+    @Input() groupBy: string;
+    autoGroupBy = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
 
     constructor() {
     }
@@ -21,8 +22,13 @@ export class QueryBaseComponent {
             return '';
         }
 
+        let groupByValue = this.groupBy;
+        if (this.groupBy === 'auto') {
+            groupByValue = this.autoGroupBy[this.view];
+        }
+
         query = query.replace(/:range:/g, this.dateRange);
-        query = query.replace(/:group_by:/g, this.group_by[this.view]);
+        query = query.replace(/:group_by:/g, groupByValue);
 
         for (const variable of this.variables) {
             const re = new RegExp(variable.name, 'g');

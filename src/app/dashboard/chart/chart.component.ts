@@ -71,7 +71,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     ngOnChanges(changes) {
         const dateRange = changes.dateRange;
+        const groupBy = changes.groupBy;
         if (dateRange && dateRange.currentValue && !dateRange.firstChange) {
+            this.loadDataSet();
+        } else if (groupBy && groupBy.currentValue && !groupBy.firstChange) {
             this.loadDataSet();
         }
     }

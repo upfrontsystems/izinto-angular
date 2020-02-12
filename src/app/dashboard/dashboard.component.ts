@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
-import {Dashboard} from '../_models/dashboard';
+import {Dashboard, GroupBy} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
@@ -41,6 +41,8 @@ export class DashboardComponent implements OnInit {
         'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y',
         'mobile': {'hour': 'd MMMM h:mm a', 'day': 'dd/MM/yy', 'week': 'dd/MM/yy', 'month': 'dd/MM/yy'}
     };
+    groupByOptions = GroupBy;
+    groupBy = 'auto';
     // query date range from start to end
     dateRange = 'time > now() - 30d';
     dateRangeCounter = 1;

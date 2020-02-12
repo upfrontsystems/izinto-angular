@@ -13,10 +13,13 @@
             <mat-toolbar class="no-shadow">
                 <mat-toolbar-row>
                     <div fxShow="false" fxShow.gt-xs>
-                        <button mat-button (click)="updateView('hour')" [class.active]="dateView == 'hour'">Hour</button>
+                        <button mat-button (click)="updateView('hour')" [class.active]="dateView == 'hour'">Hour
+                        </button>
                         <button mat-button (click)="updateView('day')" [class.active]="dateView == 'day'">Day</button>
-                        <button mat-button (click)="updateView('week')" [class.active]="dateView == 'week'">Week</button>
-                        <button mat-button (click)="updateView('month')" [class.active]="dateView == 'month'">Month</button>
+                        <button mat-button (click)="updateView('week')" [class.active]="dateView == 'week'">Week
+                        </button>
+                        <button mat-button (click)="updateView('month')" [class.active]="dateView == 'month'">Month
+                        </button>
                     </div>
                     <div fxHide="false" fxHide.gt-xs>
                         <button mat-icon-button (click)="dateView = 'month'" [class.active]="dateView === 'month'">
@@ -29,17 +32,27 @@
                             <mat-icon>view_day</mat-icon>
                         </button>
                     </div>
-                    <div fxFlex class="date-navigator">
+                    <div fxFlex="30" class="date-navigator font-18">
                         <button mat-icon-button (click)="updateDateCounter(1)" class="m-t-15">
                             <mat-icon>keyboard_arrow_left</mat-icon>
                         </button>
-                        <div fxFlex="30">
-                            <ngx-mat-drp (selectedDateRangeChanged)="updateRange($event)" [options]="options" #dateRangePicker></ngx-mat-drp>
+                        <div fxFlex>
+                            <ngx-mat-drp (selectedDateRangeChanged)="updateRange($event)" [options]="options"
+                                         #dateRangePicker></ngx-mat-drp>
                         </div>
                         <button mat-icon-button (click)="updateDateCounter(-1)" class="m-t-15">
                             <mat-icon>keyboard_arrow_right</mat-icon>
                         </button>
-                   </div>
+                    </div>
+
+                    <div fxFlex="10" class="font-16 p-l-20">
+                        <mat-label class="p-r-10">Group by:</mat-label>
+                        <mat-select [(ngModel)]="groupBy">
+                            <mat-option *ngFor="let group of groupByOptions" [value]="group">
+                                {{group}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
 
                     <span fxFlex fxHide="false" fxHide.gt-xs></span>
                 </mat-toolbar-row>
@@ -48,14 +61,15 @@
             <mat-card-content>
 
                 <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat" [view]="dateView"
-                                      [dateRange]="dateRange" [variables]="dashboard.variables"
+                                      [dateRange]="dateRange" [groupBy]="groupBy" [variables]="dashboard.variables"
                                       [dataSources]="dataSources"></app-single-stat-list>
             </mat-card-content>
 
             <mat-card-content>
 
                 <app-chart-list appMouseListener [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
-                                [dateRange]="dateRange" [startDate]="dateSelect" [endDate]="endDate" [variables]="dashboard.variables"
+                                [dateRange]="dateRange" [groupBy]="groupBy" [startDate]="dateSelect" [endDate]="endDate"
+                                [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
             </mat-card-content>
 

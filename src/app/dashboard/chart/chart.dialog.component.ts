@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Chart, ChartGroupBy, ChartTypes} from '../../_models/chart';
+import {Chart, ChartTypes} from '../../_models/chart';
 import {DataSource} from '../../_models/data.source';
 import {ChartService} from '../../_services/chart.service';
 
@@ -15,7 +15,6 @@ export class ChartDialogComponent implements OnInit {
     public form: FormGroup;
     chart: Chart;
     chartTypes = ChartTypes;
-    groupBy = ChartGroupBy;
     dataSources: DataSource[];
     state: string;
 
@@ -41,7 +40,6 @@ export class ChartDialogComponent implements OnInit {
             color: this.chart.color,
             decimals: (this.chart.decimals || 2),
             type: this.chart.type,
-            group_by: this.chart.group_by,
             query: this.chart.query,
             data_source_id: new FormControl(this.chart.data_source_id, [Validators.required])
         };
