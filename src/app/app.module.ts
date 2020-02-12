@@ -1,5 +1,7 @@
 import * as $ from 'jquery';
 import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { ColorCompactModule } from 'ngx-color/compact';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
@@ -10,8 +12,7 @@ import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { ColorCompactModule } from 'ngx-color/compact';
+import { NgxMatDrpModule } from 'ngx-mat-daterange-picker';
 
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
@@ -99,16 +100,17 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         BrowserModule,
         BrowserAnimationsModule,
         ColorCompactModule,
-        MaterialModule,
-        FormsModule,
         FlexLayoutModule,
+        FormsModule,
         GraphQLModule,
         HttpClientModule,
-        PerfectScrollbarModule,
+        MaterialModule,
+        NgMultiSelectDropDownModule.forRoot(),
         NgxMatSelectSearchModule,
+        NgxMatDrpModule,
+        PerfectScrollbarModule,
         ReactiveFormsModule,
         SharedModule,
-        NgMultiSelectDropDownModule.forRoot(),
     ],
     entryComponents: [
         ChartDialogComponent,

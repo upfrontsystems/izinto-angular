@@ -30,15 +30,17 @@
                         </button>
                     </div>
                     <div fxFlex class="date-navigator">
-                        <button mat-icon-button (click)="updateDateCounter(1)">
+                        <button mat-icon-button (click)="updateDateCounter(1)" class="m-t-15">
                             <mat-icon>keyboard_arrow_left</mat-icon>
                         </button>
-                        <span class="date-text">{{dateSelect | date : getDateFormat()}} - </span>
-                        <span class="date-text"> {{endDate | date : getDateFormat()}}</span>
-                        <button mat-icon-button (click)="updateDateCounter(-1)">
+                        <div fxFlex="30">
+                            <ngx-mat-drp (selectedDateRangeChanged)="updateRange($event)" [options]="options" #dateRangePicker></ngx-mat-drp>
+                        </div>
+                        <button mat-icon-button (click)="updateDateCounter(-1)" class="m-t-15">
                             <mat-icon>keyboard_arrow_right</mat-icon>
                         </button>
-                    </div>
+                   </div>
+
                     <span fxFlex fxHide="false" fxHide.gt-xs></span>
                 </mat-toolbar-row>
             </mat-toolbar>
