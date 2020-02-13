@@ -1,9 +1,11 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Chart, ChartTypes} from '../../_models/chart';
 import {DataSource} from '../../_models/data.source';
 import {ChartService} from '../../_services/chart.service';
+import {DashboardView} from '../../_models/dashboard_view';
+import {GroupBy} from '../../_models/dashboard';
 
 @Component({
     selector: 'app-chart-dialog',
@@ -13,9 +15,12 @@ import {ChartService} from '../../_services/chart.service';
 export class ChartDialogComponent implements OnInit {
 
     public form: FormGroup;
+    groupByRows: FormArray = this.fb.array([]);
     chart: Chart;
     chartTypes = ChartTypes;
     dataSources: DataSource[];
+    dateViews: DashboardView[];
+    groupByOptions = GroupBy;
     state: string;
 
     constructor(
@@ -29,6 +34,7 @@ export class ChartDialogComponent implements OnInit {
     ngOnInit() {
         this.chart = this.data.chart;
         this.dataSources = this.data.dataSources;
+        this.dateViews = this.data.dateViews;
         this.state = this.chart.id ? 'Edit' : 'Add';
 
         const formData = {
@@ -41,14 +47,34 @@ export class ChartDialogComponent implements OnInit {
             decimals: (this.chart.decimals || 2),
             type: this.chart.type,
             query: this.chart.query,
-            data_source_id: new FormControl(this.chart.data_source_id, [Validators.required])
+            data_source_id: new FormControl(this.chart.data_source_id, [Validators.required]),
+            group_by: this.groupByRows
         };
         this.form = this.fb.group(formData);
 
         this.onFormChanges();
+        this.addDateViews();
     }
 
     onFormChanges(): void {
+    }
+
+    private addDateViews() {
+        this.dateViews.forEach(view => {
+            let value = 'auto';
+            for (const group of this.chart.group_by) {
+                if (group.dashboard_view_id === view.id) {
+                    value = group.value;
+                    break;
+                }
+            }
+            const row = this.fb.group({
+                chart_id: this.chart.id,
+                dashboard_view_id: view.id,
+                value: value
+            });
+            this.groupByRows.push(row);
+        });
     }
 
     updateColors(event) {

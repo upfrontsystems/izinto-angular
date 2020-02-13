@@ -34,8 +34,6 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             this.loadDataSets();
         } else if (changes.dateRange && changes.dateRange.currentValue) {
             this.loadDataSets();
-        } else if (changes.groupBy && changes.groupBy.currentValue && !changes.groupBy.firstChange) {
-            this.loadDataSets();
         }
     }
 
@@ -94,7 +92,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
         for (const singleStat of this.singleStats) {
             this.dataSets[singleStat.id] = new Record();
             let query = singleStat.query;
-            query = this.formatQuery(query, singleStat.data_source);
+            query = this.formatQuery(query, [], singleStat.data_source);
 
             this.dataSourceService.loadDataQuery(singleStat.data_source_id, query).subscribe(resp => {
                 const rec = new Record();

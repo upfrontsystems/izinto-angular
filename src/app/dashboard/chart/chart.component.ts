@@ -96,7 +96,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     editChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: this.chart, dataSources: this.dataSources},
+            data: {chart: this.chart, dataSources: this.dataSources, dateViews: this.dateViews},
             disableClose: true
         });
 
@@ -118,7 +118,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.scales = [];
         d3.selectAll('div.svg-container').remove();
         let query = this.chart.query;
-        query = this.formatQuery(query, this.chart.data_source);
+        query = this.formatQuery(query, this.chart.group_by, this.chart.data_source);
 
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
@@ -280,13 +280,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     xAxisInterval(width) {
         const interval = width / 50;
 
-        if (this.view === 'hour') {
+        if (this.view === 'Hour') {
             return interval;
-        } else if (this.view === 'day') {
+        } else if (this.view === 'Day') {
             return interval > 24 && 24 || interval;
-        } else if (this.view === 'week') {
+        } else if (this.view === 'Week') {
             return interval > 7 && 7 || interval;
-        } else if (this.view === 'month') {
+        } else if (this.view === 'Month') {
             return interval > 30 && 30 || interval;
         }
         return interval;
@@ -294,7 +294,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     tickFormat() {
         let fmt = '%d %b';
-        if (this.view === 'hour' || this.view === 'day') {
+        if (this.view === 'Hour' || this.view === 'Day') {
             fmt = '%H:%M';
         }
         return d3TimeFormat.timeFormat(fmt);

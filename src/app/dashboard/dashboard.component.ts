@@ -14,6 +14,7 @@ import {ChartService} from '../_services/chart.service';
 import {SingleStatService} from '../_services/single.stat.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {NgxDrpOptions, PresetItem, Range} from 'ngx-mat-daterange-picker';
+import {DashboardView} from '../_models/dashboard_view';
 
 @Component({
     selector: 'app-dashboard',
@@ -30,18 +31,18 @@ export class DashboardComponent implements OnInit {
     dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
-    dateView = 'month';
+    dateViews: DashboardView[] = [];
+    dateView = 'Month';
     private range = {
-        'hour': {'count': 1, 'unit': 'h'},
-        'day': {'count': 1, 'unit': 'd'},
-        'week': {'count': 7, 'unit': 'd'},
-        'month': {'count': 30, 'unit': 'd'}
+        'Hour': {'count': 1, 'unit': 'h'},
+        'Day': {'count': 1, 'unit': 'd'},
+        'Week': {'count': 7, 'unit': 'd'},
+        'Month': {'count': 30, 'unit': 'd'}
     };
     dateFormat = {
         'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y',
         'mobile': {'hour': 'd MMMM h:mm a', 'day': 'dd/MM/yy', 'week': 'dd/MM/yy', 'month': 'dd/MM/yy'}
     };
-    groupByOptions = GroupBy;
     groupBy = 'auto';
     // query date range from start to end
     dateRange = 'time > now() - 30d';
@@ -81,6 +82,7 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
 
+        this.getDashboardViews();
         this.getDataSources();
 
         this.route.paramMap.subscribe(params => {
@@ -104,6 +106,12 @@ export class DashboardComponent implements OnInit {
             toMinMax: {fromDate: null, toDate: new Date()},
             placeholder: '\t'
         };
+    }
+
+    getDashboardViews() {
+        this.dashboardService.listDashboardViews().subscribe(resp => {
+            this.dateViews = resp;
+        });
     }
 
     // handler function that receives the updated date range object
@@ -174,7 +182,7 @@ export class DashboardComponent implements OnInit {
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: {dashboard_id: this.dashboardId}, dataSources: this.dataSources},
+            data: {chart: {dashboard_id: this.dashboardId, group_by: []}, dataSources: this.dataSources, dateViews: this.dateViews},
             disableClose: true
         });
 

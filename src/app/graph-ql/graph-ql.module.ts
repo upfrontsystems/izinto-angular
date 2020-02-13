@@ -24,7 +24,6 @@ export class GraphQLModule {
     // .set('X-Hasura-Role', 'user')
     // .set('X-Hasura-User-Id', stringify(localStorage.getItem('user_id')));
 
-    console.log(localStorage.getItem('user_id'));
     const http = httpLink.create({ uri, headers: authHeader });
 
     apollo.create({

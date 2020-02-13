@@ -13,25 +13,17 @@
             <mat-toolbar class="no-shadow">
                 <mat-toolbar-row>
                     <div fxShow="false" fxShow.gt-xs>
-                        <button mat-button (click)="updateView('hour')" [class.active]="dateView == 'hour'">Hour
-                        </button>
-                        <button mat-button (click)="updateView('day')" [class.active]="dateView == 'day'">Day</button>
-                        <button mat-button (click)="updateView('week')" [class.active]="dateView == 'week'">Week
-                        </button>
-                        <button mat-button (click)="updateView('month')" [class.active]="dateView == 'month'">Month
+                        <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
+                                [class.active]="dateView == view.name">{{view.name}}
                         </button>
                     </div>
                     <div fxHide="false" fxHide.gt-xs>
-                        <button mat-icon-button (click)="dateView = 'month'" [class.active]="dateView === 'month'">
-                            <mat-icon>view_module</mat-icon>
-                        </button>
-                        <button mat-icon-button (click)="dateView = 'week'" [class.active]="dateView === 'week'">
-                            <mat-icon>view_week</mat-icon>
-                        </button>
-                        <button mat-icon-button (click)="dateView = 'day'" [class.active]="dateView === 'day'">
-                            <mat-icon>view_day</mat-icon>
+                        <button *ngFor="let view of dateViews" mat-icon-button (click)="updateView(view.name)"
+                                [class.active]="dateView === view.name">
+                            <mat-icon>{{view.icon}}</mat-icon>
                         </button>
                     </div>
+
                     <div fxFlex="30" class="date-navigator font-18">
                         <button mat-icon-button (click)="updateDateCounter(1)" class="m-t-15">
                             <mat-icon>keyboard_arrow_left</mat-icon>
@@ -44,16 +36,6 @@
                             <mat-icon>keyboard_arrow_right</mat-icon>
                         </button>
                     </div>
-
-                    <div fxFlex="10" class="font-16 p-l-20">
-                        <mat-label class="p-r-10">Group by:</mat-label>
-                        <mat-select [(ngModel)]="groupBy">
-                            <mat-option *ngFor="let group of groupByOptions" [value]="group">
-                                {{group}}
-                            </mat-option>
-                        </mat-select>
-                    </div>
-
                     <span fxFlex fxHide="false" fxHide.gt-xs></span>
                 </mat-toolbar-row>
             </mat-toolbar>
@@ -61,14 +43,14 @@
             <mat-card-content>
 
                 <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat" [view]="dateView"
-                                      [dateRange]="dateRange" [groupBy]="groupBy" [variables]="dashboard.variables"
+                                      [dateRange]="dateRange" [variables]="dashboard.variables"
                                       [dataSources]="dataSources"></app-single-stat-list>
             </mat-card-content>
 
             <mat-card-content>
 
                 <app-chart-list appMouseListener [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
-                                [dateRange]="dateRange" [groupBy]="groupBy" [startDate]="dateSelect" [endDate]="endDate"
+                                [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="dateSelect" [endDate]="endDate"
                                 [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
             </mat-card-content>

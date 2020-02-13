@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Dashboard} from '../_models/dashboard';
+import {DashboardView} from '../_models/dashboard_view';
 
 
 @Injectable({
@@ -45,6 +46,10 @@ export class DashboardService {
 
     reorderDashboard(dashboard) {
         return this.http.put('/api/dashboard/' + dashboard.id + '/reorder', dashboard);
+    }
+
+    listDashboardViews() {
+        return this.http.get<DashboardView[]>('/api/dashboard_views');
     }
 
     clearCopied() {

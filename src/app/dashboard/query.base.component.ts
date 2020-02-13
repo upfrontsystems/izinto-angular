@@ -1,6 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {Variable} from '../_models/variable';
 import {DataSource} from '../_models/data.source';
+import {DashboardView} from '../_models/dashboard_view';
 
 @Component({
     selector: 'app-query-base',
@@ -11,19 +12,25 @@ export class QueryBaseComponent {
     @Input() variables: Variable[];
     @Input() dataSources: DataSource[];
     @Input() dateRange: string;
-    @Input() groupBy: string;
-    autoGroupBy = {'hour': '10m', 'day': '1h', 'week': '1d', 'month': '1d'};
+    @Input() dateViews: DashboardView[];
+    autoGroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d'};
 
     constructor() {
     }
 
-    formatQuery(query, dataSource: DataSource) {
+    formatQuery(query, chartGroupBy, dataSource: DataSource) {
         if (!query) {
             return '';
         }
 
-        let groupByValue = this.groupBy;
-        if (this.groupBy === 'auto') {
+        let groupByValue = '1d';
+        for (const group of chartGroupBy) {
+            if (group.dashboard_view.name === this.view) {
+                groupByValue = group.value;
+            }
+        }
+
+        if (groupByValue === 'auto') {
             groupByValue = this.autoGroupBy[this.view];
         }
 

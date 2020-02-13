@@ -1,9 +1,6 @@
 import {Component, ElementRef, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
 import {Chart} from '../../_models/chart';
-import {MatDialog} from '@angular/material';
 import {ChartService} from '../../_services/chart.service';
-import {Variable} from '../../_models/variable';
-import {DataSource} from '../../_models/data.source';
 import {QueryBaseComponent} from '../query.base.component';
 
 @Component({
@@ -17,19 +14,13 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @ViewChild('deleteConfirm') private deleteConfirm: any;
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
-    @Input() variables: Variable[];
-    @Input() dataSources: DataSource[];
-    @Input() view: string;
-    @Input() dateRange: string;
     @Input() startDate: Date;
     @Input() endDate: Date;
     charts: Chart[] = [];
 
-    constructor(protected dialog: MatDialog,
-                protected chartService: ChartService) {
+    constructor(protected chartService: ChartService) {
         super();
     }
-
 
     ngOnChanges(changes) {
         if (changes.addedChart && changes.addedChart.currentValue) {

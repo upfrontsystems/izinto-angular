@@ -65,6 +65,26 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+
+            <div fxFlex="100">
+                Group By Intervals
+            </div>
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" class="category-table">
+                <div fxLayout="row wrap">
+                    <div *ngFor="let group of form.get('group_by')['controls']; let i = index"
+                         fxFlex="100" formArrayName="group_by">
+                        <mat-form-field [formGroupName]="i">
+                            <mat-label>{{dateViews[i].name}}</mat-label>
+                            <mat-select formControlName="value">
+                                <mat-option *ngFor="let option of groupByOptions" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </form>
 </div>
