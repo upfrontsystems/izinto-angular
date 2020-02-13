@@ -270,12 +270,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             }).select('.x-hover-line').attr('y2', markerHeight);
 
             // add date label at end
-            if (record.date) {
-                d3.select('g.focus.g-' + this.chart.id)
-                    .select('text.dataset-date').text(function (): any {
-                    return record.date.toLocaleString('en-ZA', {dateStyle: 'medium', timeStyle: 'short'});
-                });
-            }
+            d3.select('g.focus.g-' + this.chart.id)
+                .select('text.dataset-date').text(function (): any {
+                return (xdate as any).toLocaleString('en-ZA', {dateStyle: 'medium', timeStyle: 'short'});
+            });
         }
     }
 
