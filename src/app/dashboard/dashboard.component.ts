@@ -112,7 +112,16 @@ export class DashboardComponent implements OnInit {
         this.dateSelect = range.fromDate;
         this.endDate = range.toDate;
 
-        // TODO update range query
+        // calculate hour or day difference from picked range
+        const unit = this.range[this.dateView].unit;
+        const today = new Date();
+        let startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / 360000) + unit;
+        let endRange = Math.round((today.getTime() - this.endDate.getTime()) / 360000) + unit;
+        if (unit === 'd') {
+            startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / (1000 * 3600 * 24)) + unit;
+            endRange = Math.round((today.getTime() - this.endDate.getTime()) / (1000 * 3600 * 24)) + unit;
+        }
+        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
     }
 
     // helper function to create initial presets
@@ -217,10 +226,11 @@ export class DashboardComponent implements OnInit {
         const startCount = this.dateRangeCounter * this.range[this.dateView].count;
         const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
 
+        // date range query gets updated when picker is updated
         // format date range from start to end
-        const startRange = startCount + this.range[this.dateView].unit;
-        const endRange = endCount + this.range[this.dateView].unit;
-        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
+        // const startRange = startCount + this.range[this.dateView].unit;
+        // const endRange = endCount + this.range[this.dateView].unit;
+        // this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
 
         const date = new Date();
         const end = new Date();
