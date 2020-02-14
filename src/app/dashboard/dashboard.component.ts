@@ -123,11 +123,17 @@ export class DashboardComponent implements OnInit {
         // calculate hour or day difference from picked range
         const unit = this.range[this.dateView].unit;
         const today = new Date();
-        let startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / 3600000) + unit;
-        let endRange = Math.round((today.getTime() - this.endDate.getTime()) / 3600000) + unit;
+        let startRange = '30d';
+        let endRange = '0d';
         if (unit === 'd') {
-            startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / (1000 * 3600 * 24)) + unit;
-            endRange = Math.round((today.getTime() - this.endDate.getTime()) / (1000 * 3600 * 24)) + unit;
+            today.setHours(0, 0, 0, 0);
+            startRange = Math.ceil((today.getTime() - this.dateSelect.getTime()) / (1000 * 3600 * 24)) + unit;
+            endRange = Math.ceil((today.getTime() - this.endDate.getTime()) / (1000 * 3600 * 24)) + unit;
+        } else {
+            const minutes = (Math.floor(today.getMinutes() / 10) * 10);
+            today.setMinutes(minutes, 0, 0);
+            startRange = Math.ceil((today.getTime() - this.dateSelect.getTime()) / 3600000) + unit;
+            endRange = Math.floor((today.getTime() - this.endDate.getTime()) / 3600000) + unit;
         }
         this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
     }
@@ -245,20 +251,17 @@ export class DashboardComponent implements OnInit {
         if (this.dateView === 'Hour') {
             // round minutes down
             const startTime = new Date(date.setHours(date.getHours() - startCount));
-            const minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
+            let minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
             startTime.setMinutes(minutes, 0, 0);
             this.dateSelect = startTime;
 
-            // round end up to half hour
+            // round end down
             const endTime = new Date(end.setHours(end.getHours() - endCount));
-            if (endTime.getMinutes() < 30) {
-                endTime.setMinutes(29, 0, 0);
-            } else {
-                endTime.setMinutes(59, 0, 0);
-            }
+            minutes = (Math.floor(endTime.getMinutes() / 10) * 10);
+            endTime.setMinutes(minutes, 0, 0);
             this.endDate = endTime;
         } else {
-            // round day down
+            // round start day to start of day
             let startDay = new Date(date.setDate(date.getDate() - startCount));
             if (this.dateView === 'Month' || this.dateView === 'Week') {
                 let timeStamp = startDay.getTime();
@@ -268,7 +271,16 @@ export class DashboardComponent implements OnInit {
                 startDay.setMinutes(0, 0, 0);
             }
             this.dateSelect = startDay;
-            this.endDate = new Date(end.setDate(end.getDate() - endCount));
+
+            // round end day to end of previous day
+            const endDay = new Date(end.setDate(end.getDate() - endCount));
+            if (this.dateView === 'Month' || this.dateView === 'Week') {
+                endDay.setDate(endDay.getDate() - 1);
+                endDay.setHours(23, 59, 0, 0);
+            } else if (this.dateView === 'Day') {
+                endDay.setMinutes(0, 0, 0);
+            }
+            this.endDate = endDay;
         }
 
         this.pickerRange = {fromDate: this.dateSelect, toDate: this.endDate};
