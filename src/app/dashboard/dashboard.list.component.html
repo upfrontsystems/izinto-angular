@@ -11,12 +11,12 @@
 
                     <mat-card-header>
                         <mat-card-title>
+                            <button class="pull-right" mat-icon-button cdkDragHandle title="Reposition dashboard">
+                                <mat-icon>swap_vert</mat-icon>
+                            </button>
                             <a class="link-title" [routerLink]="['/dashboards', dashboard.id]">
                                 {{dashboard.title}}
                             </a>
-                            <button mat-button class="h-100" cdkDragHandle title="Reposition dashboard">
-                                <mat-icon>swap_vert</mat-icon>
-                            </button>
                         </mat-card-title>
                         <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
                     </mat-card-header>
