@@ -1,18 +1,18 @@
 import * as $ from 'jquery';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { ColorCompactModule } from 'ngx-color/compact';
-import {NgModule} from '@angular/core';
+import {ColorCompactModule} from 'ngx-color/compact';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
-import {ReactiveFormsModule} from '@angular/forms';
-import {GraphQLModule} from './graph-ql/graph-ql.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {GraphQLModule} from './graph-ql/graph-ql.module';
+import {NgModule} from '@angular/core';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {NgxMatDrpModule} from 'ngx-mat-daterange-picker';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { NgxMatDrpModule } from 'ngx-mat-daterange-picker';
+import {ReactiveFormsModule} from '@angular/forms';
 
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';

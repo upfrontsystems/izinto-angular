@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
-import {Dashboard, GroupBy} from '../_models/dashboard';
+import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material';
@@ -123,8 +123,8 @@ export class DashboardComponent implements OnInit {
         // calculate hour or day difference from picked range
         const unit = this.range[this.dateView].unit;
         const today = new Date();
-        let startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / 360000) + unit;
-        let endRange = Math.round((today.getTime() - this.endDate.getTime()) / 360000) + unit;
+        let startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / 3600000) + unit;
+        let endRange = Math.round((today.getTime() - this.endDate.getTime()) / 3600000) + unit;
         if (unit === 'd') {
             startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / (1000 * 3600 * 24)) + unit;
             endRange = Math.round((today.getTime() - this.endDate.getTime()) / (1000 * 3600 * 24)) + unit;
@@ -242,11 +242,32 @@ export class DashboardComponent implements OnInit {
 
         const date = new Date();
         const end = new Date();
-        if (this.dateView === 'hour') {
-            this.dateSelect = new Date(date.setHours(date.getHours() - startCount));
-            this.endDate = new Date(end.setHours(end.getHours() - endCount));
+        if (this.dateView === 'Hour') {
+            // round minutes down
+            const startTime = new Date(date.setHours(date.getHours() - startCount));
+            const minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
+            startTime.setMinutes(minutes, 0, 0);
+            this.dateSelect = startTime;
+
+            // round end up to half hour
+            const endTime = new Date(end.setHours(end.getHours() - endCount));
+            if (endTime.getMinutes() < 30) {
+                endTime.setMinutes(29, 0, 0);
+            } else {
+                endTime.setMinutes(59, 0, 0);
+            }
+            this.endDate = endTime;
         } else {
-            this.dateSelect = new Date(date.setDate(date.getDate() - startCount));
+            // round day down
+            let startDay = new Date(date.setDate(date.getDate() - startCount));
+            if (this.dateView === 'Month' || this.dateView === 'Week') {
+                let timeStamp = startDay.getTime();
+                timeStamp -= timeStamp % (24 * 60 * 60 * 1000);
+                startDay = new Date(timeStamp);
+            } else if (this.dateView === 'Day') {
+                startDay.setMinutes(0, 0, 0);
+            }
+            this.dateSelect = startDay;
             this.endDate = new Date(end.setDate(end.getDate() - endCount));
         }
 
