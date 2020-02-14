@@ -1,18 +1,23 @@
 <div cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
-<ng-container *ngFor="let dashboard of dashboards">
-    <div fxLayout="row"
-    cdkDrag [cdkDragData]="dashboard" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
-        <div fxFlex="100%">
-            <mat-card fxLayout="row">
-                <div fxFlex="5" *ngIf="collectionId">
-                    <button mat-button class="h-100" cdkDragHandle title="Reposition dashboard">
-                        <mat-icon>swap_vert</mat-icon>
-                    </button>
-                </div>
-                <mat-card-content fxFlex>
-                    <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
-                        <mat-icon>more_horiz</mat-icon>
-                    </button>
+    <ng-container *ngFor="let dashboard of dashboards">
+        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
+            <div fxFlex="100%">
+                <mat-card cdkDragHandle>
+                    <div class="pull-right">
+                        <button mat-icon-button [matMenuTriggerFor]="itemMenu">
+                            <mat-icon>more_horiz</mat-icon>
+                        </button>
+                    </div>
+
+                    <mat-card-header>
+                        <mat-card-title>
+                            <a class="link-title" [routerLink]="['/dashboards', dashboard.id]">
+                                {{dashboard.title}}
+                            </a>
+                        </mat-card-title>
+                        <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
+                    </mat-card-header>
+
                     <mat-menu #itemMenu="matMenu">
                         <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
                                 title="Delete">
@@ -32,17 +37,8 @@
                             <span>Copy</span>
                         </button>
                     </mat-menu>
-
-                    <mat-card-actions></mat-card-actions>
-                    <mat-icon class="list-icon">event_note</mat-icon>
-                    <mat-card-title><a class="link-title" [routerLink]="['/dashboards', dashboard.id]">
-                        {{dashboard.title}}
-                    </a></mat-card-title>
-                    <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
-
-                </mat-card-content>
-            </mat-card>
+                </mat-card>
+            </div>
         </div>
-    </div>
-</ng-container>
+    </ng-container>
 </div>
