@@ -3,13 +3,34 @@
         <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
             <div fxFlex="100%">
                 <mat-card>
-                    <div class="pull-right">
-                        <button mat-icon-button [matMenuTriggerFor]="itemMenu">
+                    <mat-card-content>
+                        <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
                             <mat-icon>more_horiz</mat-icon>
                         </button>
-                    </div>
 
-                    <mat-card-header>
+                        <mat-menu #itemMenu="matMenu">
+                            <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
+                                    title="Delete">
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                            </button>
+                            <confirmation #deleteConfirm [title]="'Delete dashboard'"
+                                          [content]="'Are you sure you wish to permanently delete this dashboard?'"
+                                          (onAccept)="deleteDashboard(dashboard)">
+                            </confirmation>
+                            <button mat-menu-item class="pull-right" color="accent" (click)="editDashboard(dashboard)"
+                                    title="Edit">
+                                <mat-icon>edit</mat-icon>
+                                <span>Edit</span>
+                            </button>
+                            <button mat-menu-item class="pull-right" color="accent" (click)="copyDashboard(dashboard)"
+                                    title="Copy">
+                                <mat-icon>file_copy</mat-icon>
+                                <span>Copy</span>
+                            </button>
+                        </mat-menu>
+
+                        <mat-icon class="list-icon">insert_chart</mat-icon>
                         <mat-card-title>
                             <button class="pull-right" mat-icon-button cdkDragHandle title="Reposition dashboard">
                                 <mat-icon>swap_vert</mat-icon>
@@ -19,27 +40,8 @@
                             </a>
                         </mat-card-title>
                         <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
-                    </mat-card-header>
 
-                    <mat-menu #itemMenu="matMenu">
-                        <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
-                                title="Delete">
-                            <mat-icon>delete</mat-icon>
-                            <span>Delete</span>
-                        </button>
-                        <confirmation #deleteConfirm [title]="'Delete dashboard'"
-                                      [content]="'Are you sure you wish to permanently delete this dashboard?'"
-                                      (onAccept)="deleteDashboard(dashboard)">
-                        </confirmation>
-                        <button mat-menu-item class="pull-right" color="accent" (click)="editDashboard(dashboard)" title="Edit">
-                            <mat-icon>edit</mat-icon>
-                            <span>Edit</span>
-                        </button>
-                        <button mat-menu-item class="pull-right" color="accent" (click)="copyDashboard(dashboard)" title="Copy">
-                            <mat-icon>file_copy</mat-icon>
-                            <span>Copy</span>
-                        </button>
-                    </mat-menu>
+                    </mat-card-content>
                 </mat-card>
             </div>
         </div>
