@@ -13,8 +13,8 @@ import {DataSourceService} from '../_services/data.source.service';
 import {ChartService} from '../_services/chart.service';
 import {SingleStatService} from '../_services/single.stat.service';
 import {MediaMatcher} from '@angular/cdk/layout';
-import {NgxDrpOptions, PresetItem, Range} from 'ngx-mat-daterange-picker';
 import {DashboardView} from '../_models/dashboard_view';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-dashboard',
@@ -40,8 +40,9 @@ export class DashboardComponent implements OnInit {
         'Month': {'count': 30, 'unit': 'd'}
     };
     dateFormat = {
-        'hour': 'd MMMM h:mm a', 'day': 'd MMMM y', 'week': 'd MMMM y', 'month': 'd MMM y',
-        'mobile': {'hour': 'd MMMM h:mm a', 'day': 'dd/MM/yy', 'week': 'dd/MM/yy', 'month': 'dd/MM/yy'}
+        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM Y', 'Week': 'D MMMM Y', 'Month': 'D MMMM Y',
+        'mobile': {'Hour': 'D/MM H:mm', 'Day': 'D/MM/Y', 'Week': 'D/MM/Y', 'Month': 'D/MM/Y'
+        }
     };
     groupBy = 'auto';
     // query date range from start to end
@@ -59,10 +60,15 @@ export class DashboardComponent implements OnInit {
             label: 'Add Single Stat',
         }
     ];
+    today = moment();
 
-    pickerRange: Range = {fromDate: new Date(), toDate: new Date()};
-    options: NgxDrpOptions;
-    presets: Array<PresetItem> = [];
+    pickerRange = {startDate: moment(), endDate: moment()};
+    ranges = {
+        'Last Day': [moment().subtract(1, 'days'), moment()],
+        'Last Week': [moment().subtract(6, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    };
 
     private readonly _mobileQueryListener: () => void;
 
@@ -75,7 +81,7 @@ export class DashboardComponent implements OnInit {
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
-        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
     }
@@ -91,21 +97,6 @@ export class DashboardComponent implements OnInit {
         });
 
         this.setDateRange();
-
-        // setup date range picker options
-        this.setupPresets();
-        this.options = {
-            presets: this.presets,
-            format: this.getDateFormat(),
-            range: this.pickerRange,
-            applyLabel: 'Submit',
-            calendarOverlayConfig: {
-                shouldCloseOnBackdropClick: false,
-                hasBackdrop: false
-            },
-            toMinMax: {fromDate: null, toDate: new Date()},
-            placeholder: '\t'
-        };
     }
 
     getDashboardViews() {
@@ -115,10 +106,14 @@ export class DashboardComponent implements OnInit {
     }
 
     // handler function that receives the updated date range object
-    updateRange(range: Range) {
-        this.pickerRange = range;
-        this.dateSelect = range.fromDate;
-        this.endDate = range.toDate;
+    updateRange(event) {
+
+        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
+            return;
+        }
+
+        this.dateSelect = this.pickerRange.startDate.toDate();
+        this.endDate = this.pickerRange.endDate.toDate();
 
         // calculate hour or day difference from picked range
         const unit = this.range[this.dateView].unit;
@@ -137,33 +132,6 @@ export class DashboardComponent implements OnInit {
         }
         this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
     }
-
-    // helper function to create initial presets
-    setupPresets() {
-
-        const backDate = (numOfDays) => {
-            const tday = new Date();
-            return new Date(tday.setDate(tday.getDate() - numOfDays));
-        };
-
-        const today = new Date();
-        const yesterday = backDate(1);
-        const minus7 = backDate(7);
-        const minus30 = backDate(30);
-        const currMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        const currMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
-
-        this.presets = [
-            {presetLabel: 'Yesterday', range: {fromDate: yesterday, toDate: today}},
-            {presetLabel: 'Last 7 Days', range: {fromDate: minus7, toDate: today}},
-            {presetLabel: 'Last 30 Days', range: {fromDate: minus30, toDate: today}},
-            {presetLabel: 'This Month', range: {fromDate: currMonthStart, toDate: currMonthEnd}},
-            {presetLabel: 'Last Month', range: {fromDate: lastMonthStart, toDate: lastMonthEnd}}
-        ];
-    }
-
 
     getDashboard() {
         this.dashboardService.getById(this.dashboardId).subscribe(resp => {
@@ -240,11 +208,10 @@ export class DashboardComponent implements OnInit {
         const startCount = this.dateRangeCounter * this.range[this.dateView].count;
         const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
 
-        // date range query gets updated when picker is updated
         // format date range from start to end
-        // const startRange = startCount + this.range[this.dateView].unit;
-        // const endRange = endCount + this.range[this.dateView].unit;
-        // this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
+        const startRange = startCount + this.range[this.dateView].unit;
+        const endRange = endCount + this.range[this.dateView].unit;
+        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
 
         const date = new Date();
         const end = new Date();
@@ -283,9 +250,6 @@ export class DashboardComponent implements OnInit {
             this.endDate = endDay;
         }
 
-        this.pickerRange = {fromDate: this.dateSelect, toDate: this.endDate};
-        if (this.dateRangePicker) {
-            this.dateRangePicker.resetDates(this.pickerRange);
-        }
+        this.pickerRange = {startDate: moment(this.dateSelect), endDate: moment(this.endDate)};
     }
 }

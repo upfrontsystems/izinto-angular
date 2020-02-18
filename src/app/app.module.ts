@@ -8,7 +8,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {GraphQLModule} from './graph-ql/graph-ql.module';
 import {NgModule} from '@angular/core';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
-import {NgxMatDrpModule} from 'ngx-mat-daterange-picker';
+import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
@@ -20,7 +20,6 @@ import {AppBlankComponent} from './layouts/blank/blank.component';
 import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
 import {AdminComponent} from './admin/admin.component';
-import { AlertNotificationComponent } from './shared/alert/alert.component';
 import {AlertService} from './_services/alert.service';
 import {ChartComponent} from './dashboard/chart/chart.component';
 import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
@@ -107,7 +106,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         MaterialModule,
         NgMultiSelectDropDownModule.forRoot(),
         NgxMatSelectSearchModule,
-        NgxMatDrpModule,
+        NgxDaterangepickerMd.forRoot(),
         PerfectScrollbarModule,
         ReactiveFormsModule,
         SharedModule,
