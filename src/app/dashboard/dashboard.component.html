@@ -2,7 +2,7 @@
     <div fxFlex="100">
         <mat-card *ngIf="dashboard">
             <mat-card-content>
-                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']">
+                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']" *ngIf="canEdit">
                     <mat-icon>settings</mat-icon>
                 </a>
 
@@ -51,4 +51,4 @@
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="canEdit" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

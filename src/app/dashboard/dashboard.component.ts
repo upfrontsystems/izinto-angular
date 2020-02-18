@@ -15,6 +15,7 @@ import {SingleStatService} from '../_services/single.stat.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -23,9 +24,8 @@ import * as moment from 'moment';
 })
 export class DashboardComponent implements OnInit {
 
-    @ViewChild('dateRangePicker') dateRangePicker;
-
     mobileQuery: MediaQueryList;
+    canEdit = false;
     dashboardId: number;
     dashboard: Dashboard;
     dataSources: DataSource[];
@@ -74,6 +74,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
+                protected authService: AuthenticationService,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
@@ -97,6 +98,9 @@ export class DashboardComponent implements OnInit {
         });
 
         this.setDateRange();
+
+        // only admin can add and edit charts
+        this.canEdit = this.authService.hasRole('Administrator');
     }
 
     getDashboardViews() {

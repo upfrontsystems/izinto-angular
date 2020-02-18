@@ -44,7 +44,6 @@ import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
 import {SpinnerService} from './_services/spinner.service';
 import {SharedModule} from './shared/shared.module';
-import { SingleStatComponent } from './dashboard/single-stat/single.stat.component';
 import {SingleStatListComponent} from './dashboard/single-stat/single.stat.list.component';
 import { SingleStatDialogComponent } from './dashboard/single-stat/single.stat.dialog.component';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
@@ -83,7 +82,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         FabSpeedDialComponent,
         FullComponent,
         HomeComponent,
-        SingleStatComponent,
         SingleStatListComponent,
         SingleStatDialogComponent,
         SpinnerComponent,
