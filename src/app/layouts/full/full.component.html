@@ -8,20 +8,33 @@
     <!-- ============================================================== -->
     <mat-toolbar color="primary" class="topbar telative">
 
-        <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
-            <mat-icon>menu</mat-icon>
-        </button>
         <!-- ============================================================== -->
         <!-- Logo - style you can find in header.scss -->
         <!-- ============================================================== -->
         <div class="navbar-header">
             <a class="navbar-brand" href="/">
+                <!-- Logo icon -->
+                <b>
+                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                    <!-- Dark Logo icon -->
+                    <img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo">
+                    <!-- Light Logo icon -->
+                    <img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo">
+                </b>
+                <!--End Logo icon -->
                 <!-- Logo text -->
                 <span class="site-title" fxShow="false" fxShow.gt-xs>
                     IZINTO
                 </span>
             </a>
         </div>
+
+        <!-- ============================================================== -->
+        <!-- sidebar toggle -->
+        <!-- ============================================================== -->
+        <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+            <mat-icon>menu</mat-icon>
+        </button>
 
         <span fxFlex></span>
         <!-- ============================================================== -->
@@ -54,9 +67,9 @@
         <!-- ============================================================== -->
         <!-- Sidebar - style you can find in sidebar.scss -->
         <!-- ============================================================== -->
-        <mat-sidenav #snav id="snav" [mode]="mobileQuery.matches ? 'side' : 'over'" fixedTopGap="0"
-                     [opened]="mobileQuery.matches"
-                     [disableClose]="mobileQuery.matches" (open)="sidebarOpened = true" (close)="sidebarOpened = false">
+        <mat-sidenav #snav id="snav" [mode]="'over'" fixedTopGap="0"
+                     [opened]="false"
+                     [disableClose]="false" (open)="sidebarOpened = true" (close)="sidebarOpened = false">
             <app-sidebar></app-sidebar>
         </mat-sidenav>
         <!-- ============================================================== -->
