@@ -18,11 +18,7 @@ export class QueryBaseComponent {
     constructor() {
     }
 
-    formatQuery(query, chartGroupBy, dataSource: DataSource) {
-        if (!query) {
-            return '';
-        }
-
+    groupByForView(chartGroupBy) {
         let groupByValue = '1d';
         for (const group of chartGroupBy) {
             if (group.dashboard_view.name === this.view) {
@@ -34,8 +30,16 @@ export class QueryBaseComponent {
             groupByValue = this.autoGroupBy[this.view];
         }
 
+        return groupByValue;
+    }
+
+    formatQuery(query, chartGroupBy, dataSource: DataSource) {
+        if (!query) {
+            return '';
+        }
+
         query = query.replace(/:range:/g, this.dateRange);
-        query = query.replace(/:group_by:/g, groupByValue);
+        query = query.replace(/:group_by:/g, this.groupByForView(chartGroupBy));
 
         for (const variable of this.variables) {
             const re = new RegExp(variable.name, 'g');

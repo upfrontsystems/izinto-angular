@@ -15,6 +15,18 @@ import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 
+
+export const groupByValues = {
+    '10s': 10,
+    '1m': 60,
+    '5m': 300,
+    '30m': 60 * 30,
+    '1h': 60 * 60,
+    '6h': 60 * 60 * 6,
+    '1d': 60 * 60 * 24,
+    '7d': 60 * 60 * 24 * 7
+};
+
 @Component({
     selector: 'app-chart',
     templateUrl: './chart.component.html',
@@ -312,6 +324,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         return a;
     }
 
+    barWidth() {
+        const groupBy = this.groupByForView(this.chart.group_by),
+            groupByValue = groupByValues[groupBy],
+            xAxisScale = this.xAxisScale(),
+            tickTime = new Date(this.startDate);
+        tickTime.setTime(this.startDate.getTime() + groupByValue * 1000 - (2 * 3600 * 1000));
+        return xAxisScale(tickTime);
+    }
+
     barChart(dataSet) {
         const width = this.innerWidth,
             height = this.innerHeight,
@@ -378,7 +399,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const color = this.chart.color;
         dataSet.forEach((dataset, index) => {
             const bar_selector = 'rect.chart-' + this.chart.id + '-' + index,
-                bandwidth = width / dataset.length,
+                bandwidth = this.barWidth(),
                 padding = 2,
                 update = barChart.selectAll(bar_selector).data(dataset);
             barChart.selectAll('rect').remove();
