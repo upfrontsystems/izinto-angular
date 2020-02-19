@@ -119,17 +119,8 @@ export class DashboardComponent implements OnInit {
         this.pickerRange = range;
         this.dateSelect = range.fromDate;
         this.endDate = range.toDate;
-
-        // calculate hour or day difference from picked range
-        const unit = this.range[this.dateView].unit;
-        const today = new Date();
-        let startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / 3600000) + unit;
-        let endRange = Math.round((today.getTime() - this.endDate.getTime()) / 3600000) + unit;
-        if (unit === 'd') {
-            startRange = Math.round((today.getTime() - this.dateSelect.getTime()) / (1000 * 3600 * 24)) + unit;
-            endRange = Math.round((today.getTime() - this.endDate.getTime()) / (1000 * 3600 * 24)) + unit;
-        }
-        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
+        this.endDate.setHours(23, 59, 59, 0);
+        this.dateRange = `time > '${this.dateSelect.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 
     // helper function to create initial presets
