@@ -7,6 +7,7 @@ import {SingleStatDialogComponent} from './single.stat.dialog.component';
 import {Record} from '../../_models/record';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-single-stat-list',
@@ -22,9 +23,10 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
+                protected authService: AuthenticationService,
                 protected dataSourceService: DataSourceService,
                 protected singleStatService: SingleStatService) {
-        super();
+        super(authService);
     }
 
     ngOnChanges(changes) {
@@ -39,6 +41,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
 
     ngOnInit() {
         this.getSingleStats();
+        this.checkCanEdit();
     }
 
     getSingleStats() {

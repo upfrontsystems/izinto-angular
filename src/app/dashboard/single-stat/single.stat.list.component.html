@@ -2,7 +2,7 @@
     <mat-card fxFlex="25" fxFlex.xs="100" *ngFor="let stat of singleStats">
         <mat-card-content>
 
-            <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
+            <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                 <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #itemMenu="matMenu">

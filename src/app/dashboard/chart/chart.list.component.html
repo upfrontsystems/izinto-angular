@@ -2,7 +2,7 @@
     <ng-container *ngFor="let chart of charts">
         <div fxLayout="row" class="chart-row" cdkDrag [cdkDragData]="chart"
              cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
-            <button mat-button class="drag-handle" cdkDragHandle title="Reposition chart">
+            <button mat-button class="drag-handle" cdkDragHandle title="Reposition chart" *ngIf="canEdit">
                 <mat-icon>swap_vert</mat-icon>
             </button>
             <app-chart [chart]="chart" [view]="view" [dateRange]="dateRange" [startDate]="startDate" [endDate]="endDate"

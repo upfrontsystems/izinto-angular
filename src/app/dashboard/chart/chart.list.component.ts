@@ -2,6 +2,7 @@ import {Component, ElementRef, Input, OnChanges, OnInit, ViewChild} from '@angul
 import {Chart} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {QueryBaseComponent} from '../query.base.component';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-chart-list',
@@ -18,8 +19,8 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @Input() endDate: Date;
     charts: Chart[] = [];
 
-    constructor(protected chartService: ChartService) {
-        super();
+    constructor(protected authService: AuthenticationService, protected chartService: ChartService) {
+        super(authService);
     }
 
     ngOnChanges(changes) {
@@ -30,6 +31,7 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
 
     ngOnInit() {
         this.getCharts();
+        this.checkCanEdit();
     }
 
     getCharts() {

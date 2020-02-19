@@ -2,7 +2,7 @@
     <div fxFlex="100">
         <mat-card *ngIf="dashboard">
             <mat-card-content>
-                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']">
+                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']" *ngIf="canEdit">
                     <mat-icon>settings</mat-icon>
                 </a>
 
@@ -10,34 +10,26 @@
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
             </mat-card-content>
 
-            <mat-toolbar class="no-shadow">
-                <mat-toolbar-row>
-                    <div fxShow="false" fxShow.gt-xs>
-                        <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
-                                [class.active]="dateView == view.name">{{view.name}}
-                        </button>
-                    </div>
-                    <div fxHide="false" fxHide.gt-xs>
-                        <button *ngFor="let view of dateViews" mat-icon-button (click)="updateView(view.name)"
-                                [class.active]="dateView === view.name">
-                            <mat-icon>{{view.icon}}</mat-icon>
-                        </button>
-                    </div>
-
-                    <div fxFlex="30" class="date-navigator font-18">
-                        <button mat-icon-button (click)="updateDateCounter(1)" class="m-t-15">
-                            <mat-icon>keyboard_arrow_left</mat-icon>
-                        </button>
-                        <div fxFlex>
-                            <ngx-mat-drp (selectedDateRangeChanged)="updateRange($event)" [options]="options"
-                                         #dateRangePicker></ngx-mat-drp>
-                        </div>
-                        <button mat-icon-button (click)="updateDateCounter(-1)" class="m-t-15">
-                            <mat-icon>keyboard_arrow_right</mat-icon>
-                        </button>
-                    </div>
-                    <span fxFlex fxHide="false" fxHide.gt-xs></span>
+            <mat-toolbar class="no-shadow" fxLayout="row" fxLayout.xs="column">
+                <mat-toolbar-row fxFlex fxFlex.xs="100">
+                    <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
+                            [class.active]="dateView == view.name">{{view.name}}
+                    </button>
                 </mat-toolbar-row>
+                <mat-toolbar-row fxFlex="auto" fxFlex.xs="100" class="date-navigator font-18">
+                    <button mat-icon-button (click)="updateDateCounter(1)">
+                        <mat-icon>keyboard_arrow_left</mat-icon>
+                    </button>
+                    <input type="text" matInput ngxDaterangepickerMd
+                           [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
+                           timePicker="true" [timePicker24Hour]="!mobileQuery.matches" [maxDate]="today"
+                           [autoApply]="false" (datesUpdated)="updateRange($event)"
+                           class="form-control"/>
+                    <button mat-icon-button (click)="updateDateCounter(-1)">
+                        <mat-icon>keyboard_arrow_right</mat-icon>
+                    </button>
+                </mat-toolbar-row>
+                    <mat-toolbar-row fxFlex="auto" fxHide="false" fxHide.lt-lg></mat-toolbar-row>
             </mat-toolbar>
 
             <mat-card-content>
@@ -50,7 +42,8 @@
             <mat-card-content>
 
                 <app-chart-list appMouseListener [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
-                                [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="dateSelect" [endDate]="endDate"
+                                [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="dateSelect"
+                                [endDate]="endDate"
                                 [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
             </mat-card-content>
@@ -58,4 +51,4 @@
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="canEdit" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

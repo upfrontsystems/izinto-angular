@@ -8,6 +8,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 import {SingleStatService} from '../../_services/single.stat.service';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MediaMatcher} from '@angular/cdk/layout';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -18,6 +19,7 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
+                protected authService: AuthenticationService,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
@@ -25,9 +27,9 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
-        super(changeDetectorRef, media, route, http, dataSourceService, dialog, chartService, dashboardService, singleStatService);
+        super(changeDetectorRef, media, authService, route, http, dataSourceService, dialog, chartService, dashboardService,
+            singleStatService);
     }
-
 
     ngOnInit() {
         this.route.paramMap.subscribe(params => {

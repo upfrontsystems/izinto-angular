@@ -14,6 +14,7 @@ import {MatDialog} from '@angular/material';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 
 export const groupByValues = {
@@ -41,7 +42,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     private dataSets = [];
     private scales = [];
-
     private chartHeight = 200;
     private chartWidth = 1200;
     private innerWidth = 0;
@@ -56,10 +56,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     constructor(protected dialog: MatDialog,
+                protected authService: AuthenticationService,
                 protected dataSourceService: DataSourceService,
                 protected chartService: ChartService,
                 private mouseListener: MouseListenerDirective) {
-        super();
+        super(authService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
             if (event.srcElement.matches('rect')) {
@@ -96,6 +97,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         d3Trans.transition().duration(750);
         this.setChartWidth();
         this.loadDataSet();
+
+        // only admin can edit chart
+        this.checkCanEdit();
     }
 
     setChartWidth() {
