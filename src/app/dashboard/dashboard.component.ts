@@ -213,7 +213,6 @@ export class DashboardComponent implements OnInit {
             // round end day to end of previous day
             const endDay = new Date(end.setDate(end.getDate() - endCount));
             if (this.dateView === 'Month' || this.dateView === 'Week') {
-                endDay.setDate(endDay.getDate() - 1);
                 endDay.setHours(23, 59, 0, 0);
             } else if (this.dateView === 'Day') {
                 endDay.setMinutes(0, 0, 0);
