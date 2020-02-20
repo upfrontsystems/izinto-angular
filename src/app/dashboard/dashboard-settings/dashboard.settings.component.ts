@@ -27,8 +27,7 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService,
                 protected singleStatService: SingleStatService) {
-        super(changeDetectorRef, media, authService, route, http, dataSourceService, dialog, chartService, dashboardService,
-            singleStatService);
+        super(changeDetectorRef, media, authService, route, http, dataSourceService, dialog, dashboardService);
     }
 
     ngOnInit() {
