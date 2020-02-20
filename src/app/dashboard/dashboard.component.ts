@@ -219,6 +219,10 @@ export class DashboardComponent implements OnInit {
                 endDay.setMinutes(0, 0, 0);
             }
             this.endDate = endDay;
+
+            // set the ms to zero to prevent a slight offset problem when comparing dates returned by InfluxDb
+            this.startDate.setSeconds(this.startDate.getSeconds(), 0);
+            this.endDate.setSeconds(this.endDate.getSeconds(), 0);
         }
 
         this.pickerRange = {startDate: moment(this.startDate), endDate: moment(this.endDate)};
