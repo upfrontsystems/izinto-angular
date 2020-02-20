@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit {
         'Month': {'count': 30, 'unit': 'd'}
     };
     dateFormat = {
-        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM Y', 'Week': 'D MMMM Y', 'Month': 'D MMMM Y',
+        'Hour': 'D MMM h:mm a', 'Day': 'D MMM Y', 'Week': 'D MMM Y', 'Month': 'D MMM Y',
         'mobile': {'Hour': 'D/MM H:mm', 'Day': 'D/MM/Y', 'Week': 'D/MM/Y', 'Month': 'D/MM/Y'
         }
     };
