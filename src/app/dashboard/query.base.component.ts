@@ -57,6 +57,6 @@ export class QueryBaseComponent {
             query = query.replace(/:database:/g, dataSource.database);
         }
 
-        return query;
+        return query + ' TZ(\'' + Intl.DateTimeFormat().resolvedOptions().timeZone + '\')';
     }
 }

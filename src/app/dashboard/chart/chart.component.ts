@@ -142,8 +142,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     const dataset = [];
                     for (const record of series['values']) {
                         const rec = new Record(),
-                            val = record[1];
-                        rec.date = new Date(record[0]);
+                            val = record[1],
+                            date = new Date(record[0]);
+                        if (date < this.startDate || date > this.endDate) {
+                            continue;
+                        }
+                        rec.date = date;
                         rec.unit = this.chart.unit;
                         rec.value = val;
                         if (val !== null) {
@@ -333,7 +337,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             groupByValue = groupByValues[groupBy],
             xAxisScale = this.xAxisScale(),
             tickTime = new Date(this.startDate);
-        tickTime.setTime(this.startDate.getTime() + groupByValue * 1000 - (2 * 3600 * 1000));
+        tickTime.setTime(this.startDate.getTime() + groupByValue * 1000);
         return xAxisScale(tickTime);
     }
 
@@ -404,16 +408,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         dataSet.forEach((dataset, index) => {
             const bar_selector = 'rect.chart-' + this.chart.id + '-' + index,
                 bandwidth = this.barWidth(),
-                padding = 2,
+                padding = 1,
                 update = barChart.selectAll(bar_selector).data(dataset);
             barChart.selectAll('rect').remove();
             update.enter().append('rect')
                 .attr('class', bar_selector)
-                .attr('x', (d: any) => xAxisScale(d.date) + bandwidth * index)
+                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index)
                 .attr('y', function (d: Record) {
                     return height - yScale(d.value);
                 })
-                .attr('width', bandwidth - padding)
+                .attr('width', bandwidth - padding * 2)
                 .attr('height', function (d: Record) {
                     return yScale(d.value);
                 })

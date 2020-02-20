@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
     };
     groupBy = 'auto';
     // query date range from start to end
-    dateRange = 'time > now() - 30d';
+    dateRange = '';
     dateRangeCounter = 1;
     startDate: Date;
     endDate: Date;
@@ -181,18 +181,12 @@ export class DashboardComponent implements OnInit {
 
         this.startDate = this.pickerRange.startDate.toDate();
         this.endDate = this.pickerRange.endDate.toDate();
-        this.endDate.setHours(23, 59, 59, 0);
         this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 
     setDateRange() {
         const startCount = this.dateRangeCounter * this.range[this.dateView].count;
         const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
-
-        // format date range from start to end
-        const startRange = startCount + this.range[this.dateView].unit;
-        const endRange = endCount + this.range[this.dateView].unit;
-        this.dateRange = `time > now() - ${startRange} AND time < now() - ${endRange}`;
 
         const date = new Date();
         const end = new Date();
@@ -210,13 +204,9 @@ export class DashboardComponent implements OnInit {
             this.endDate = endTime;
         } else {
             // round start day to start of day
-            let startDay = new Date(date.setDate(date.getDate() - startCount));
+            const startDay = new Date(date.setDate(date.getDate() - startCount));
             if (this.dateView === 'Month' || this.dateView === 'Week') {
-                let timeStamp = startDay.getTime();
-                timeStamp -= timeStamp % (24 * 60 * 60 * 1000);
-                startDay = new Date(timeStamp);
-            } else if (this.dateView === 'Day') {
-                startDay.setMinutes(0, 0, 0);
+                startDay.setHours(0, 0, 0);
             }
             this.startDate = startDay;
 
@@ -232,5 +222,6 @@ export class DashboardComponent implements OnInit {
         }
 
         this.pickerRange = {startDate: moment(this.startDate), endDate: moment(this.endDate)};
+        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 }
