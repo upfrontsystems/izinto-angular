@@ -138,24 +138,33 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
+                // a result can have multiple series, each series is a separate dataset
                 for (const series of resp['results'][0]['series']) {
-                    const dataset = [];
+                    const datasets = [];
                     for (const record of series['values']) {
-                        const rec = new Record(),
-                            val = record[1],
-                            date = new Date(record[0]);
+                        const date = new Date(record[0]);
                         if (date < this.startDate || date > this.endDate) {
                             continue;
                         }
-                        rec.date = date;
-                        rec.unit = this.chart.unit;
-                        rec.value = val;
-                        if (val !== null) {
-                            dataset.push(rec);
-                        }
+                        const values = record.splice(1);
+                        // a record can have multiple values which must be unpacked into different data sets
+                        values.forEach((val, index) => {
+                            if (datasets[index] === undefined) {
+                                datasets[index] = [];
+                            }
+                            const rec = new Record();
+                            rec.date = date;
+                            rec.unit = this.chart.unit;
+                            rec.value = val;
+                            if (val !== null) {
+                                datasets[index].push(rec);
+                            }
+                        });
                     }
-                    dataset.sort();
-                    this.dataSets.push(dataset);
+                    for (const dataset of datasets) {
+                        dataset.sort();
+                        this.dataSets.push(dataset);
+                    }
                 }
             }
             this.buildChart();
