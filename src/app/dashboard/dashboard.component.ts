@@ -101,19 +101,6 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    // handler function that receives the updated date range object
-    updateRange(event) {
-
-        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
-            return;
-        }
-
-        this.startDate = this.pickerRange.startDate.toDate();
-        this.endDate = this.pickerRange.endDate.toDate();
-        this.endDate.setHours(23, 59, 59, 0);
-        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
-    }
-
     getDashboard() {
         this.dashboardService.getById(this.dashboardId).subscribe(resp => {
             this.dashboard = resp;
@@ -183,6 +170,19 @@ export class DashboardComponent implements OnInit {
 
         this.dateRangeCounter += count;
         this.setDateRange();
+    }
+
+    // handler function that receives the updated date range object
+    updateRange(event) {
+
+        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
+            return;
+        }
+
+        this.startDate = this.pickerRange.startDate.toDate();
+        this.endDate = this.pickerRange.endDate.toDate();
+        this.endDate.setHours(23, 59, 59, 0);
+        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 
     setDateRange() {
