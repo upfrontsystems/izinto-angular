@@ -347,7 +347,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             xAxisScale = this.xAxisScale(),
             tickTime = new Date(this.startDate);
         tickTime.setTime(this.startDate.getTime() + groupByValue * 1000);
-        return xAxisScale(tickTime);
+        return xAxisScale(tickTime) / this.dataSets.length;
     }
 
     barChart(dataSet) {
@@ -415,14 +415,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const fillFunc = this.chart.fillFunc;
         const color = this.chart.color;
         dataSet.forEach((dataset, index) => {
-            const bar_selector = 'rect.chart-' + this.chart.id + '-' + index,
+            const bar_selector = 'dataset-' + index,
                 bandwidth = this.barWidth(),
                 padding = 1,
-                update = barChart.selectAll(bar_selector).data(dataset);
-            barChart.selectAll('rect').remove();
+                update = barChart.selectAll('rect.' + bar_selector).data(dataset);
+            // barChart.selectAll('rect.' + bar_selector).remove();
+            update.exit().remove();
             update.enter().append('rect')
                 .attr('class', bar_selector)
-                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index)
+                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
                 .attr('y', function (d: Record) {
                     return height - yScale(d.value);
                 })
@@ -437,7 +438,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         return color.split(',')[index];
                     }
                 });
-
+            update.transition()
+                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
+                .attr('y', function (d: Record) {
+                    return height - yScale(d.value);
+                })
+                .attr('width', bandwidth - padding * 2)
+                .attr('height', function (d: Record) {
+                    return yScale(d.value);
+                });
         });
         if (create && dataSet.length > 0) {
             this.markerLine(d3.select('svg.chart-' + this.chart.id));
