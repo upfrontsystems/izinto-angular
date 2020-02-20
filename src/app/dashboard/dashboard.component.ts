@@ -63,12 +63,6 @@ export class DashboardComponent implements OnInit {
     today = moment();
 
     pickerRange = {startDate: moment(), endDate: moment()};
-    ranges = {
-        'Last Day': [moment().subtract(1, 'days'), moment()],
-        'Last Week': [moment().subtract(6, 'days'), moment()],
-        'This Month': [moment().startOf('month'), moment().endOf('month')],
-        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    };
 
     private readonly _mobileQueryListener: () => void;
 
