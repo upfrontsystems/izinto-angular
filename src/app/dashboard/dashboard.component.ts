@@ -73,9 +73,7 @@ export class DashboardComponent implements OnInit {
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
-                protected chartService: ChartService,
-                protected dashboardService: DashboardService,
-                protected singleStatService: SingleStatService) {
+                protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
