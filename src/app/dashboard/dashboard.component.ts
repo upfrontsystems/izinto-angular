@@ -48,7 +48,7 @@ export class DashboardComponent implements OnInit {
     // query date range from start to end
     dateRange = 'time > now() - 30d';
     dateRangeCounter = 1;
-    dateSelect: Date;
+    startDate: Date;
     endDate: Date;
     fabButtons = [
         {
@@ -116,10 +116,10 @@ export class DashboardComponent implements OnInit {
             return;
         }
 
-        this.dateSelect = this.pickerRange.startDate.toDate();
+        this.startDate = this.pickerRange.startDate.toDate();
         this.endDate = this.pickerRange.endDate.toDate();
         this.endDate.setHours(23, 59, 59, 0);
-        this.dateRange = `time > '${this.dateSelect.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
+        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 
     getDashboard() {
@@ -209,7 +209,7 @@ export class DashboardComponent implements OnInit {
             const startTime = new Date(date.setHours(date.getHours() - startCount));
             let minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
             startTime.setMinutes(minutes, 0, 0);
-            this.dateSelect = startTime;
+            this.startDate = startTime;
 
             // round end down
             const endTime = new Date(end.setHours(end.getHours() - endCount));
@@ -226,7 +226,7 @@ export class DashboardComponent implements OnInit {
             } else if (this.dateView === 'Day') {
                 startDay.setMinutes(0, 0, 0);
             }
-            this.dateSelect = startDay;
+            this.startDate = startDay;
 
             // round end day to end of previous day
             const endDay = new Date(end.setDate(end.getDate() - endCount));
@@ -239,6 +239,6 @@ export class DashboardComponent implements OnInit {
             this.endDate = endDay;
         }
 
-        this.pickerRange = {startDate: moment(this.dateSelect), endDate: moment(this.endDate)};
+        this.pickerRange = {startDate: moment(this.startDate), endDate: moment(this.endDate)};
     }
 }
