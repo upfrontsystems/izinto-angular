@@ -14,6 +14,7 @@ import {MatDialog} from '@angular/material';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
+import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
 
 
@@ -59,7 +60,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 protected authService: AuthenticationService,
                 protected dataSourceService: DataSourceService,
                 protected chartService: ChartService,
-                private mouseListener: MouseListenerDirective) {
+                private mouseListener: MouseListenerDirective,
+                private touchListener: TouchListenerDirective) {
         super(authService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
@@ -78,6 +80,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         mouseListener.out.subscribe(event => {
             if (event.srcElement.matches('rect')) {
                 this.mouseout();
+            }
+        });
+        touchListener.touch.subscribe(event => {
+            if (event.srcElement.matches('rect')) {
+                // calculate x coordinate within chart
+                const bounds = event.srcElement.getBoundingClientRect();
+                this.mousemove(event.changedTouches[0].clientX - bounds.left);
             }
         });
     }

@@ -4,6 +4,7 @@ import { AccordionAnchorDirective, AccordionLinkDirective, AccordionDirective } 
 import {AlertComponent, AlertNotificationComponent} from './alert/alert.component';
 import { MenuItems } from './menu-items/menu-items';
 import { MouseListenerDirective } from './mouse-listener/mouse.listener.directive';
+import { TouchListenerDirective } from './touch-listener/touch.listener.directive';
 
 @NgModule({
     declarations: [
@@ -13,6 +14,7 @@ import { MouseListenerDirective } from './mouse-listener/mouse.listener.directiv
         AlertComponent,
         AlertNotificationComponent,
         MouseListenerDirective,
+        TouchListenerDirective,
     ],
     exports: [
         AccordionAnchorDirective,
@@ -20,7 +22,8 @@ import { MouseListenerDirective } from './mouse-listener/mouse.listener.directiv
         AccordionDirective,
         AlertComponent,
         AlertNotificationComponent,
-        MouseListenerDirective
+        MouseListenerDirective,
+        TouchListenerDirective,
     ],
     entryComponents: [
         AlertNotificationComponent,

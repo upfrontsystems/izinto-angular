@@ -41,7 +41,8 @@
 
             <mat-card-content>
 
-                <app-chart-list appMouseListener [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
+                <app-chart-list appMouseListener appTouchListener
+                                [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
                                 [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="startDate"
                                 [endDate]="endDate"
                                 [variables]="dashboard.variables"
