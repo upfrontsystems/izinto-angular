@@ -84,6 +84,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         });
         touchListener.touch.subscribe(event => {
             if (event.srcElement.matches('rect')) {
+                event.preventDefault();
                 // calculate x coordinate within chart
                 const bounds = event.srcElement.getBoundingClientRect();
                 this.mousemove(event.changedTouches[0].clientX - bounds.left);
