@@ -33,7 +33,7 @@ export class DataSourceService {
 
     loadDataQuery(dataSoureId, query) {
         const query_params = this.queryURL + encodeURIComponent(query);
-        return this.http.get(`/api/data_source/${dataSoureId}/query`, {params: {'query': query_params}});
+        return this.http.get(`/api/data_source/${dataSoureId}/query`, {params: {'query': query_params, 'epoch': 'ms'}});
     }
 
     getDevices(dataSource: DataSource) {
