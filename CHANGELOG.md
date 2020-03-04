@@ -23,3 +23,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#38](https://github.com/upfrontsystems/izinto-angular/issues/38) add group by dropdown
 * [#42](https://github.com/upfrontsystems/izinto-angular/issues/42) fix chart date alignment
 * [#49](https://github.com/upfrontsystems/izinto-angular/issues/42) fix data truncation
+* [#62](https://github.com/upfrontsystems/izinto-angular/issues/42) remove template components
