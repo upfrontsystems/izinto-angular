@@ -32,11 +32,11 @@
         </a>
         <mat-nav-list class="sub-item" *ngIf="menuitem.type === 'sub'">
             <mat-list-item *ngFor="let childitem of menuitem.children" routerLinkActive="selected">
-                <a [routerLink]="['/', menuitem.state, childitem.state ]" class="relative" routerLinkActive="selected">{{
+                <a [routerLink]="childitem.link" class="relative" routerLinkActive="selected" (click)="sidebar.toggle()">{{
                     childitem.name}}</a>
             </mat-list-item>
         </mat-nav-list>
-        <div class="saperator text-muted" *ngIf="menuitem.type === 'saperator'">
+        <div class="saperator text-muted" *ngIf="menuitem.type === 'separator'">
             <span>{{ menuitem.name }}</span>
         </div>
     </mat-list-item>

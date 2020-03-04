@@ -2,12 +2,14 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    OnDestroy
+    OnDestroy, Input
 } from '@angular/core';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { MediaMatcher } from '@angular/cdk/layout';
 import {CollectionService} from '../../../_services/collection.service';
 import {DashboardService} from '../../../_services/dashboard.service';
+import {Chart} from '../../../_models/chart';
+import {MatSidenav} from '@angular/material';
 
 @Component({
     selector: 'app-sidebar',
@@ -15,6 +17,8 @@ import {DashboardService} from '../../../_services/dashboard.service';
     styleUrls: []
 })
 export class AppSidebarComponent implements OnInit, OnDestroy {
+
+    @Input() sidebar: MatSidenav;
     public config: PerfectScrollbarConfigInterface = {};
     mobileQuery: MediaQueryList;
 
@@ -33,16 +37,26 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.collectionService.getCollections({user_id: true}).subscribe(resp => {
+        this.collectionService.getCollections({user_id: true, list_dashboards: true}).subscribe(resp => {
             for (const collection of resp) {
-                this.menuItems.push(
-                    {
-                        link: '/collections/' + collection.id,
-                        name: collection.title,
-                        type: 'link',
-                        icon: 'library_books'
-                    },
-                );
+                const menuitem = {
+                    link: '/collections/' + collection.id,
+                    name: collection.title,
+                    type: 'sub',
+                    icon: 'library_books'
+                };
+                menuitem['children'] = [];
+                for (const dashboard of collection['dashboards']) {
+                    menuitem['children'].push(
+                        {
+                            state: dashboard.id,
+                            name: dashboard.title,
+                            type: 'link',
+                            link: '/collections/' + collection.id + '/dashboards/' + dashboard.id
+                        }
+                    );
+                }
+                this.menuItems.push(menuitem);
             }
         });
 

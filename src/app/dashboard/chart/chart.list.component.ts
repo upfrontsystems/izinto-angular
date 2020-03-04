@@ -27,6 +27,9 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
         if (changes.addedChart && changes.addedChart.currentValue) {
             this.chartAdded(changes.addedChart.currentValue);
         }
+        if (changes.dashboardId) {
+            this.getCharts();
+        }
     }
 
     ngOnInit() {

@@ -70,7 +70,7 @@
         <mat-sidenav #snav id="snav" [mode]="'over'" fixedTopGap="0"
                      [opened]="false"
                      [disableClose]="false" (open)="sidebarOpened = true" (close)="sidebarOpened = false">
-            <app-sidebar></app-sidebar>
+            <app-sidebar [sidebar]="snav"></app-sidebar>
         </mat-sidenav>
         <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->
