@@ -10,7 +10,7 @@
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
             </mat-card-content>
 
-            <mat-toolbar class="no-shadow" fxLayout="row" fxLayout.xs="column">
+            <mat-toolbar class="no-shadow sticky-toolbar" fxLayout="row" fxLayout.xs="column">
                 <mat-toolbar-row fxFlex fxFlex.xs="100">
                     <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
                             [class.active]="dateView == view.name">{{view.name}}

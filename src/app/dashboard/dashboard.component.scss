@@ -115,3 +115,8 @@ g.grid g.tick line {
 .picker-button {
     cursor: pointer;
 }
+
+.sticky-toolbar {
+    position: sticky;
+    top: 0px
+}
