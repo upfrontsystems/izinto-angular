@@ -118,5 +118,6 @@ g.grid g.tick line {
 
 .sticky-toolbar {
     position: sticky;
-    top: 0px
+    top: 0px;
+    z-index: 10;
 }
