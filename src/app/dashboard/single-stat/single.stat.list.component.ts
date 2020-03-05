@@ -36,6 +36,8 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             this.loadDataSets();
         } else if (changes.dateRange && changes.dateRange.currentValue) {
             this.loadDataSets();
+        } else if (changes.dashboardId) {
+            this.getSingleStats();
         }
     }
 
