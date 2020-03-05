@@ -10,7 +10,7 @@ import {AuthenticationService} from '../../_services/authentication.service';
 })
 export class ForgotComponent implements OnInit {
     public form: FormGroup;
-    private resetRequested = false;
+    public resetRequested = false;
 
     constructor(private fb: FormBuilder,
                 protected authService: AuthenticationService) {

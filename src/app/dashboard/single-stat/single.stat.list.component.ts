@@ -18,7 +18,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
 
     @Input() dashboardId: number;
     @Input() addedSingleStat: SingleStat;
-    private singleStats: SingleStat[] = [];
+    public singleStats: SingleStat[] = [];
     private dataSets = {};
 
     constructor(protected http: HttpClient,
