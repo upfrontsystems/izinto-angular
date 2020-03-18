@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Collection} from '../_models/collection';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
@@ -6,13 +6,16 @@ import {MatDialog} from '@angular/material';
 import {CollectionService} from '../_services/collection.service';
 import {CollectionDialogComponent} from './collection.dialog.component';
 import {AlertService} from '../_services/alert.service';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
   selector: 'app-collection-list',
   templateUrl: './collection.list.component.html',
   styleUrls: ['./collection.component.css']
 })
-export class CollectionListComponent {
+export class CollectionListComponent implements OnInit {
+
+    canEdit = false;
 
     @Input() collections: Collection[];
     @Output() edited: EventEmitter<Collection> = new EventEmitter();
@@ -22,7 +25,13 @@ export class CollectionListComponent {
                 private http: HttpClient,
                 public dialog: MatDialog,
                 protected alertService: AlertService,
+                protected authService: AuthenticationService,
                 private collectionService: CollectionService) { }
+
+    ngOnInit() {
+        // only admin can add and edit collections
+        this.canEdit = this.authService.hasRole('Administrator');
+    }
 
     editCollection(collection) {
         const dialogRef = this.dialog.open(CollectionDialogComponent, {
