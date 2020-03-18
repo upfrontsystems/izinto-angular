@@ -24,7 +24,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
     public filteredUsers: ReplaySubject<User[]> = new ReplaySubject<User[]>(1);
     protected _onDestroy = new Subject<void>();
 
-    @ViewChild('userSelect') userSelect: MatSelect;
+    @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
 
     constructor(
         public dialogRef: MatDialogRef<DashboardDialogComponent>,

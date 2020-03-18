@@ -11,8 +11,8 @@ import {AuthenticationService} from '../../_services/authentication.service';
 })
 export class ChartListComponent extends QueryBaseComponent implements OnInit, OnChanges {
 
-    @ViewChild('chart') private chartContainer: ElementRef;
-    @ViewChild('deleteConfirm') private deleteConfirm: any;
+    @ViewChild('chart', {static: true}) private chartContainer: ElementRef;
+    @ViewChild('deleteConfirm', {static: true}) private deleteConfirm: any;
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
     @Input() startDate: Date;
