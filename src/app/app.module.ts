@@ -39,7 +39,6 @@ import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.comp
 import {FullComponent} from './layouts/full/full.component';
 import {HomeComponent} from './home/home.component';
 import {MaterialModule} from './material.module';
-import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
 import {SpinnerService} from './_services/spinner.service';
@@ -102,7 +101,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         GraphQLModule,
         HttpClientModule,
         MaterialModule,
-        NgMultiSelectDropDownModule.forRoot(),
         NgxMatSelectSearchModule,
         NgxDaterangepickerMd.forRoot(),
         PerfectScrollbarModule,
