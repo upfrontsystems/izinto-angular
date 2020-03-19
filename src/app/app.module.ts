@@ -50,6 +50,8 @@ import {UserDialogComponent} from './user/user.dialog.component';
 import { VariableComponent } from './dashboard/variable/variable.component';
 import { VariableDialogComponent } from './dashboard/variable/variable.dialog.component';
 import { QueryBaseComponent } from './dashboard/query.base.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -104,6 +106,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         PerfectScrollbarModule,
         ReactiveFormsModule,
         SharedModule,
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     ],
     entryComponents: [
         ChartDialogComponent,
