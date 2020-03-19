@@ -5,7 +5,6 @@ import {ColorCompactModule} from 'ngx-color/compact';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {GraphQLModule} from './graph-ql/graph-ql.module';
 import {NgModule} from '@angular/core';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
@@ -98,7 +97,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         ColorCompactModule,
         FlexLayoutModule,
         FormsModule,
-        GraphQLModule,
         HttpClientModule,
         MaterialModule,
         NgxMatSelectSearchModule,

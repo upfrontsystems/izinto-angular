@@ -65,28 +65,31 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         super(authService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
-            if (event.srcElement.matches('rect')) {
+            const target = event.target as HTMLElement;
+            if (target.matches('rect')) {
                 // calculate x coordinate within chart
-                const target = event.target as HTMLElement;
                 const bounds = target.getBoundingClientRect();
                 this.mousemove(event.clientX - bounds.left);
             }
         });
         mouseListener.over.subscribe(event => {
-            if (event.srcElement.matches('rect')) {
+            const target = event.target as HTMLElement;
+            if (target.matches('rect')) {
                 this.mouseover();
             }
         });
         mouseListener.out.subscribe(event => {
-            if (event.srcElement.matches('rect')) {
+            const target = event.target as HTMLElement;
+            if (target.matches('rect')) {
                 this.mouseout();
             }
         });
         touchListener.touch.subscribe(event => {
-            if (event.srcElement.matches('rect')) {
+            const target = event.target as HTMLElement;
+            if (target.matches('rect')) {
                 event.preventDefault();
                 // calculate x coordinate within chart
-                const bounds = event.srcElement.getBoundingClientRect();
+                const bounds = target.getBoundingClientRect();
                 this.mousemove(event.changedTouches[0].clientX - bounds.left);
             }
         });
