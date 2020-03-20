@@ -38,10 +38,12 @@ html .page-wrapper {
 /*******************
  Login register
 *******************/
+.logo {
+    background: white;
+}
 .login-register {
-  height: 100vh;
+  background: white;
   display: flex;
-  background-size: cover;
   align-items: center;
   .mat-card {
     margin: 0px 15px;

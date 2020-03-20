@@ -1,0 +1,14 @@
+<div>
+    <div class="logo text-center">
+        <div>
+            <img src="assets/images/logo-big.png" alt="DashTweak">
+        </div>
+        <div>
+            <a mat-raised-button [routerLink]="['/authentication/register']" class="btn btn-info btn-rounded waves-effect waves-light m-b-40 m-r-10">Register</a>
+            <a mat-raised-button [routerLink]="['/authentication/login']" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Log in</a>
+        </div>
+        <div>
+            <button *ngIf="showButton" mat-raised-button color="accent" (click)="addToHomeScreen()">Add to home screen</button>
+        </div>
+    </div>
+</div>

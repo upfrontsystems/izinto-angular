@@ -13,6 +13,7 @@ import {CollectionListComponent} from './collection/collection.list.component';
 import {CollectionComponent} from './collection/collection.component';
 import {DashboardSettingsComponent} from './dashboard/dashboard-settings/dashboard.settings.component';
 import {DataSourceComponent} from './data-source/data.source.component';
+import {LandingpageComponent} from './landingpage/landingpage.component';
 
 const appRoutes: Routes = [
     {
@@ -80,8 +81,18 @@ const appRoutes: Routes = [
         ]
     },
     {
+        path: '',
+        component: AppBlankComponent,
+        children: [
+            {
+                path: 'landingpage',
+                component: LandingpageComponent,
+            }
+        ]
+    },
+    {
         path: '**',
-        redirectTo: 'authentication/login'
+        redirectTo: 'landingpage'
     }
 ];
 

@@ -52,6 +52,7 @@ import { VariableDialogComponent } from './dashboard/variable/variable.dialog.co
 import { QueryBaseComponent } from './dashboard/query.base.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { LandingpageComponent } from './landingpage/landingpage.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -90,7 +91,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         VariableComponent,
         VariableDialogComponent,
         DataSourceDialogComponent,
-        QueryBaseComponent
+        QueryBaseComponent,
+        LandingpageComponent
     ],
     imports: [
         AppRoutes,
