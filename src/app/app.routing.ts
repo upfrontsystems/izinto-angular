@@ -77,22 +77,17 @@ const appRoutes: Routes = [
                 path: 'authentication',
                 loadChildren:
                     './authentication/authentication.module#AuthenticationModule'
-            }
-        ]
-    },
-    {
-        path: '',
-        component: AppBlankComponent,
-        children: [
+            },
             {
-                path: 'landingpage',
+                path: 'home',
                 component: LandingpageComponent,
+                pathMatch: 'full'
             }
         ]
     },
     {
         path: '**',
-        redirectTo: 'landingpage'
+        redirectTo: 'home'
     }
 ];
 
