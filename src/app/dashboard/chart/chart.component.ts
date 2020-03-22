@@ -290,7 +290,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         // update marker label for each dataset
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            const rix = bisectDate(this.dataSets[dix], xdate) - 1;
+            const rix = bisectDate(this.dataSets[dix], xdate) - 1,
+                chart_type = this.chart.type;
 
             const record = this.dataSets[dix][rix];
             if (record === undefined) {
@@ -304,7 +305,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     if (record.text) {
                         return record.text;
                     } else {
-                        return record.value.toFixed(decimals) + ' ' + record.unit;
+                        if (chart_type === 'Wind Arrow' && dix === 1) {
+                            // TODO: unit for wind speed is hardcoded
+                            return record.value.toFixed(decimals) + ' m/s';
+                        } else {
+                            return record.value.toFixed(decimals) + ' ' + record.unit;
+                        }
                     }
             }).select('.x-hover-line').attr('y2', markerHeight);
 
