@@ -4,6 +4,17 @@ import {DataSource} from '../_models/data.source';
 import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
 
+export const groupByValues = {
+    '10s': 10,
+    '1m': 60,
+    '5m': 300,
+    '30m': 60 * 30,
+    '1h': 60 * 60,
+    '6h': 60 * 60 * 6,
+    '1d': 60 * 60 * 24,
+    '7d': 60 * 60 * 24 * 7
+};
+
 @Component({
     selector: 'app-query-base',
     template: '<div></div>'
@@ -45,6 +56,8 @@ export class QueryBaseComponent {
             return '';
         }
 
+        const groupByValue = groupByValues[this.groupByForView(chartGroupBy)];
+
         query = query.replace(/:range:/g, this.dateRange);
         query = query.replace(/:group_by:/g, this.groupByForView(chartGroupBy));
 
@@ -57,6 +70,11 @@ export class QueryBaseComponent {
             query = query.replace(/:database:/g, dataSource.database);
         }
 
-        return query;
+        // Force InfluxDB to group in the local timezones when data is grouped by increments that are larger than 1 hour
+        if (groupByValue > 3600) {
+            return query + ' TZ(\'' + Intl.DateTimeFormat().resolvedOptions().timeZone + '\')';
+        } else {
+            return query;
+        }
     }
 }

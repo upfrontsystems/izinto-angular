@@ -11,23 +11,12 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import {MatDialog} from '@angular/material';
-import {QueryBaseComponent} from '../query.base.component';
+import {QueryBaseComponent, groupByValues} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
 
-
-export const groupByValues = {
-    '10s': 10,
-    '1m': 60,
-    '5m': 300,
-    '30m': 60 * 30,
-    '1h': 60 * 60,
-    '6h': 60 * 60 * 6,
-    '1d': 60 * 60 * 24,
-    '7d': 60 * 60 * 24 * 7
-};
 
 @Component({
     selector: 'app-chart',
@@ -360,7 +349,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             xAxisScale = this.xAxisScale(),
             tickTime = new Date(this.startDate);
         tickTime.setTime(this.startDate.getTime() + groupByValue * 1000);
-        return xAxisScale(tickTime) / this.dataSets.length;
+        if (this.chart.type === 'Wind Arrow') {
+            return xAxisScale(tickTime);
+        } else {
+            return xAxisScale(tickTime) / this.dataSets.length;
+        }
     }
 
     barChart(dataSet) {
@@ -573,7 +566,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             arrowStart = 6 + (arrowWidth / 2.0 - 10);
         } else {
             d = 'M' + x + ',15L' + x + ',5L' + x_min_3 + ',5L' + x + ',1L' + x_plus_3 + ',5L' + x + ',5';
-            arrowStart = 6 + (arrowWidth / 2.0 - 10);
+            arrowStart = 6 + (arrowWidth / 2.0 - 5);
         }
 
         svg.append('path')
@@ -586,15 +579,19 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     windArrows(dataset) {
-        // use the bar chart as base for the chart
-        this.barChart(dataset);
+        // if there are two data sets in the result, we assume the second dataset is the wind speed
+        if (dataset.length === 2) {
+            this.barChart([dataset[1]]);
+        } else {
+            this.barChart(dataset);
+        }
         if (dataset.length) {
             dataset = dataset[0];
         }
 
         // remove the bars
-        const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
-        bars.remove();
+        // const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
+        // bars.remove();
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
         svg.remove();
@@ -607,7 +604,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         for (let i = 0; i < dataset.length; i++) {
             const arrowX = arrowScale(dataset[i].date),
-                arrowWidth = this.innerWidth / dataset.length;
+                arrowWidth = this.barWidth();
             this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
         }
     }
