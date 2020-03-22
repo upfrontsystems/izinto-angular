@@ -10,6 +10,7 @@ import * as d3Array from 'd3-array';
 import * as d3TimeFormat from 'd3-time-format';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
+import * as d3SacleChromatic from 'd3-scale-chromatic';
 import {MatDialog} from '@angular/material';
 import {QueryBaseComponent, groupByValues} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
@@ -102,6 +103,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         // only admin can edit chart
         this.checkCanEdit();
+
+        if (this.chart.type === 'Wind Arrow') {
+            this.chart.fillFunc = function(value) {
+                return d3Scale.scaleSequential(d3SacleChromatic.interpolateYlGnBu)
+                    .domain([0, 20])(value);
+            };
+        }
     }
 
     setChartWidth() {
