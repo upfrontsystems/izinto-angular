@@ -164,7 +164,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             }
                             const rec = new Record();
                             rec.date = date;
-                            rec.unit = this.chart.unit;
+                            rec.unit = this.chart.unit || '';
                             rec.fieldName = series['columns'][index + 1]
                             rec.value = val;
                             if (val !== null) {
