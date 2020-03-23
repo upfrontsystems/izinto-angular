@@ -5,5 +5,6 @@
     date: Date;
     unit: String;
     text: String;
+    fieldName: String;
     value: Number;
 }

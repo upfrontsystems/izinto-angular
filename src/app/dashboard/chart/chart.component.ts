@@ -59,7 +59,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             if (target.matches('rect')) {
                 // calculate x coordinate within chart
                 const bounds = target.getBoundingClientRect();
-                this.mousemove(event.clientX - bounds.left);
+                this.mousemove(event.clientX - bounds.left, bounds);
             }
         });
         mouseListener.over.subscribe(event => {
@@ -80,7 +80,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 event.preventDefault();
                 // calculate x coordinate within chart
                 const bounds = target.getBoundingClientRect();
-                this.mousemove(event.changedTouches[0].clientX - bounds.left);
+                this.mousemove(event.changedTouches[0].clientX - bounds.left, event.changedTouches[0].clientY - bounds.bottom);
             }
         });
     }
@@ -165,6 +165,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             const rec = new Record();
                             rec.date = date;
                             rec.unit = this.chart.unit;
+                            rec.fieldName = series['columns'][index + 1]
                             rec.value = val;
                             if (val !== null) {
                                 datasets[index].push(rec);
@@ -224,6 +225,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     markerLine(svg) {
+        const lineHeight = 22;
         const focus = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'focus g-' + this.chart.id)
@@ -236,26 +238,40 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y1', 0)
             .attr('y2', this.chartHeight);
 
+        const infoBox = focus.append('g').attr('class', 'infobox');
+        infoBox.append('rect')
+            .attr('class', 'background')
+            .attr('transform', 'translate(10, 20)')
+            .attr('stroke', 'darkgray')
+            .attr('fill', 'whitesmoke')
+            .attr('width', '200')
+            .attr('height', this.dataSets.length * lineHeight + 30)
+            .attr('fill-opacity', '0.7')
+            .attr('rx', '5');
+
+        // add date label
+        infoBox.append('text')
+            .style('font-size', '0.8em')
+            .style('font-weight', '600')
+            .style('text-anchor', 'middle')
+            .attr('class', 'hover-text dataset-date')
+            .attr('x', 100)
+            .attr('y', 35)
+            .attr('font-family', 'Poppins')
+            .attr('fill', 'black');
+
         // add text label for each dataset
         const colors = this.chart.color.split(',');
-        let yOffset = 27;
+        let yOffset = 40;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            yOffset += 18;
-            focus.append('text')
+            yOffset += lineHeight;
+            infoBox.append('text')
+                .style('font-weight', '600')
                 .attr('class', 'hover-text dataset-' + dix)
-                .attr('x', 5)
+                .attr('x', 25)
                 .attr('y', yOffset)
                 .attr('fill', colors[dix]);
         }
-
-        // add date label
-        focus.append('text')
-            .style('font-size', '12px')
-            .style('word-spacing', '5px')
-            .attr('class', 'hover-text dataset-date')
-            .attr('x', 5)
-            .attr('y', yOffset + 15)
-            .attr('fill', 'grey');
 
         svg.append('rect')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
@@ -274,7 +290,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         d3.select('g.focus.g-' + this.chart.id).style('display', 'none');
     }
 
-    mousemove(xcoord) {
+    mousemove(xcoord, bounds) {
         if (this.dataSets.length === 0) {
             return;
         }
@@ -289,6 +305,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             decimals = this.chart.decimals;
 
         // update marker label for each dataset
+        let textLength = 20;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const rix = bisectDate(this.dataSets[dix], xdate) - 1,
                 chart_type = this.chart.type;
@@ -305,20 +322,43 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     if (record.text) {
                         return record.text;
                     } else {
+                        let text = '';
                         if (chart_type === 'Wind Arrow' && dix === 1) {
                             // TODO: unit for wind speed is hardcoded
-                            return record.value.toFixed(decimals) + ' m/s';
+                            text = 'Wind speed: ' + record.value.toFixed(decimals) + ' m/s';
                         } else {
-                            return record.value.toFixed(decimals) + ' ' + record.unit;
+                            text = record.fieldName + ': ' + record.value.toFixed(decimals) + ' ' + record.unit;
                         }
+                        if (text.length > textLength) {
+                            textLength = text.length;
+                        }
+                        return text;
                     }
             }).select('.x-hover-line').attr('y2', markerHeight);
 
+            const boxWidth = textLength * 10;
+            d3.select('g.focus.g-' + this.chart.id)
+                .select('rect.background')
+                .attr('width', boxWidth)
+
             // add date label at end
             d3.select('g.focus.g-' + this.chart.id)
-                .select('text.dataset-date').text(function (): any {
-                return (xdate as any).toLocaleString('en-ZA', {dateStyle: 'medium', timeStyle: 'short'});
-            });
+                .select('text.dataset-date')
+                    .attr('x', boxWidth / 2)
+                    .text(function (): any {
+                        return d3TimeFormat.timeFormat('%d %B %Y, %H:%M')(xdate as any);
+                    });
+
+            const focus = d3.select('g.focus.g-' + this.chart.id);
+            if (newX + boxWidth > bounds.width) {
+                 focus
+                    .select('g.infobox')
+                    .attr('transform', 'translate(' + (-boxWidth - 30) + ', 0)');
+            } else {
+                focus
+                    .select('g.infobox')
+                    .attr('transform', 'translate(0, 0)');
+            }
         }
     }
 
