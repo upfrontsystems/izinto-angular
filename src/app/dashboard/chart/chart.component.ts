@@ -149,12 +149,18 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 // a result can have multiple series, each series is a separate dataset
+                const groupByValue = groupByValues[this.groupByForView(this.chart.group_by)];
                 for (const series of resp['results'][0]['series']) {
                     const datasets = [];
                     for (const record of series['values']) {
                         const date = new Date(record[0]);
                         if (date < this.startDate || date > this.endDate) {
                             continue;
+                        }
+                        // Add timezone offset if group by is greater than 1 hour
+                        if (groupByValue > 3600) {
+                            const timeOffsetInMS = date.getTimezoneOffset() * 60000;
+                            date.setTime(date.getTime() + timeOffsetInMS);
                         }
                         const values = record.splice(1);
                         // a record can have multiple values which must be unpacked into different data sets
@@ -165,7 +171,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             const rec = new Record();
                             rec.date = date;
                             rec.unit = this.chart.unit || '';
-                            rec.fieldName = series['columns'][index + 1]
+                            rec.fieldName = series['columns'][index + 1];
                             rec.value = val;
                             if (val !== null) {
                                 datasets[index].push(rec);
@@ -200,14 +206,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         return d3Scale.scaleTime().range([0, this.innerWidth]).domain(
             [this.startDate, this.endDate]
         );
-    }
-
-    xScale(dataset) {
-        const x = d3Scale.scaleBand().range([0, this.innerWidth]).padding(0.1);
-        x.domain(dataset.map(function (d) {
-            return d.date;
-        }));
-        return x;
     }
 
     yScale(dataset, domain?) {
@@ -642,10 +640,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         if (dataset.length) {
             dataset = dataset[0];
         }
-
-        // remove the bars
-        // const bars = d3.select('svg.chart-' + this.chart.id + ' > g').select('g.chart-' + this.chart.id);
-        // bars.remove();
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
         svg.remove();

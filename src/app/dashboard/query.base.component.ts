@@ -70,11 +70,6 @@ export class QueryBaseComponent {
             query = query.replace(/:database:/g, dataSource.database);
         }
 
-        // Force InfluxDB to group in the local timezones when data is grouped by increments that are larger than 1 hour
-        if (groupByValue > 3600) {
-            return query + ' TZ(\'' + Intl.DateTimeFormat().resolvedOptions().timeZone + '\')';
-        } else {
-            return query;
-        }
+        return query;
     }
 }
