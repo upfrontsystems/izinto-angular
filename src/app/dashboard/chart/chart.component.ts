@@ -109,8 +109,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         if (this.chart.type === 'Wind Arrow') {
             this.chart.fillFunc = function(value) {
-                return d3Scale.scaleSequential(d3SacleChromatic.interpolateYlGnBu)
-                    .domain([0, 20])(value);
+                return d3Scale.scaleSequential(d3SacleChromatic.interpolateRdYlBu)
+                    .domain([20, 0])(value);
             };
         }
     }
@@ -239,8 +239,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y1', 0)
             .attr('y2', this.chartHeight);
 
-        const infoBox = focus.append('g').attr('class', 'infobox');
-        infoBox.append('rect')
+        const toolTip = focus.append('g').attr('class', 'tooltip');
+        toolTip.append('rect')
             .attr('class', 'background')
             .attr('transform', 'translate(10, 20)')
             .attr('stroke', 'darkgray')
@@ -251,7 +251,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('rx', '5');
 
         // add date label
-        infoBox.append('text')
+        toolTip.append('text')
             .style('font-size', '0.8em')
             .style('font-weight', '600')
             .style('text-anchor', 'middle')
@@ -266,7 +266,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let yOffset = 40;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             yOffset += lineHeight;
-            infoBox.append('text')
+            toolTip.append('text')
                 .style('font-weight', '600')
                 .attr('class', 'hover-text dataset-' + dix)
                 .attr('x', 25)
@@ -353,11 +353,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             const focus = d3.select('g.focus.g-' + this.chart.id);
             if (newX + boxWidth > bounds.width) {
                  focus
-                    .select('g.infobox')
+                    .select('g.tooltip')
                     .attr('transform', 'translate(' + (-boxWidth - 30) + ', 0)');
             } else {
                 focus
-                    .select('g.infobox')
+                    .select('g.tooltip')
                     .attr('transform', 'translate(0, 0)');
             }
         }
