@@ -225,7 +225,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .range([this.innerHeight, 0]);
     }
 
-    markerLine(svg) {
+    toolTip(svg) {
         const lineHeight = 22;
         const focus = svg.append('g')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
@@ -239,8 +239,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y1', 0)
             .attr('y2', this.chartHeight);
 
-        const toolTip = focus.append('g').attr('class', 'tooltip');
-        toolTip.append('rect')
+        const toolTipInfo = focus.append('g').attr('class', 'tooltip');
+        toolTipInfo.append('rect')
             .attr('class', 'background')
             .attr('transform', 'translate(10, 20)')
             .attr('stroke', 'darkgray')
@@ -251,7 +251,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('rx', '5');
 
         // add date label
-        toolTip.append('text')
+        toolTipInfo.append('text')
             .style('font-size', '0.8em')
             .style('font-weight', '600')
             .style('text-anchor', 'middle')
@@ -266,7 +266,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let yOffset = 40;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             yOffset += lineHeight;
-            toolTip.append('text')
+            toolTipInfo.append('text')
                 .style('font-weight', '600')
                 .attr('class', 'hover-text dataset-' + dix)
                 .attr('x', 25)
@@ -520,7 +520,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 });
         });
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.chart-' + this.chart.id));
+            this.toolTip(d3.select('svg.chart-' + this.chart.id));
         }
     }
 
@@ -621,7 +621,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .remove());
 
         if (create && dataSet.length > 0) {
-            this.markerLine(d3.select('svg.chart-' + this.chart.id));
+            this.toolTip(d3.select('svg.chart-' + this.chart.id));
         }
 
     }
