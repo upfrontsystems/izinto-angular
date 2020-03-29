@@ -444,6 +444,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight);
+            d3.select('div.chart-' + this.chart.id + ' rect.overlay')
+                .attr('width', this.chartWidth)
+                .attr('height', this.chartHeight);
         }
 
         svg.selectAll('text.section-label').remove();
@@ -579,6 +582,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         } else {
             d3.select('div.chart-' + this.chart.id + ' svg')
                 .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
+                .attr('width', this.chartWidth)
+                .attr('height', this.chartHeight);
+            d3.select('div.chart-' + this.chart.id + ' rect.overlay')
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight);
             dataSet.forEach((dataset, index) => {
