@@ -27,3 +27,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#12](https://github.com/upfrontsystems/izinto-angular/issues/12) show wind speed on wind arrow chart
 * [#75](https://github.com/upfrontsystems/izinto-angular/issues/75) fix info box display
 * [#74](https://github.com/upfrontsystems/izinto-angular/issues/75) fix "null" unit
+* [#76](https://github.com/upfrontsystems/izinto-angular/issues/76) fix chart resizing

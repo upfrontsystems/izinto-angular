@@ -42,8 +42,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
-        this.setChartWidth();
-        this.buildChart();
+        const width = event.target.innerWidth;
+        if (width && this.windowWidth !== width) {
+            this.setChartWidth();
+            this.buildChart();
+        }
     }
 
     constructor(protected dialog: MatDialog,
@@ -337,7 +340,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             const boxWidth = textLength * 10;
             d3.select('g.focus.g-' + this.chart.id)
                 .select('rect.background')
-                .attr('width', boxWidth)
+                .attr('width', boxWidth);
 
             // add date label at end
             d3.select('g.focus.g-' + this.chart.id)
@@ -426,6 +429,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
             svg = d3.select('div.chart-' + this.chart.id)
                 .append('svg')
+                .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
+                .attr('preserveAspectRatio', 'xMidYMid meet')
                 .attr('class', 'chart-' + this.chart.id)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
@@ -434,6 +439,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             svg.append('g')
                 .attr('class', 'grid');
             barChart = svg.append('g').attr('class', 'chart-' + this.chart.id);
+        } else {
+            d3.select('div.chart-' + this.chart.id + ' svg')
+                .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
+                .attr('width', this.chartWidth)
+                .attr('height', this.chartHeight);
         }
 
         svg.selectAll('text.section-label').remove();
@@ -540,6 +550,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
             svg = d3.select('div.chart-' + this.chart.id)
                 .append('svg')
+                .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
+                .attr('preserveAspectRatio', 'xMidYMid meet')
                 .attr('class', 'chart-' + this.chart.id)
                 .attr('width', this.chartWidth)
                 .attr('height', this.chartHeight)
@@ -565,6 +577,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     .text(this.chart.title);
             });
         } else {
+            d3.select('div.chart-' + this.chart.id + ' svg')
+                .attr('viewBox', '0 0 ' + this.chartWidth + ' ' + this.chartHeight)
+                .attr('width', this.chartWidth)
+                .attr('height', this.chartHeight);
             dataSet.forEach((dataset, index) => {
                 svg.select('g.line-chart-' + index + ' path.line')
                     .transition(trans)
