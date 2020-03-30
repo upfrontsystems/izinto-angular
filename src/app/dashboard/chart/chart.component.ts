@@ -225,16 +225,52 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .range([this.innerHeight, 0]);
     }
 
+    dropShadow(svg) {
+        const defs = svg.append('defs');
+
+        // black drop shadow
+        const filter = defs.append('filter')
+            .attr('id', 'drop-shadow');
+
+        filter.append('feGaussianBlur')
+            .attr('in', 'SourceAlpha')
+            .attr('stdDeviation', 1)
+            .attr('result', 'blur');
+        filter.append('feOffset')
+            .attr('in', 'blur')
+            .attr('dx', 1)
+            .attr('dy', 1)
+            .attr('result', 'offsetBlur');
+        filter.append('feFlood')
+            .attr('in', 'offsetBlur')
+            .attr('flood-color', '#2f3d4a')
+            .attr('flood-opacity', '0.5')
+            .attr('result', 'offsetColor');
+        filter.append('feComposite')
+            .attr('in', 'offsetColor')
+            .attr('in2', 'offsetBlur')
+            .attr('operator', 'in')
+            .attr('result', 'offsetBlur');
+
+        const feMerge = filter.append('feMerge');
+
+        feMerge.append('feMergeNode')
+            .attr('in', 'offsetBlur');
+        feMerge.append('feMergeNode')
+            .attr('in', 'SourceGraphic');
+    }
+
     toolTip(svg) {
+        this.dropShadow(svg);
         const lineHeight = 22;
         const focus = svg.append('g')
-            .attr('transform', 'translate(' + this.margin.left + ',0)')
+            .attr('transform', 'translate(' + -this.chartWidth + ',0)')
             .attr('class', 'focus g-' + this.chart.id)
             .style('display', 'none');
 
         focus.append('line')
             .attr('class', 'x-hover-line hover-line')
-            .attr('stroke', 'darkgray')
+            .attr('stroke', '#eef5f9')
             .attr('stroke-width', '2px')
             .attr('y1', 0)
             .attr('y2', this.chartHeight);
@@ -243,35 +279,47 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         toolTipInfo.append('rect')
             .attr('class', 'background')
             .attr('transform', 'translate(10, 20)')
-            .attr('stroke', 'darkgray')
-            .attr('fill', 'whitesmoke')
-            .attr('width', '200')
-            .attr('height', this.dataSets.length * lineHeight + 30)
-            .attr('fill-opacity', '0.7')
-            .attr('rx', '5');
+            .attr('stroke', 'white')
+            .attr('fill', 'white')
+            .attr('width', 300)
+            .attr('height', this.dataSets.length * lineHeight + 45)
+            .attr('rx', '5')
+            .style('filter', 'url(#drop-shadow)');
 
         // add date label
         toolTipInfo.append('text')
             .style('font-size', '0.8em')
-            .style('font-weight', '600')
             .style('text-anchor', 'middle')
             .attr('class', 'hover-text dataset-date')
             .attr('x', 100)
-            .attr('y', 35)
+            .attr('y', 40)
             .attr('font-family', 'Poppins')
             .attr('fill', 'black');
 
         // add text label for each dataset
         const colors = this.chart.color.split(',');
-        let yOffset = 40;
+        let yOffset = 50;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             yOffset += lineHeight;
+            toolTipInfo.append('rect')
+                .attr('x', 25)
+                .attr('y', yOffset - 5)
+                .attr('width', '10')
+                .attr('height', '2')
+                .attr('fill', colors[dix]);
+            toolTipInfo.append('text')
+                .style('font-weight', '400')
+                .attr('class', 'tooltip-legend dataset-' + dix)
+                .attr('x', 40)
+                .attr('y', yOffset)
+                .attr('fill', 'black');
             toolTipInfo.append('text')
                 .style('font-weight', '600')
-                .attr('class', 'hover-text dataset-' + dix)
-                .attr('x', 25)
+                .attr('class', 'tooltip-value dataset-' + dix)
+                .attr('x', 280)
                 .attr('y', yOffset)
-                .attr('fill', colors[dix]);
+                .attr('text-anchor', 'end')
+                .attr('fill', 'black');
         }
 
         svg.append('rect')
@@ -281,6 +329,28 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('height', this.chartHeight)
             .attr('fill', 'none')
             .attr('pointer-events', 'all');
+    }
+
+    legend(svg, color, fieldName, index) {
+        const legend = svg.append('g')
+            .attr('class', 'legend');
+        const offSetX = fieldName.length * 9 * index;
+        legend
+            .append('rect')
+            .attr('x', index * 40 + offSetX)
+            .attr('y', this.chartHeight - 65)
+            .attr('width', '10')
+            .attr('height', '3')
+            .attr('rx', '2')
+            .attr('fill', color);
+        legend.append('text')
+            .style('font-weight', '400')
+            .style('font-size', '0.8em')
+            .attr('class', 'chart-legend dataset-' + index)
+            .attr('x', index * 40 + offSetX + 15)
+            .attr('y', this.chartHeight - 60)
+            .attr('fill', 'black')
+            .text(fieldName);
     }
 
     mouseover() {
@@ -303,10 +373,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             newX = xcoord + this.margin.left,
             xscale = this.xAxisScale(),
             xdate = xscale.invert(xcoord),
-            decimals = this.chart.decimals;
+            decimals = this.chart.decimals,
+            tooltip = d3.select('g.focus.g-' + this.chart.id);
 
         // update marker label for each dataset
-        let textLength = 20;
+        let textLength = 0,
+            valueLength = 0;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const rix = bisectDate(this.dataSets[dix], xdate) - 1,
                 chart_type = this.chart.type;
@@ -316,51 +388,74 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 return;
             }
 
-            d3.select('g.focus.g-' + this.chart.id)
+            tooltip
                 .attr('transform', 'translate(' + newX + ',' + 0 + ')')
                 .style('display', null)
-                .select('text.dataset-' + dix).text(function (): any {
+                .select('text.tooltip-legend.dataset-' + dix).text(function (): any {
                     if (record.text) {
                         return record.text;
                     } else {
                         let text = '';
                         if (chart_type === 'Wind Arrow' && dix === 1) {
-                            // TODO: unit for wind speed is hardcoded
-                            text = 'Wind speed: ' + record.value.toFixed(decimals) + ' m/s';
+                            text = 'Wind speed: ';
                         } else {
-                            text = record.fieldName + ': ' + record.value.toFixed(decimals) + ' ' + record.unit;
+                            text = record.fieldName + ': ';
                         }
                         if (text.length > textLength) {
                             textLength = text.length;
                         }
                         return text;
                     }
-            }).select('.x-hover-line').attr('y2', markerHeight);
+                })
+                .select('.x-hover-line').attr('y2', markerHeight);
 
-            const boxWidth = textLength * 10;
-            d3.select('g.focus.g-' + this.chart.id)
-                .select('rect.background')
-                .attr('width', boxWidth);
-
-            // add date label at end
-            d3.select('g.focus.g-' + this.chart.id)
-                .select('text.dataset-date')
-                    .attr('x', boxWidth / 2)
+            tooltip
+                .select('text.tooltip-value.dataset-' + dix)
                     .text(function (): any {
-                        return d3TimeFormat.timeFormat('%d %B %Y, %H:%M')(xdate as any);
-                    });
-
-            const focus = d3.select('g.focus.g-' + this.chart.id);
-            if (newX + boxWidth > bounds.width) {
-                 focus
-                    .select('g.tooltip')
-                    .attr('transform', 'translate(' + (-boxWidth - 30) + ', 0)');
-            } else {
-                focus
-                    .select('g.tooltip')
-                    .attr('transform', 'translate(0, 0)');
-            }
+                        let value = '';
+                        if (chart_type === 'Wind Arrow' && dix === 1) {
+                            // TODO: unit for wind speed is hardcoded
+                            value = record.value.toFixed(decimals) + ' m/s';
+                        } else {
+                            value = record.value.toFixed(decimals) + ' ' + record.unit;
+                        }
+                        if (value.length > valueLength) {
+                            valueLength = value.length;
+                        }
+                        return value;
+                        })
+                    .attr('textLength', valueLength * 0.5 + 'em');
         }
+
+        let boxWidth = (textLength + valueLength) * 11;
+        if (boxWidth < 200) {
+            boxWidth = 200;
+        }
+        tooltip
+            .select('rect.background')
+            .attr('width', boxWidth);
+
+        // add date label at end
+        tooltip
+            .select('text.dataset-date')
+                .attr('x', boxWidth / 2)
+                .text(function (): any {
+                    return d3TimeFormat.timeFormat('%d %B, %H:%M')(xdate as any);
+                });
+
+        if (newX + boxWidth > bounds.width) {
+             tooltip
+                .select('g.tooltip')
+                .attr('transform', 'translate(' + (-boxWidth - 30) + ', 0)');
+        } else {
+            tooltip
+                .select('g.tooltip')
+                .attr('transform', 'translate(0, 0)');
+        }
+
+        tooltip
+            .selectAll('text.tooltip-value')
+            .attr('x', boxWidth - 13);
     }
 
     xAxisInterval(width) {
@@ -412,12 +507,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     barChart(dataSet) {
-        const width = this.innerWidth,
-            height = this.innerHeight,
-            merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
+        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged),
-            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth);
+            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth),
+            showLegend = this.dataSets.length > 1 && this.chart.type !== 'Wind Arrow';
+
+        if (showLegend) {
+            this.chartHeight = 250;
+            this.margin.bottom = 50;
+            this.setChartWidth();
+        }
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -460,11 +560,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
-        const interval = this.xAxisInterval(width),
+        const interval = this.xAxisInterval(this.innerWidth),
             tickFormat = this.tickFormat();
         svg.append('g')
             .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + height + ')')
+            .attr('transform', 'translate(0,' + this.innerHeight + ')')
             .call(d3Axis.axisBottom(xAxisScale)
                 .ticks(interval)
                 .tickFormat(function (d: any) {
@@ -483,9 +583,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .call(g => g.select('.domain')
                 .remove());
 
-        const fillFunc = this.chart.fillFunc;
-        const color = this.chart.color;
+        const fillFunc = this.chart.fillFunc,
+            color = this.chart.color,
+            height = this.innerHeight;
         dataSet.forEach((dataset, index) => {
+            // add legends
+            if (create && showLegend) {
+                const datasetColor = color.split(',')[index],
+                    fieldName = dataset[0].fieldName;
+                this.legend(svg, datasetColor, fieldName, index);
+            }
+
             const bar_selector = 'dataset-' + index,
                 bandwidth = this.barWidth(),
                 padding = 1,
@@ -526,14 +634,19 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     lineChart(dataSet) {
 
-        const width = this.innerWidth,
-            height = this.innerHeight,
-            merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
-            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-width),
+        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
+            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth),
+            showLegend = this.dataSets.length > 1,
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged, [
                 d3Array.max<Date>(merged.map(d => d.value)),
                 d3Array.min<Date>(merged.map(d => d.value))]);
+
+        if (showLegend) {
+            this.chartHeight = 250;
+            this.margin.bottom = 50;
+            this.setChartWidth();
+        }
 
         const line = d3Shape.line<Record>()
             .x(function (d: any): number {
@@ -563,6 +676,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             svg.append('g')
                 .attr('class', 'grid');
             dataSet.forEach((dataset, index) => {
+                if (create && this.dataSets.length > 1) {
+                    const datasetColor = this.chart.color.split(',')[index],
+                        fieldName = dataset[0].fieldName;
+                    this.legend(svg, datasetColor, fieldName, index);
+                }
+
                 const linechart = svg.append('g').attr('class', 'line-chart-' + index);
                 linechart.append('path')
                     .datum(dataset)
@@ -594,14 +713,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             });
         }
 
-        const interval = this.xAxisInterval(width);
+        const interval = this.xAxisInterval(this.innerWidth);
         const tickFormat = this.tickFormat();
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
         svg.append('g')
             .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + height + ')')
+            .attr('transform', 'translate(0,' + this.innerHeight + ')')
             .call(d3Axis.axisBottom(xAxisScale)
                 .ticks(interval)
                 .tickFormat(function (d: any) {
