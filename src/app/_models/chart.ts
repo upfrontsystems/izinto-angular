@@ -21,6 +21,10 @@ export class Chart {
     decimals: number;
     type: ChartType;
     query: string;
+    labels: string;
+    min: number;
+    max: number;
+    height: number;
     data_source_id: number;
     data_source: DataSource;
     group_by: ChartGroupBy[];

@@ -4,20 +4,38 @@
         <div fxLayout="row wrap">
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+                <mat-form-field>
                     <input matInput placeholder="Title" [formControl]="form.get('title')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field class="p-r-10">
+                    <mat-label>Type</mat-label>
+                    <mat-select [formControl]="form.get('type')">
+                        <mat-option *ngFor="let type of chartTypes" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field class="p-r-10">
                     <input matInput placeholder="Unit" [formControl]="form.get('unit')">
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Decimals" min="0" [formControl]="form.get('decimals')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+                <mat-form-field>
                     <input matInput placeholder="Colours" [formControl]="form.get('color')" autocomplete="off"
                            spellcheck="false">
                     <span matSuffix [matMenuTriggerFor]="colorPicker" aria-label="color-picker" class="picker-button">
@@ -30,25 +48,35 @@
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
-                    <input matInput type="number" placeholder="Decimals" min="0" [formControl]="form.get('decimals')"
+                <mat-form-field>
+                    <input matInput placeholder="Labels" [formControl]="form.get('labels')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field class="p-r-10">
+                    <input matInput type="number" placeholder="Y-axis minimum" min="0" [formControl]="form.get('min')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field class="p-r-10">
+                    <input matInput type="number" placeholder="Y-axis maxixum" min="0" [formControl]="form.get('max')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="33" fxFlex.gt-xs="33" fxFlex="33">
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Chart height (px)" min="0" [formControl]="form.get('height')"
                            autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
-                    <mat-label>Type</mat-label>
-                    <mat-select [formControl]="form.get('type')">
-                        <mat-option *ngFor="let type of chartTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
-                <mat-form-field style="width: 100%">
+                <mat-form-field>
                     <mat-label>Query</mat-label>
                     <textarea matInput [formControl]="form.get('query')"
                               cdkTextareaAutosize></textarea>
@@ -72,8 +100,8 @@
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" class="category-table">
                 <div fxLayout="row wrap">
                     <div *ngFor="let group of form.get('group_by')['controls']; let i = index"
-                         fxFlex="100" formArrayName="group_by">
-                        <mat-form-field [formGroupName]="i">
+                         fxFlex.gt-sm="25" fxFlex="50" formArrayName="group_by">
+                        <mat-form-field class="p-r-20" [formGroupName]="i">
                             <mat-label>{{dateViews[i].name}}</mat-label>
                             <mat-select formControlName="value">
                                 <mat-option *ngFor="let option of groupByOptions" [value]="option">

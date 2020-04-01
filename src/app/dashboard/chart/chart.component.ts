@@ -39,12 +39,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     private innerHeight = 0;
     public windowWidth: any;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
+    private showLegend = false;
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
         const width = event.target.innerWidth;
         if (width && this.windowWidth !== width) {
-            this.setChartWidth();
             this.buildChart();
         }
     }
@@ -101,7 +101,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     ngOnInit() {
         // Initialise transition
         d3Trans.transition().duration(750);
-        this.setChartWidth();
         this.loadDataSet();
 
         // only admin can edit chart
@@ -116,6 +115,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     setChartWidth() {
+        // default height of 200
+        this.chartHeight = this.chart.height || 200;
+        // increase the height and bottom margin for the legend
+        if (this.showLegend) {
+            this.chartHeight += 50;
+            this.margin.bottom = 50;
+        }
         this.windowWidth = window.innerWidth;
         this.chartWidth = this.windowWidth - 130;
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
@@ -194,6 +200,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     buildChart() {
+        this.showLegend = this.dataSets.length > 1 && this.chart.type !== 'Wind Arrow';
+        this.setChartWidth();
         if (this.chart.type === 'Line') {
             this.lineChart(this.dataSets);
         } else if (this.chart.type === 'Bar') {
@@ -211,18 +219,20 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         );
     }
 
-    yScale(dataset, domain?) {
-        const ymin = d3Array.min<Date>(dataset.map(d => d.value)),
-            ymax = d3Array.max<Date>(dataset.map(d => d.value));
-        return d3Scale.scaleLinear().domain(domain && domain || [ymin, ymax]).range([0, this.innerHeight]);
-    }
-
-    gridScale(dataset) {
-        const ymin = d3Array.min<Date>(dataset.map(d => d.value)),
-            ymax = d3Array.max<Date>(dataset.map(d => d.value));
-        return d3Scale.scaleLinear()
-            .domain([ymin, ymax])
-            .range([this.innerHeight, 0]);
+    yScale(dataset, ascending = true) {
+        let ymin = this.chart.min,
+            ymax = this.chart.max;
+        if (ymin === null) {
+            ymin = d3Array.min<number>(dataset.map(d => d.value));
+        }
+        if (ymax === null) {
+            ymax = d3Array.max<number>(dataset.map(d => d.value));
+        }
+        if (ascending) {
+            return d3Scale.scaleLinear().domain([ymin, ymax]).range([0, this.innerHeight]);
+        } else {
+            return d3Scale.scaleLinear().domain([ymax, ymin]).range([0, this.innerHeight]);
+        }
     }
 
     dropShadow(svg) {
@@ -374,11 +384,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             xscale = this.xAxisScale(),
             xdate = xscale.invert(xcoord),
             decimals = this.chart.decimals,
+            labels = this.chart.labels && this.chart.labels.split(',') || [],
             tooltip = d3.select('g.focus.g-' + this.chart.id);
 
         // update marker label for each dataset
         let textLength = 0,
-            valueLength = 0;
+            valueLength = 0,
+            value = '';
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const rix = bisectDate(this.dataSets[dix], xdate) - 1,
                 chart_type = this.chart.type;
@@ -399,7 +411,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         if (chart_type === 'Wind Arrow' && dix === 1) {
                             text = 'Wind speed: ';
                         } else {
-                            text = record.fieldName + ': ';
+                            text = labels[dix] && labels[dix] + ': ' || record.fieldName + ': ';
                         }
                         if (text.length > textLength) {
                             textLength = text.length;
@@ -412,7 +424,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             tooltip
                 .select('text.tooltip-value.dataset-' + dix)
                     .text(function (): any {
-                        let value = '';
                         if (chart_type === 'Wind Arrow' && dix === 1) {
                             // TODO: unit for wind speed is hardcoded
                             value = record.value.toFixed(decimals) + ' m/s';
@@ -424,7 +435,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         }
                         return value;
                         })
-                    .attr('textLength', valueLength * 0.5 + 'em');
+                    .attr('textLength', function() {
+                        if (chart_type === 'Wind Arrow' && dix === 1) {
+                            return value.length * 0.5 + 'em';
+                        } else {
+                            return valueLength * 0.5 + 'em';
+                        }
+                    });
         }
 
         let boxWidth = (textLength + valueLength) * 11;
@@ -510,14 +527,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged),
-            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth),
-            showLegend = this.dataSets.length > 1 && this.chart.type !== 'Wind Arrow';
-
-        if (showLegend) {
-            this.chartHeight = 250;
-            this.margin.bottom = 50;
-            this.setChartWidth();
-        }
+            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -585,12 +595,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         const fillFunc = this.chart.fillFunc,
             color = this.chart.color,
-            height = this.innerHeight;
+            height = this.innerHeight,
+            labels = this.chart.labels;
         dataSet.forEach((dataset, index) => {
             // add legends
-            if (create && showLegend) {
+            if (create && this.showLegend) {
                 const datasetColor = color.split(',')[index],
-                    fieldName = dataset[0].fieldName;
+                    label = labels.split(',')[index],
+                    fieldName = label || dataset[0].fieldName;
                 this.legend(svg, datasetColor, fieldName, index);
             }
 
@@ -635,18 +647,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     lineChart(dataSet) {
 
         const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
-            gridLines = d3Axis.axisLeft(this.gridScale(merged)).ticks(4).tickSize(-this.innerWidth),
-            showLegend = this.dataSets.length > 1,
+            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth),
             xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged, [
-                d3Array.max<Date>(merged.map(d => d.value)),
-                d3Array.min<Date>(merged.map(d => d.value))]);
-
-        if (showLegend) {
-            this.chartHeight = 250;
-            this.margin.bottom = 50;
-            this.setChartWidth();
-        }
+            yScale = this.yScale(merged, false);
 
         const line = d3Shape.line<Record>()
             .x(function (d: any): number {
@@ -676,9 +679,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             svg.append('g')
                 .attr('class', 'grid');
             dataSet.forEach((dataset, index) => {
-                if (create && this.dataSets.length > 1) {
+                if (create && this.showLegend) {
                     const datasetColor = this.chart.color.split(',')[index],
-                        fieldName = dataset[0].fieldName;
+                        label = this.chart.labels && this.chart.labels.split(',')[index] || undefined,
+                        fieldName = label || dataset[0].fieldName;
                     this.legend(svg, datasetColor, fieldName, index);
                 }
 

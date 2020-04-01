@@ -28,3 +28,6 @@ All notable changes to this project will be documented in this file. See [standa
 * [#75](https://github.com/upfrontsystems/izinto-angular/issues/75) fix info box display
 * [#74](https://github.com/upfrontsystems/izinto-angular/issues/75) fix "null" unit
 * [#76](https://github.com/upfrontsystems/izinto-angular/issues/76) fix chart resizing
+* [#51](https://github.com/upfrontsystems/izinto-angular/issues/51) set height of chart
+* [#54](https://github.com/upfrontsystems/izinto-angular/issues/54) set y-axis min and max
+* [#61](https://github.com/upfrontsystems/izinto-angular/issues/61) add legends
