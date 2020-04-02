@@ -11,8 +11,12 @@ Main sidebar
 ******************/
 
 .mat-sidenav {
-  width: 240px;
+  width: 300px;
   padding-top: 0px;
+}
+
+span.menuitem-text {
+  max-width: 200px;
 }
 
 #snav {
@@ -50,7 +54,6 @@ Main sidebar
       align-items: center;
       display: flex;
       font-size: 15px;
-      white-space: nowrap;
       color: $sidebar-text;
 
       mat-icon:not(.dd-icon) {

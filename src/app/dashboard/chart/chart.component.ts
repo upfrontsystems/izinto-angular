@@ -80,7 +80,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         touchListener.touch.subscribe(event => {
             const target = event.target as HTMLElement;
             if (target.matches('rect')) {
-                event.preventDefault();
                 // calculate x coordinate within chart
                 const bounds = target.getBoundingClientRect();
                 this.mousemove(event.changedTouches[0].clientX - bounds.left, event.changedTouches[0].clientY - bounds.bottom);
@@ -123,7 +122,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             this.margin.bottom = 50;
         }
         this.windowWidth = window.innerWidth;
-        this.chartWidth = this.windowWidth - 130;
+        if (this.windowWidth > 600) {
+            this.chartWidth = this.windowWidth - 130;
+        } else {
+            this.chartWidth = this.windowWidth - 30;
+        }
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
     }
@@ -461,9 +464,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 });
 
         if (newX + boxWidth > bounds.width) {
-             tooltip
+            let boxX = -boxWidth - 30;
+            if (this.windowWidth <= 600) {
+                boxX = bounds.width - (newX + boxWidth) - 30;
+            }
+            tooltip
                 .select('g.tooltip')
-                .attr('transform', 'translate(' + (-boxWidth - 30) + ', 0)');
+                .attr('transform', 'translate(' + boxX + ', 0)');
         } else {
             tooltip
                 .select('g.tooltip')
@@ -608,7 +615,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
             const bar_selector = 'dataset-' + index,
                 bandwidth = this.barWidth(),
-                padding = 1,
+                padding = bandwidth > 2 && 1 || 0,
                 update = barChart.selectAll('rect.' + bar_selector).data(dataset);
             // barChart.selectAll('rect.' + bar_selector).remove();
             update.exit().remove();
