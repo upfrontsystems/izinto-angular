@@ -1,6 +1,6 @@
 <div fxLayout="row wrap" fxLayoutAlign="center">
-    <mat-card class="single-stat" fxFlex="25" fxFlex.xs="100" *ngFor="let stat of singleStats">
-        <mat-card-content class="single-stat">
+    <mat-card class="single-stat" fxFlex="25" fxFlex.sm="40" fxFlex.md="40" fxFlex.xs="100" *ngFor="let stat of singleStats">
+        <mat-card-content>
 
             <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                 <mat-icon>more_horiz</mat-icon>
@@ -21,8 +21,8 @@
                 </button>
             </mat-menu>
 
-            <mat-card-title>{{stat.title}}</mat-card-title>
-            <p [style.color]="dataSets[stat.id].color" class="stat-value">{{dataSets[stat.id].valueString}}</p>
+            <h3 class="stat-header">{{stat.title}}</h3>
+            <h1 [style.color]="dataSets[stat.id].color" class="stat-value">{{dataSets[stat.id].valueString}}</h1>
 
         </mat-card-content>
     </mat-card>

@@ -52,10 +52,13 @@ g.grid g.tick line {
     padding-bottom: 2em;
 }
 
+.stat-header {
+  text-align: center;
+}
+
 .stat-value {
     width: 100%;
     text-align: center;
-    font-size: xx-large;
 }
 
 .drag-handle {
@@ -67,6 +70,9 @@ g.grid g.tick line {
     padding-right: 5px
 }
 
+div.d3-chart {
+    margin-top: 40px;
+}
 
 .chart-row .drag-handle, .chart-row .chart-actions {
     display: none;
@@ -122,6 +128,8 @@ g.grid g.tick line {
     z-index: 10;
 }
 
-mat-card-title.single-stat {
+mat-card.single-stat {
     font-size: medium;
+    background-color: #fafafa !important;
+    border: 1px solid #c0c0c0;
 }
