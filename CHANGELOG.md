@@ -31,3 +31,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#51](https://github.com/upfrontsystems/izinto-angular/issues/51) set height of chart
 * [#54](https://github.com/upfrontsystems/izinto-angular/issues/54) set y-axis min and max
 * [#61](https://github.com/upfrontsystems/izinto-angular/issues/61) add legends
+* [#88](https://github.com/upfrontsystems/izinto-angular/issues/88) check for labels

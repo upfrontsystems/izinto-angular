@@ -608,8 +608,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             // add legends
             if (create && this.showLegend) {
                 const datasetColor = color.split(',')[index],
-                    label = labels.split(',')[index],
-                    fieldName = label || dataset[0].fieldName;
+                    fieldName = labels && labels.split(',')[index] || dataset[0].fieldName;
                 this.legend(svg, datasetColor, fieldName, index);
             }
 
