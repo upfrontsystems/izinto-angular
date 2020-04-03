@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+    build:
+        working_directory: ~/angular-dashtweak
+        docker:
+            - image: circleci/node:10-browsers
+        steps:
+            - checkout
+            - run:
+                name: Show current branch
+                command: echo ${CIRCLE_BRANCH}
+            - restore_cache:
+                key: v1-deps-{{ checksum "package-lock.json" }}
+            - run:
+                name: Install local dependencies
+                command: npm install
+            - save_cache:
+                key: v1-deps-{{ checksum "package-lock.json" }}
+                paths:
+                    - node_modules
+            - run:
+                name: Testing
+                command: npm run test -- --no-watch --no-progress
+            - store_artifacts:
+                path: test-results.xml
+                prefix: tests
