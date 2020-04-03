@@ -122,7 +122,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             this.margin.bottom = 50;
         }
         this.windowWidth = window.innerWidth;
-        if (this.windowWidth > 600) {
+        if (this.windowWidth > 700) {
             this.chartWidth = this.windowWidth - 130;
         } else {
             this.chartWidth = this.windowWidth - 30;
@@ -463,10 +463,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     return d3TimeFormat.timeFormat('%d %B, %H:%M')(xdate as any);
                 });
 
-        if (newX + boxWidth > bounds.width) {
+        if (newX + boxWidth > this.innerWidth) {
             let boxX = -boxWidth - 30;
             if (this.windowWidth <= 600) {
-                boxX = bounds.width - (newX + boxWidth) - 30;
+                boxX = this.innerWidth - (newX + boxWidth);
             }
             tooltip
                 .select('g.tooltip')

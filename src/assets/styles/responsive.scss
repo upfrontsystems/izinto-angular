@@ -72,26 +72,6 @@ File: scss
 }
 
 @media (max-width: 600px) {
-  html .page-wrapper {
-    .page-content {
-      padding: 0;
-    }
-  }
-  .navbar-header {
-    flex-shrink: 0;
-    .navbar-brand {
-      padding-top: 0px;
-    }
-  }
-
-  .mat-card {
-    margin: 0;
-    border-radius: 0;
-    .mat-card-content {
-      padding: 15px 5px;
-    }
-  }
-
   .responsive-table {
     .header-label {
       width: 80px;
@@ -119,6 +99,44 @@ File: scss
  ============================================================== */
 
 @media (max-width: 767px) {
+  html .page-wrapper {
+    .page-content {
+      padding: 0;
+    }
+  }
+  .navbar-header {
+    flex-shrink: 0;
+    .navbar-brand {
+      padding-top: 0px;
+    }
+  }
+
+  .mat-card {
+    margin: 0;
+    border-radius: 0;
+    .mat-card-content {
+      padding: 15px 5px;
+    }
+  }
+
+  mat-card.single-stat {
+    margin: 15px;
+    .mat-card-content {
+      padding: 15px;
+    }
+  }
+
+  .mat-card-title,
+  .mat-card-subtitle {
+    text-align: center;
+    margin-top: 5px !important;
+    margin-left: 10px;
+  };
+
+  mat-toolbar.topbar {
+    padding: 0 5px;
+  }
+
   .mat-toolbar-single-row {
     height: 64px !important;
   }
