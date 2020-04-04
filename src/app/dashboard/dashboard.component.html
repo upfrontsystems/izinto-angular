@@ -1,16 +1,7 @@
-<div fxLayout="row wrap">
+<div fxLayout="row wrap" id="dashboard">
     <div fxFlex="100">
         <mat-card *ngIf="dashboard">
-            <mat-card-content>
-                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']" *ngIf="canEdit">
-                    <mat-icon>settings</mat-icon>
-                </a>
-
-                <mat-card-title>{{dashboard.title}}</mat-card-title>
-                <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
-            </mat-card-content>
-
-            <mat-toolbar class="no-shadow sticky-toolbar" fxLayout="row" fxLayout.xs="column">
+            <mat-toolbar class="no-shadow sticky-toolbar" fxLayout="row" fxLayout.xs="column" *ngIf="dateSelectOpened">
                 <mat-toolbar-row fxFlex fxFlex.xs="100">
                     <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
                             [class.active]="dateView == view.name">{{view.name}}
@@ -33,6 +24,12 @@
             </mat-toolbar>
 
             <mat-card-content>
+                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']" *ngIf="canEdit">
+                    <mat-icon>settings</mat-icon>
+                </a>
+
+                <mat-card-title>{{dashboard.title}}</mat-card-title>
+                <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
 
                 <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat" [view]="dateView"
                                       [dateRange]="dateRange" [variables]="dashboard.variables"

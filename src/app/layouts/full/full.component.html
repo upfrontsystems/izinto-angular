@@ -38,7 +38,12 @@
         <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
             <mat-icon>menu</mat-icon>
         </button>
-
+        <button mat-icon-button routerLink="/">
+            <mat-icon>home</mat-icon>
+        </button>
+        <button mat-icon-button (click)="toggleDateSelect()">
+            <mat-icon>date_range</mat-icon>
+        </button>
         <span fxFlex></span>
         <!-- ============================================================== -->
         <!-- app header component - style you can find in header.scss / header.component.ts-->

@@ -61,6 +61,7 @@ export class DashboardComponent implements OnInit {
         }
     ];
     today = moment();
+    dateSelectOpened = false;
 
     pickerRange = {startDate: moment(), endDate: moment()};
 
@@ -90,6 +91,7 @@ export class DashboardComponent implements OnInit {
         });
 
         this.setDateRange();
+        this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
 
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');

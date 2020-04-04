@@ -32,3 +32,5 @@ All notable changes to this project will be documented in this file. See [standa
 * [#54](https://github.com/upfrontsystems/izinto-angular/issues/54) set y-axis min and max
 * [#61](https://github.com/upfrontsystems/izinto-angular/issues/61) add legends
 * [#88](https://github.com/upfrontsystems/izinto-angular/issues/88) check for labels
+* [#70](https://github.com/upfrontsystems/izinto-angular/issues/70) refactor top bar
+* [#87](https://github.com/upfrontsystems/izinto-angular/issues/87) refactor legends

@@ -1015,14 +1015,14 @@ list inline
     }
 }
 
-button.mat-menu-trigger {
+#dashboard button.mat-menu-trigger {
     display:none;
 }
 
-mat-card.single-stat:hover button.mat-menu-trigger {
+#dashboard mat-card.single-stat:hover button.mat-menu-trigger {
     display:inline;
 }
 
-div.chart-row:hover button.mat-menu-trigger {
+#dashboard div.chart-row:hover button.mat-menu-trigger {
     display:inline;
 }

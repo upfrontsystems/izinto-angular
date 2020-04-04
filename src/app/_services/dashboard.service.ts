@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardView} from '../_models/dashboard_view';
@@ -8,6 +8,8 @@ import {DashboardView} from '../_models/dashboard_view';
     providedIn: 'root'
 })
 export class DashboardService {
+
+    toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>()
 
     constructor(private http: HttpClient) {
     }

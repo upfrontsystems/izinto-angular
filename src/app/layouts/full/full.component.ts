@@ -9,13 +9,14 @@ import {
     ViewChild,
     HostListener,
     Directive,
-    AfterViewInit
+    AfterViewInit, OnInit
 } from '@angular/core';
 import {AppHeaderComponent} from './header/header.component';
 import {AppSidebarComponent} from './sidebar/sidebar.component';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {DashboardService} from '../../_services/dashboard.service';
 
 /** @title Responsive sidenav */
 @Component({
@@ -23,7 +24,7 @@ import {AuthenticationService} from '../../_services/authentication.service';
     templateUrl: 'full.component.html',
     styles: ['.site-title {font-family: Dosis, sans-serif; font-size: 36px; color: black}']
 })
-export class FullComponent implements OnDestroy, AfterViewInit {
+export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
     mobileQuery: MediaQueryList;
     dir = 'ltr';
     green: boolean;
@@ -34,6 +35,7 @@ export class FullComponent implements OnDestroy, AfterViewInit {
     danger: boolean;
     showHide: boolean;
     sidebarOpened = false;
+    dateSelectOpened = false;
 
     public config: PerfectScrollbarConfigInterface = {};
     private _mobileQueryListener: () => void;
@@ -41,11 +43,20 @@ export class FullComponent implements OnDestroy, AfterViewInit {
     constructor(
         changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher,
-        public authService: AuthenticationService
+        public authService: AuthenticationService,
+        private dashboardService: DashboardService
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
+    }
+
+    ngOnInit() {
+        this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
+    }
+
+    toggleDateSelect() {
+        this.dashboardService.toggleDateSelect.emit(!this.dateSelectOpened);
     }
 
     ngOnDestroy(): void {
@@ -58,6 +69,4 @@ export class FullComponent implements OnDestroy, AfterViewInit {
             (<any>$('.app-search')).toggle(200);
         });
     }
-
-    // Mini sidebar
 }

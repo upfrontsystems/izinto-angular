@@ -33,13 +33,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     private dataSets = [];
     private scales = [];
-    private chartHeight = 200;
+    private chartHeight = 250;
     private chartWidth = 1200;
     private innerWidth = 0;
     private innerHeight = 0;
+    private legendHeight = 30;
     public windowWidth: any;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
-    private showLegend = false;
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -113,20 +113,23 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }
     }
 
-    setChartWidth() {
-        // default height of 200
+    setChartDimensions() {
+        // default height of 250
         this.chartHeight = this.chart.height || 200;
-        // increase the height and bottom margin for the legend
-        if (this.showLegend) {
-            this.chartHeight += 50;
-            this.margin.bottom = 50;
-        }
         this.windowWidth = window.innerWidth;
         if (this.windowWidth > 700) {
             this.chartWidth = this.windowWidth - 130;
         } else {
             this.chartWidth = this.windowWidth - 30;
         }
+
+        // we assume a maximum legend width of 250px;
+        const legendsPerRow = this.chartWidth / 250,
+            legendRows = Math.ceil(this.dataSets.length / legendsPerRow);
+        this.legendHeight = legendRows * 30;
+        this.chartHeight += this.legendHeight;
+        this.margin.bottom = 20 + this.legendHeight;
+
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
     }
@@ -203,8 +206,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     buildChart() {
-        this.showLegend = this.dataSets.length > 1 && this.chart.type !== 'Wind Arrow';
-        this.setChartWidth();
+        this.setChartDimensions();
         if (this.chart.type === 'Line') {
             this.lineChart(this.dataSets);
         } else if (this.chart.type === 'Bar') {
@@ -289,51 +291,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('y2', this.chartHeight);
 
         const toolTipInfo = focus.append('g').attr('class', 'tooltip');
-        toolTipInfo.append('rect')
-            .attr('class', 'background')
-            .attr('transform', 'translate(10, 20)')
-            .attr('stroke', 'white')
-            .attr('fill', 'white')
-            .attr('width', 300)
-            .attr('height', this.dataSets.length * lineHeight + 45)
-            .attr('rx', '5')
-            .style('filter', 'url(#drop-shadow)');
-
         // add date label
         toolTipInfo.append('text')
             .style('font-size', '0.8em')
-            .style('text-anchor', 'middle')
             .attr('class', 'hover-text dataset-date')
-            .attr('x', 100)
+            .attr('x', 10)
             .attr('y', 40)
             .attr('font-family', 'Poppins')
             .attr('fill', 'black');
-
-        // add text label for each dataset
-        const colors = this.chart.color.split(',');
-        let yOffset = 50;
-        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            yOffset += lineHeight;
-            toolTipInfo.append('rect')
-                .attr('x', 25)
-                .attr('y', yOffset - 5)
-                .attr('width', '10')
-                .attr('height', '2')
-                .attr('fill', colors[dix]);
-            toolTipInfo.append('text')
-                .style('font-weight', '400')
-                .attr('class', 'tooltip-legend dataset-' + dix)
-                .attr('x', 40)
-                .attr('y', yOffset)
-                .attr('fill', 'black');
-            toolTipInfo.append('text')
-                .style('font-weight', '600')
-                .attr('class', 'tooltip-value dataset-' + dix)
-                .attr('x', 280)
-                .attr('y', yOffset)
-                .attr('text-anchor', 'end')
-                .attr('fill', 'black');
-        }
 
         svg.append('rect')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
@@ -344,26 +309,52 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('pointer-events', 'all');
     }
 
-    legend(svg, color, fieldName, index) {
-        const legend = svg.append('g')
-            .attr('class', 'legend');
-        const offSetX = fieldName.length * 9 * index;
-        legend
-            .append('rect')
-            .attr('x', index * 40 + offSetX)
-            .attr('y', this.chartHeight - 65)
-            .attr('width', '10')
-            .attr('height', '3')
-            .attr('rx', '2')
-            .attr('fill', color);
-        legend.append('text')
-            .style('font-weight', '400')
-            .style('font-size', '0.8em')
-            .attr('class', 'chart-legend dataset-' + index)
-            .attr('x', index * 40 + offSetX + 15)
-            .attr('y', this.chartHeight - 60)
-            .attr('fill', 'black')
-            .text(fieldName);
+    legend(svg) {
+        svg.selectAll('g.legend').remove();
+        const legendGroup = svg.append('g')
+                .attr('class', 'legend g-' + this.chart.id),
+            colors = this.chart.color.split(','),
+            labels = this.chart.labels;
+        let yOffset = this.chartHeight - 30 - this.legendHeight,
+            xOffset = 0;
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            const dataset = this.dataSets[dix],
+                fieldName = labels && labels.split(',')[dix] || dataset[0].fieldName,
+                padding = 5,
+                rectWidth = 10,
+                recordValueWidth = 15 * 10,
+                labelWidth = fieldName.length * 10,
+                legendWidth = rectWidth + labelWidth + recordValueWidth;
+            if (dix > 0) {
+                xOffset += legendWidth;
+            }
+            // wrap to next line if legend does not fit
+            if (xOffset + legendWidth > this.innerWidth) {
+                xOffset = 0;
+                yOffset += 22;
+            }
+            legendGroup.append('rect')
+                .attr('x', xOffset)
+                .attr('y', yOffset - 5)
+                .attr('width', '10')
+                .attr('height', '2')
+                .attr('fill', colors[dix]);
+            const label = legendGroup.append('text')
+                .style('font-weight', '400')
+                .attr('class', 'legend-label dataset-' + dix)
+                .attr('x', xOffset + rectWidth + padding)
+                .attr('y', yOffset)
+                .attr('fill', 'black')
+                .text(fieldName + ': '),
+                bBox = (label.node() as SVGSVGElement).getBBox();
+            legendGroup.append('text')
+                .style('font-weight', '600')
+                .attr('class', 'legend-value dataset-' + dix)
+                .attr('x', bBox.x + bBox.width + padding)
+                .attr('y', yOffset)
+                .attr('fill', 'black');
+        }
+
     }
 
     mouseover() {
@@ -387,13 +378,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             xscale = this.xAxisScale(),
             xdate = xscale.invert(xcoord),
             decimals = this.chart.decimals,
-            labels = this.chart.labels && this.chart.labels.split(',') || [],
-            tooltip = d3.select('g.focus.g-' + this.chart.id);
+            tooltip = d3.select('g.focus.g-' + this.chart.id),
+            legend = d3.select('g.legend.g-' + this.chart.id);
 
         // update marker label for each dataset
-        let textLength = 0,
-            valueLength = 0,
-            value = '';
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const rix = bisectDate(this.dataSets[dix], xdate) - 1,
                 chart_type = this.chart.type;
@@ -406,62 +394,30 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             tooltip
                 .attr('transform', 'translate(' + newX + ',' + 0 + ')')
                 .style('display', null)
-                .select('text.tooltip-legend.dataset-' + dix).text(function (): any {
-                    if (record.text) {
-                        return record.text;
-                    } else {
-                        let text = '';
-                        if (chart_type === 'Wind Arrow' && dix === 1) {
-                            text = 'Wind speed: ';
-                        } else {
-                            text = labels[dix] && labels[dix] + ': ' || record.fieldName + ': ';
-                        }
-                        if (text.length > textLength) {
-                            textLength = text.length;
-                        }
-                        return text;
-                    }
-                })
                 .select('.x-hover-line').attr('y2', markerHeight);
 
-            tooltip
-                .select('text.tooltip-value.dataset-' + dix)
+            const bBox = (legend.select('text.legend-label.dataset-' + dix).node() as SVGSVGElement).getBBox();
+            legend
+                .select('text.legend-value.dataset-' + dix)
                     .text(function (): any {
                         if (chart_type === 'Wind Arrow' && dix === 1) {
                             // TODO: unit for wind speed is hardcoded
-                            value = record.value.toFixed(decimals) + ' m/s';
+                            return record.value.toFixed(decimals) + ' m/s';
                         } else {
-                            value = record.value.toFixed(decimals) + ' ' + record.unit;
+                            return record.value.toFixed(decimals) + ' ' + record.unit;
                         }
-                        if (value.length > valueLength) {
-                            valueLength = value.length;
-                        }
-                        return value;
-                        })
-                    .attr('textLength', function() {
-                        if (chart_type === 'Wind Arrow' && dix === 1) {
-                            return value.length * 0.5 + 'em';
-                        } else {
-                            return valueLength * 0.5 + 'em';
-                        }
-                    });
+                    })
+                    .attr('x', bBox.x + bBox.width + 5);
         }
 
-        let boxWidth = (textLength + valueLength) * 11;
-        if (boxWidth < 200) {
-            boxWidth = 200;
-        }
-        tooltip
-            .select('rect.background')
-            .attr('width', boxWidth);
-
-        // add date label at end
+        // update date label
         tooltip
             .select('text.dataset-date')
-                .attr('x', boxWidth / 2)
                 .text(function (): any {
                     return d3TimeFormat.timeFormat('%d %B, %H:%M')(xdate as any);
                 });
+
+        const boxWidth = (tooltip.select('text.dataset-date').node() as SVGSVGElement).getBBox().width;
 
         if (newX + boxWidth > this.innerWidth) {
             let boxX = -boxWidth - 30;
@@ -476,10 +432,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .select('g.tooltip')
                 .attr('transform', 'translate(0, 0)');
         }
-
-        tooltip
-            .selectAll('text.tooltip-value')
-            .attr('x', boxWidth - 13);
     }
 
     xAxisInterval(width) {
@@ -566,6 +518,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('height', this.chartHeight);
         }
 
+        this.legend(svg);
         svg.selectAll('text.section-label').remove();
         svg.append('text')
             .attr('class', 'section-label')
@@ -602,16 +555,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         const fillFunc = this.chart.fillFunc,
             color = this.chart.color,
-            height = this.innerHeight,
-            labels = this.chart.labels;
+            height = this.innerHeight;
         dataSet.forEach((dataset, index) => {
-            // add legends
-            if (create && this.showLegend) {
-                const datasetColor = color.split(',')[index],
-                    fieldName = labels && labels.split(',')[index] || dataset[0].fieldName;
-                this.legend(svg, datasetColor, fieldName, index);
-            }
-
             const bar_selector = 'dataset-' + index,
                 bandwidth = this.barWidth(),
                 padding = bandwidth > 2 && 1 || 0,
@@ -685,13 +630,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             svg.append('g')
                 .attr('class', 'grid');
             dataSet.forEach((dataset, index) => {
-                if (create && this.showLegend) {
-                    const datasetColor = this.chart.color.split(',')[index],
-                        label = this.chart.labels && this.chart.labels.split(',')[index] || undefined,
-                        fieldName = label || dataset[0].fieldName;
-                    this.legend(svg, datasetColor, fieldName, index);
-                }
-
                 const linechart = svg.append('g').attr('class', 'line-chart-' + index);
                 linechart.append('path')
                     .datum(dataset)
@@ -723,6 +661,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             });
         }
 
+        this.legend(svg);
         const interval = this.xAxisInterval(this.innerWidth);
         const tickFormat = this.tickFormat();
 
