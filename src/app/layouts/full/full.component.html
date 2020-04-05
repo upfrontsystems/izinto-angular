@@ -41,7 +41,7 @@
         <button mat-icon-button routerLink="/">
             <mat-icon>home</mat-icon>
         </button>
-        <button mat-icon-button (click)="toggleDateSelect()">
+        <button mat-icon-button (click)="toggleDateSelect()" *ngIf="router.url.includes('/dashboards/')">
             <mat-icon>date_range</mat-icon>
         </button>
         <span fxFlex></span>

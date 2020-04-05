@@ -20,6 +20,7 @@ import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {distinctUntilChanged} from 'rxjs-compat/operator/distinctUntilChanged';
+import {Router} from '@angular/router';
 
 /** @title Responsive sidenav */
 @Component({
@@ -50,7 +51,8 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
         public authService: AuthenticationService,
         private dashboardService: DashboardService,
         private scrollDispatcher: ScrollDispatcher,
-        private ngZone: NgZone
+        private ngZone: NgZone,
+        private router: Router,
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
