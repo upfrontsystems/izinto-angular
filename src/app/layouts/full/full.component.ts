@@ -43,7 +43,7 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;
-    private toolbarHidden = false;
+    public toolbarHidden = false;
 
     constructor(
         changeDetectorRef: ChangeDetectorRef,
@@ -52,7 +52,7 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
         private dashboardService: DashboardService,
         private scrollDispatcher: ScrollDispatcher,
         private ngZone: NgZone,
-        private router: Router,
+        public router: Router,
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
