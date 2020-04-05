@@ -128,8 +128,16 @@ div.d3-chart {
     z-index: 10;
 }
 
+h3.stat-header {
+  font-size: 15px;
+  white-space: nowrap;
+}
+h1.stat-value {
+  font-size: 30px;
+  white-space: nowrap;
+}
+
 mat-card.single-stat {
-    font-size: medium;
     background-color: #fafafa !important;
     border: 1px solid #c0c0c0;
     border-radius: 6px !important;
