@@ -6,7 +6,7 @@
     <!-- ============================================================== -->
     <!-- Topbar - style you can find in header.scss -->
     <!-- ============================================================== -->
-    <mat-toolbar color="white" class="topbar telative">
+    <mat-toolbar color="white" class="topbar telative" [class.toolbar-hidden]="toolbarHidden">
 
         <!-- ============================================================== -->
         <!-- Logo - style you can find in header.scss -->
@@ -83,7 +83,7 @@
         <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->
         <!-- ============================================================== -->
-        <mat-sidenav-content class="page-wrapper">
+        <mat-sidenav-content class="page-wrapper" [class.full-height]="toolbarHidden" cdkScrollable>
 
             <div class="page-content">
 

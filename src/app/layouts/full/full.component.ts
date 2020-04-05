@@ -1,22 +1,25 @@
 import * as $ from 'jquery';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 import {MediaMatcher} from '@angular/cdk/layout';
-import {Router} from '@angular/router';
+import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
     ChangeDetectorRef,
     Component,
-    NgZone,
     OnDestroy,
-    ViewChild,
-    HostListener,
-    Directive,
-    AfterViewInit, OnInit
+    AfterViewInit, OnInit, NgZone, HostBinding
 } from '@angular/core';
-import {AppHeaderComponent} from './header/header.component';
-import {AppSidebarComponent} from './sidebar/sidebar.component';
+import { map } from 'rxjs/operators';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {DashboardService} from '../../_services/dashboard.service';
+import {distinctUntilChanged} from 'rxjs-compat/operator/distinctUntilChanged';
 
 /** @title Responsive sidenav */
 @Component({
@@ -33,18 +36,21 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
     minisidebar: boolean;
     boxed: boolean;
     danger: boolean;
-    showHide: boolean;
     sidebarOpened = false;
     dateSelectOpened = false;
+    scrollTop = 0;
 
     public config: PerfectScrollbarConfigInterface = {};
-    private _mobileQueryListener: () => void;
+    private readonly _mobileQueryListener: () => void;
+    private toolbarHidden = false;
 
     constructor(
         changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher,
         public authService: AuthenticationService,
-        private dashboardService: DashboardService
+        private dashboardService: DashboardService,
+        private scrollDispatcher: ScrollDispatcher,
+        private ngZone: NgZone
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -53,6 +59,22 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ngOnInit() {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
+        this.scrollDispatcher.scrolled()
+            .pipe(map((event: CdkScrollable) => this.getScrollPosition(event)))
+            .subscribe(newScrollTop => this.ngZone.run(() => {
+                if (newScrollTop !== this.scrollTop) {
+                    this.toolbarHidden = newScrollTop - this.scrollTop > 0;
+                    this.scrollTop = newScrollTop;
+                }
+            }));
+    }
+
+    getScrollPosition(event) {
+        if (event) {
+            return event.getElementRef().nativeElement.scrollTop;
+        } else {
+            return window.scrollY;
+        }
     }
 
     toggleDateSelect() {
