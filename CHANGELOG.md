@@ -35,3 +35,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#70](https://github.com/upfrontsystems/izinto-angular/issues/70) refactor top bar
 * [#87](https://github.com/upfrontsystems/izinto-angular/issues/87) refactor legends
 * [#91](https://github.com/upfrontsystems/izinto-angular/issues/91) hide toolbar when scrolling down
+* [#92](https://github.com/upfrontsystems/izinto-angular/issues/91) fix padding and alignment for home page

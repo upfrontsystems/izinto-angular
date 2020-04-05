@@ -111,7 +111,7 @@ File: scss
     }
   }
 
-  .mat-card {
+  #dashboard .mat-card {
     margin: 0;
     border-radius: 0;
     .mat-card-content {
@@ -119,15 +119,15 @@ File: scss
     }
   }
 
-  mat-card.single-stat {
+  #dashboard mat-card.single-stat {
     margin: 15px;
     .mat-card-content {
       padding: 15px;
     }
   }
 
-  .mat-card-title,
-  .mat-card-subtitle {
+  #dashboard .mat-card-title,
+  #dashboard .mat-card-subtitle {
     text-align: center;
     margin-top: 5px !important;
     margin-left: 10px;
