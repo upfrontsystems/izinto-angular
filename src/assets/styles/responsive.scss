@@ -72,6 +72,10 @@ File: scss
 }
 
 @media (max-width: 600px) {
+  mat-toolbar.date-range-toolbar {
+    height: 95px;
+  }
+
   .responsive-table {
     .header-label {
       width: 80px;
