@@ -4,7 +4,7 @@
             <div fxFlex="100%">
                 <mat-card>
                     <mat-card-content>
-                        <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu">
+                        <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                             <mat-icon>more_horiz</mat-icon>
                         </button>
 
@@ -32,7 +32,7 @@
 
                         <mat-icon class="list-icon">insert_chart</mat-icon>
                         <mat-card-title>
-                            <button class="pull-right" mat-icon-button cdkDragHandle title="Reposition dashboard">
+                            <button class="pull-right" mat-icon-button cdkDragHandle title="Reposition dashboard" *ngIf="canEdit">
                                 <mat-icon>swap_vert</mat-icon>
                             </button>
                             <a class="link-title" [routerLink]="['/dashboards', dashboard.id]">

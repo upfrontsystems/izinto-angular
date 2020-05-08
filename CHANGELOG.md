@@ -37,3 +37,5 @@ All notable changes to this project will be documented in this file. See [standa
 * [#91](https://github.com/upfrontsystems/izinto-angular/issues/91) hide toolbar when scrolling down
 * [#92](https://github.com/upfrontsystems/izinto-angular/issues/91) fix padding and alignment for home page
 * [#97](https://github.com/upfrontsystems/izinto-angular/issues/97) tweak single stat size
+* [#64](https://github.com/upfrontsystems/izinto-angular/issues/64) users can still edit
+* [#83](https://github.com/upfrontsystems/izinto-angular/issues/83) users can still delete/edit/copy

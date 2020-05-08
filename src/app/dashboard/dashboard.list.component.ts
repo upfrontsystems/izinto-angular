@@ -8,6 +8,7 @@ import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {AlertService} from '../_services/alert.service';
+import {AuthenticationService} from '../_services/authentication.service';
 
 
 @Component({
@@ -17,6 +18,7 @@ import {AlertService} from '../_services/alert.service';
 })
 export class DashboardListComponent implements OnInit {
 
+    canEdit = false;
     collectionId: number;
     @Input() dashboards: Dashboard[];
     @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
@@ -27,6 +29,7 @@ export class DashboardListComponent implements OnInit {
                 private http: HttpClient,
                 public dialog: MatDialog,
                 protected alertService: AlertService,
+                protected authService: AuthenticationService,
                 private collectionService: CollectionService,
                 private dashboardService: DashboardService) { }
 
@@ -34,6 +37,7 @@ export class DashboardListComponent implements OnInit {
         this.route.paramMap.subscribe(params => {
             this.collectionId = +params.get('collection_id');
         });
+        this.canEdit = this.authService.hasRole('Administrator');
     }
 
     editDashboard(dashboard) {
