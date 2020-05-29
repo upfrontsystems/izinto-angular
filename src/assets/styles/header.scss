@@ -66,14 +66,15 @@ mat-toolbar{
  Topbar
 *******************/
 .topbar {
-  position: relative;
+  position: fixed;
   /* Make sure the toolbar will stay on top of the content as it scrolls past. */
-  z-index: 2;
+  z-index: 2222;
 }
 
 .toolbar-hidden {
-  display: none !important;
-  height: 0;
+  height: 0 !important;
+  transform: translateY(-64px);
+  transition: all 2s;
 }
 
 .example-sidenav-container {
