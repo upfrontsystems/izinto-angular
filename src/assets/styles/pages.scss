@@ -28,13 +28,9 @@ File: scss
   background: $bodycolor;
 }
 
-html .page-wrapper.full-height {
-  height: 100vh;
-}
-
 html .page-wrapper {
-  height: calc(100vh - 64px);
   .page-content {
+    margin-top: 64px;
     padding: 15px;
   }
 }

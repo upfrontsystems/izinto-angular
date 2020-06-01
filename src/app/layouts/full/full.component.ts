@@ -1,25 +1,17 @@
 import * as $ from 'jquery';
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger
-} from '@angular/animations';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    AfterViewInit, OnInit, NgZone, HostBinding
+    AfterViewInit, OnInit, NgZone
 } from '@angular/core';
 import { map } from 'rxjs/operators';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {DashboardService} from '../../_services/dashboard.service';
-import {distinctUntilChanged} from 'rxjs-compat/operator/distinctUntilChanged';
 import {Router} from '@angular/router';
 
 /** @title Responsive sidenav */
