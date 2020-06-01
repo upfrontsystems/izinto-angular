@@ -78,8 +78,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "src/assets/js/jquery.sparkline.min.js"
+              "node_modules/jquery/dist/jquery.min.js"
             ],
             "styles": [
               "src/styles.css",
