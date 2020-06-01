@@ -3,6 +3,7 @@ import { fabSpeedDialAnimations } from './fab-speed-dial.animations';
 import {Collection} from '../../_models/collection';
 import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
+import {ChartService} from '../../_services/chart.service';
 
 @Component({
     selector: 'app-fab-speed-dial',
@@ -23,6 +24,7 @@ export class FabSpeedDialComponent {
     buttons = [];
 
     constructor(protected collectionService: CollectionService,
+                protected chartService: ChartService,
                 protected dashboardService: DashboardService) { }
 
     showItems() {
@@ -50,6 +52,9 @@ export class FabSpeedDialComponent {
         }
         if (button.label === 'Paste Collection') {
             return this.collectionService.canPaste();
+        }
+        if (button.label === 'Paste Chart') {
+            return this.chartService.canPaste();
         }
         return true;
     }

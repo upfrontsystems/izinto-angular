@@ -17,6 +17,7 @@ import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {AlertService} from '../../_services/alert.service';
 
 
 @Component({
@@ -51,6 +52,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
+                private alertService: AlertService,
                 protected dataSourceService: DataSourceService,
                 protected chartService: ChartService,
                 private mouseListener: MouseListenerDirective,
@@ -152,6 +154,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.chartService.delete(this.chart).subscribe(resp => {
             this.deleted.emit(this.chart);
         });
+    }
+
+    copyChart() {
+        this.chartService.copy(this.chart);
+        this.alertService.success('Chart copied', false, 2000);
     }
 
     loadDataSet() {

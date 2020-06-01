@@ -11,7 +11,6 @@ import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
 import {DataSourceService} from '../_services/data.source.service';
 import {ChartService} from '../_services/chart.service';
-import {SingleStatService} from '../_services/single.stat.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
@@ -52,6 +51,10 @@ export class DashboardComponent implements OnInit {
     endDate: Date;
     fabButtons = [
         {
+            icon: 'collections',
+            label: 'Paste Chart',
+        },
+        {
             icon: 'add',
             label: 'Add Chart',
         },
@@ -72,6 +75,7 @@ export class DashboardComponent implements OnInit {
                 protected authService: AuthenticationService,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
+                protected chartService: ChartService,
                 protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
                 protected dashboardService: DashboardService) {
@@ -118,6 +122,8 @@ export class DashboardComponent implements OnInit {
     fabClick(label) {
         if (label === 'Add Chart') {
             this.addChart();
+        } else if (label === 'Paste Chart') {
+            this.pasteChart();
         } else if (label === 'Add Single Stat') {
             this.addSingleStat();
         }
@@ -134,6 +140,13 @@ export class DashboardComponent implements OnInit {
             if (result) {
                 this.addedChart = result;
             }
+        });
+    }
+
+    pasteChart() {
+        this.chartService.paste(this.dashboard.id).subscribe(resp => {
+            this.addedChart = resp;
+            this.chartService.clearCopied();
         });
     }
 

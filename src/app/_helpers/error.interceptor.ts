@@ -15,7 +15,6 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
-            console.log(err);
             // parse blob response
             if (err instanceof HttpErrorResponse && err.error instanceof Blob && err.error.type === 'application/json') {
                 return new Promise<any>((resolve, reject) => {

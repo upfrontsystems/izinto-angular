@@ -14,6 +14,11 @@
         <mat-icon>edit</mat-icon>
         <span>Edit</span>
     </button>
+    <button mat-menu-item class="pull-right" color="accent" (click)="copyChart()"
+            title="Copy">
+        <mat-icon>file_copy</mat-icon>
+        <span>Copy</span>
+    </button>
 </mat-menu>
 
 <div [class]="'d3-chart chart-container-' + chart.id"></div>

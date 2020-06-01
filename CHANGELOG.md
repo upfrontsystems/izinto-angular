@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.5
+### Issue Fixes
+* [#68](https://github.com/upfrontsystems/izinto-angular/issues/68) Copy / Paste Chart
+
 ## 1.0.0
 
 ### Issue Fixes
