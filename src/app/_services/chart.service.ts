@@ -37,24 +37,4 @@ export class ChartService {
     reorder(chart) {
         return this.http.put('/api/chart/' + chart.id + '/reorder', chart);
     }
-
-    // store copy of chart in local storage
-    copy(chart) {
-        localStorage.setItem('chart', JSON.stringify(chart));
-    }
-
-    paste(dashboard_id) {
-        // set dashboard id chart is pasted into
-        const chart = JSON.parse(localStorage.getItem('chart'));
-        chart.dashboard_id = dashboard_id;
-        return this.http.post<Chart>('/api/charts/paste', chart);
-    }
-
-    clearCopied() {
-        localStorage.removeItem('chart');
-    }
-
-    canPaste(): boolean {
-        return localStorage.getItem('chart') !== null;
-    }
 }

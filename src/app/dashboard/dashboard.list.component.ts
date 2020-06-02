@@ -9,6 +9,7 @@ import {CollectionService} from '../_services/collection.service';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {AlertService} from '../_services/alert.service';
 import {AuthenticationService} from '../_services/authentication.service';
+import {CopyService} from '../_services/copy.service';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class DashboardListComponent implements OnInit {
                 protected alertService: AlertService,
                 protected authService: AuthenticationService,
                 private collectionService: CollectionService,
+                private copyService: CopyService,
                 private dashboardService: DashboardService) { }
 
     ngOnInit() {
@@ -74,7 +76,7 @@ export class DashboardListComponent implements OnInit {
     }
 
     copyDashboard(dashboard) {
-        this.dashboardService.copy(dashboard);
+        this.copyService.copy('dashboard', dashboard);
         this.alertService.success('Dashboard copied', false, 2000);
     }
 }

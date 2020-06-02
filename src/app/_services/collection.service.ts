@@ -29,21 +29,4 @@ export class CollectionService {
     delete(collection) {
         return this.http.delete(`/api/collection/` + collection.id);
     }
-
-    // store copy of dashboard in local storage
-    copy(collection) {
-        localStorage.setItem('collection', JSON.stringify(collection));
-    }
-
-    paste() {
-        return this.http.post<Collection>('/api/collections/paste', localStorage.getItem('collection'));
-    }
-
-    clearCopied() {
-        localStorage.removeItem('collection');
-    }
-
-    canPaste(): boolean {
-        return localStorage.getItem('collection') !== null;
-    }
 }

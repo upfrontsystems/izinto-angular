@@ -3,6 +3,7 @@ import {Variable} from '../_models/variable';
 import {DataSource} from '../_models/data.source';
 import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
+import {AlertService} from '../_services/alert.service';
 
 export const groupByValues = {
     '10s': 10,
@@ -28,7 +29,8 @@ export class QueryBaseComponent {
     autoGroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d'};
     canEdit = false;
 
-    constructor(protected authService: AuthenticationService) {
+    constructor(protected alertService: AlertService,
+                protected authService: AuthenticationService) {
     }
 
     checkCanEdit() {

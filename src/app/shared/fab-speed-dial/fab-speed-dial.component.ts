@@ -4,6 +4,8 @@ import {Collection} from '../../_models/collection';
 import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {ChartService} from '../../_services/chart.service';
+import {SingleStatService} from '../../_services/single.stat.service';
+import {CopyService} from '../../_services/copy.service';
 
 @Component({
     selector: 'app-fab-speed-dial',
@@ -23,9 +25,7 @@ export class FabSpeedDialComponent {
     state = 'inactive';
     buttons = [];
 
-    constructor(protected collectionService: CollectionService,
-                protected chartService: ChartService,
-                protected dashboardService: DashboardService) { }
+    constructor(protected copyService: CopyService) { }
 
     showItems() {
         this.state = 'active';
@@ -48,13 +48,16 @@ export class FabSpeedDialComponent {
 
     showButton(button) {
         if (button.label === 'Paste Dashboard') {
-            return this.dashboardService.canPaste();
+            return this.copyService.canPaste('dashboard');
         }
         if (button.label === 'Paste Collection') {
-            return this.collectionService.canPaste();
+            return this.copyService.canPaste('collection');
         }
         if (button.label === 'Paste Chart') {
-            return this.chartService.canPaste();
+            return this.copyService.canPaste('chart');
+        }
+        if (button.label === 'Paste Single Stat') {
+            return this.copyService.canPaste('single_stat');
         }
         return true;
     }

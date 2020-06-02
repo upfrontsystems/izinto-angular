@@ -7,6 +7,7 @@ import {CollectionService} from '../_services/collection.service';
 import {CollectionDialogComponent} from './collection.dialog.component';
 import {AlertService} from '../_services/alert.service';
 import {AuthenticationService} from '../_services/authentication.service';
+import {CopyService} from '../_services/copy.service';
 
 @Component({
   selector: 'app-collection-list',
@@ -26,6 +27,7 @@ export class CollectionListComponent implements OnInit {
                 public dialog: MatDialog,
                 protected alertService: AlertService,
                 protected authService: AuthenticationService,
+                private copyService: CopyService,
                 private collectionService: CollectionService) { }
 
     ngOnInit() {
@@ -55,7 +57,7 @@ export class CollectionListComponent implements OnInit {
     }
 
     copyCollection(collection) {
-        this.collectionService.copy(collection);
+        this.copyService.copy('collection', collection);
         this.alertService.success('Collection copied', false, 2000);
     }
 }

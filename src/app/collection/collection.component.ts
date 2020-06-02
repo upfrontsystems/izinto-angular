@@ -6,6 +6,7 @@ import {Collection} from '../_models/collection';
 import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
 import {DashboardService} from '../_services/dashboard.service';
+import {CopyService} from '../_services/copy.service';
 
 @Component({
     selector: 'app-collection',
@@ -29,6 +30,7 @@ export class CollectionComponent implements OnInit {
     constructor(private route: ActivatedRoute,
                 private http: HttpClient,
                 public dialog: MatDialog,
+                private copyService: CopyService,
                 private collectionService: CollectionService,
                 private dashboardService: DashboardService) {
     }
@@ -102,9 +104,9 @@ export class CollectionComponent implements OnInit {
     }
 
     pasteDashboard() {
-        this.dashboardService.paste(this.collection.id).subscribe(resp => {
+        this.copyService.pasteDashboard(this.collection.id).subscribe(resp => {
             this.collection.dashboards.push(resp);
-            this.dashboardService.clearCopied();
+            this.copyService.clearCopied('dashboard');
         });
     }
 }

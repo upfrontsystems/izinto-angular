@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## 0.5
 ### Issue Fixes
 * [#68](https://github.com/upfrontsystems/izinto-angular/issues/68) Copy / Paste Chart
+* [#115](https://github.com/upfrontsystems/izinto-angular/issues/115) Add copy and paste single stat function
 
 ## 1.0.0
 

@@ -18,6 +18,7 @@ import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.d
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
+import {CopyService} from '../../_services/copy.service';
 
 
 @Component({
@@ -52,12 +53,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
-                private alertService: AlertService,
+                protected alertService: AlertService,
                 protected dataSourceService: DataSourceService,
+                private copyService: CopyService,
                 protected chartService: ChartService,
                 private mouseListener: MouseListenerDirective,
                 private touchListener: TouchListenerDirective) {
-        super(authService);
+        super(alertService, authService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
             const target = event.target as HTMLElement;
@@ -157,7 +159,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     copyChart() {
-        this.chartService.copy(this.chart);
+        this.copyService.copy('chart', this.chart);
         this.alertService.success('Chart copied', false, 2000);
     }
 

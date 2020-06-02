@@ -9,6 +9,7 @@ import {SingleStatService} from '../../_services/single.stat.service';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {CopyService} from '../../_services/copy.service';
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -24,9 +25,9 @@ export class DashboardSettingsComponent extends DashboardComponent implements On
                 protected http: HttpClient,
                 protected dataSourceService: DataSourceService,
                 public dialog: MatDialog,
-                protected chartService: ChartService,
+                protected copyService: CopyService,
                 protected dashboardService: DashboardService) {
-        super(changeDetectorRef, media, authService, route, http, chartService, dataSourceService, dialog, dashboardService);
+        super(changeDetectorRef, media, route, http, dialog, authService, copyService, dataSourceService, dashboardService);
     }
 
     ngOnInit() {

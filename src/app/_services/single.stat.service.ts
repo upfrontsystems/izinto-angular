@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {SingleStat} from '../_models/single.stat';
+import {Chart} from '../_models/chart';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +29,14 @@ export class SingleStatService {
 
     delete(singleStat) {
         return this.http.delete(`/api/single_stat/` + singleStat.id);
+    }
+
+    // store copy of single stat in local storage
+    copy(stat) {
+        localStorage.setItem('single_stat', JSON.stringify(stat));
+    }
+
+    canPaste(): boolean {
+        return localStorage.getItem('single_stat') !== null;
     }
 }

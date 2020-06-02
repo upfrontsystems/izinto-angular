@@ -8,6 +8,8 @@ import {Record} from '../../_models/record';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {AlertService} from '../../_services/alert.service';
+import {CopyService} from '../../_services/copy.service';
 
 @Component({
     selector: 'app-single-stat-list',
@@ -23,10 +25,12 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
+                protected alertService: AlertService,
                 protected authService: AuthenticationService,
+                private copyService: CopyService,
                 protected dataSourceService: DataSourceService,
                 protected singleStatService: SingleStatService) {
-        super(authService);
+        super(alertService, authService);
     }
 
     ngOnChanges(changes) {
@@ -51,6 +55,11 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             this.singleStats = resp;
             this.loadDataSets();
         });
+    }
+
+    copySingleStat(record) {
+        this.copyService.copy('single_stat', record);
+        this.alertService.success('Single Stat copied', false, 2000);
     }
 
     editSingleStat(record) {

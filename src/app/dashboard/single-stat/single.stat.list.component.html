@@ -1,5 +1,6 @@
 <div fxLayout="row wrap" fxLayoutAlign="center">
-    <mat-card class="single-stat" fxFlex="15" fxFlex.xl="10" fxFlex.lg="15" fxFlex.sm="25" fxFlex.md="25" fxFlex.xs="40" *ngFor="let stat of singleStats">
+    <mat-card class="single-stat" fxFlex="15" fxFlex.xl="10" fxFlex.lg="15" fxFlex.sm="25" fxFlex.md="25" fxFlex.xs="40"
+              *ngFor="let stat of singleStats">
         <mat-card-content>
 
             <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
@@ -18,6 +19,11 @@
                 <button mat-menu-item class="pull-right" color="accent" (click)="editSingleStat(stat)" title="Edit">
                     <mat-icon>edit</mat-icon>
                     <span>Edit</span>
+                </button>
+                <button mat-menu-item class="pull-right" color="accent" (click)="copySingleStat(stat)"
+                        title="Copy">
+                    <mat-icon>file_copy</mat-icon>
+                    <span>Copy</span>
                 </button>
             </mat-menu>
 

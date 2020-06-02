@@ -3,6 +3,8 @@ import {Chart} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {QueryBaseComponent} from '../query.base.component';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {AlertService} from '../../_services/alert.service';
+import {CopyService} from '../../_services/copy.service';
 
 @Component({
     selector: 'app-chart-list',
@@ -19,8 +21,10 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @Input() endDate: Date;
     charts: Chart[] = [];
 
-    constructor(protected authService: AuthenticationService, protected chartService: ChartService) {
-        super(authService);
+    constructor(protected alertService: AlertService,
+                protected authService: AuthenticationService,
+                protected chartService: ChartService) {
+        super(alertService, authService);
     }
 
     ngOnChanges(changes) {

@@ -15,6 +15,8 @@ import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
 import {AuthenticationService} from '../_services/authentication.service';
+import {SingleStatService} from '../_services/single.stat.service';
+import {CopyService} from '../_services/copy.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -51,12 +53,16 @@ export class DashboardComponent implements OnInit {
     endDate: Date;
     fabButtons = [
         {
-            icon: 'collections',
+            icon: 'collections_bookmark',
             label: 'Paste Chart',
         },
         {
             icon: 'add',
             label: 'Add Chart',
+        },
+        {
+            icon: 'collections',
+            label: 'Paste Single Stat',
         },
         {
             icon: 'add',
@@ -72,12 +78,12 @@ export class DashboardComponent implements OnInit {
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
-                protected authService: AuthenticationService,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
-                protected chartService: ChartService,
-                protected dataSourceService: DataSourceService,
                 protected dialog: MatDialog,
+                protected authService: AuthenticationService,
+                protected copyService: CopyService,
+                protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -126,6 +132,8 @@ export class DashboardComponent implements OnInit {
             this.pasteChart();
         } else if (label === 'Add Single Stat') {
             this.addSingleStat();
+        } else if (label === 'Paste Single Stat') {
+            this.pasteSingleStat();
         }
     }
 
@@ -144,9 +152,9 @@ export class DashboardComponent implements OnInit {
     }
 
     pasteChart() {
-        this.chartService.paste(this.dashboard.id).subscribe(resp => {
+        this.copyService.pasteChart(this.dashboard.id).subscribe(resp => {
             this.addedChart = resp;
-            this.chartService.clearCopied();
+            this.copyService.clearCopied('chart');
         });
     }
 
@@ -161,6 +169,13 @@ export class DashboardComponent implements OnInit {
             if (result) {
                 this.addedSingleStat = result;
             }
+        });
+    }
+
+    pasteSingleStat() {
+        this.copyService.pasteSingleStat(this.dashboard.id).subscribe(resp => {
+            this.addedSingleStat = resp;
+            this.copyService.clearCopied('single_stat');
         });
     }
 

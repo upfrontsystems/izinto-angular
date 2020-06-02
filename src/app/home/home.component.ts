@@ -7,6 +7,7 @@ import {Dashboard} from '../_models/dashboard';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
 import {CollectionDialogComponent} from '../collection/collection.dialog.component';
 import {MatDialog} from '@angular/material';
+import {CopyService} from '../_services/copy.service';
 
 @Component({templateUrl: 'home.component.html'})
 export class HomeComponent implements OnInit {
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit {
     constructor(
         private authenticationService: AuthenticationService,
         private collectionService: CollectionService,
+        private copyService: CopyService,
         private dashboardService: DashboardService,
         public dialog: MatDialog) {
     }
@@ -102,9 +104,9 @@ export class HomeComponent implements OnInit {
     }
 
     pasteCollection() {
-        this.collectionService.paste().subscribe(resp => {
+        this.copyService.pasteCollection().subscribe(resp => {
             this.collections.push(resp);
-            this.collectionService.clearCopied();
+            this.copyService.clearCopied('collection');
         });
     }
 
@@ -140,9 +142,9 @@ export class HomeComponent implements OnInit {
     }
 
     pasteDashboard() {
-        this.dashboardService.paste(null).subscribe(resp => {
+        this.copyService.pasteDashboard(null).subscribe(resp => {
             this.dashboards.push(resp);
-            this.dashboardService.clearCopied();
+            this.copyService.clearCopied('dashboard');
         });
     }
 }
