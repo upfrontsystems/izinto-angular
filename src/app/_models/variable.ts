@@ -1,5 +1,5 @@
 ﻿export class Variable {
-    id: string;
+    id: number;
     name: string;
     value: string;
     dashboard_id: number;
