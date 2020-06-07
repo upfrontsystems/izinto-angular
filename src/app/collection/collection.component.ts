@@ -88,16 +88,16 @@ export class CollectionComponent implements OnInit {
     }
 
     dashboardReordered(event) {
-        const oldOrder = event.item.data.order;
+        const oldIndex = event.item.data.index;
         const index = event.currentIndex;
         const dashboard = event.item.data;
 
-        let newOrder = this.collection.dashboards[index].order;
-        if (newOrder === oldOrder) {
-            newOrder += index > event.previousIndex ? 1 : -1;
+        let newIndex = this.collection.dashboards[index].index;
+        if (newIndex === oldIndex) {
+            newIndex += index > event.previousIndex ? 1 : -1;
         }
 
-        dashboard.order = newOrder;
+        dashboard.index = newIndex;
         this.dashboardService.reorderDashboard(dashboard).subscribe(resp => {
             this.getCollection();
         });

@@ -7,7 +7,7 @@ export class Dashboard {
     title: string;
     description: string;
     collection_id: number;
-    order: number;
+    index: number;
     users: User[];
     variables: Variable[];
 }
