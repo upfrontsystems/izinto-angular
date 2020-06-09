@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { Dashboard } from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';

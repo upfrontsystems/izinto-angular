@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {Collection} from '../_models/collection';
 import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';

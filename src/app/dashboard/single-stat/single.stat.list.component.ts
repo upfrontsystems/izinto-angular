@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {SingleStat} from '../../_models/single.stat';
 import {SingleStatService} from '../../_services/single.stat.service';
 import {SingleStatDialogComponent} from './single.stat.dialog.component';

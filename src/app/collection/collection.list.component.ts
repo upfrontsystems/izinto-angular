@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Collection} from '../_models/collection';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {CollectionService} from '../_services/collection.service';
 import {CollectionDialogComponent} from './collection.dialog.component';
 import {AlertService} from '../_services/alert.service';

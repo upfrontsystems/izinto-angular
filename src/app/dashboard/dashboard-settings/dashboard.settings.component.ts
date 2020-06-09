@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {DashboardComponent} from '../dashboard.component';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {ChartService} from '../../_services/chart.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {SingleStatService} from '../../_services/single.stat.service';

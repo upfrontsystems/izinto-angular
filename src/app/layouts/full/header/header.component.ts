@@ -7,7 +7,7 @@ import {UserService} from '../../../_services/user.service';
 import {User} from '../../../_models/user';
 import {UserDialogComponent} from '../../../user/user.dialog.component';
 import {Role} from '../../../_models/role';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingleStat} from '../../_models/single.stat';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {DataSource} from '../../_models/data.source';
 import {SingleStatService} from '../../_services/single.stat.service';
 

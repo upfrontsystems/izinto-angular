@@ -4,7 +4,7 @@ import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStat} from '../_models/single.stat';

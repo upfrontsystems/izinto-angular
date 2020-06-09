@@ -1,7 +1,10 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {User} from '../_models/user';
-import {MatDialog, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../_services/user.service';

@@ -1,7 +1,8 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Collection} from '../_models/collection';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSelect} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSelect } from '@angular/material/select';
 import {User} from '../_models/user';
 import {ReplaySubject, Subject} from 'rxjs';
 import {UserService} from '../_services/user.service';

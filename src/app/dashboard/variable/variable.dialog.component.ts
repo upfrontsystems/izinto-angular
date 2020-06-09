@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Variable} from '../../_models/variable';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-variable-dialog',

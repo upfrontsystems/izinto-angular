@@ -11,7 +11,7 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {QueryBaseComponent, groupByValues} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';

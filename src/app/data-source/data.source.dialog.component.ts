@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {DataSource} from '../_models/data.source';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {DataSourceService} from '../_services/data.source.service';
 
 @Component({

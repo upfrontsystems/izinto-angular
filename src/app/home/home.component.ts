@@ -6,7 +6,7 @@ import {Collection} from '../_models/collection';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
 import {CollectionDialogComponent} from '../collection/collection.dialog.component';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {CopyService} from '../_services/copy.service';
 
 @Component({templateUrl: 'home.component.html'})
