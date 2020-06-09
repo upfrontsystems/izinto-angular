@@ -13,7 +13,7 @@ describe('CollectionService', () => {
     });
 
     it('should be created', () => {
-        const service: CollectionService = TestBed.get(CollectionService);
+        const service: CollectionService = TestBed.inject(CollectionService);
         expect(service).toBeTruthy();
     });
 });

@@ -12,7 +12,7 @@ describe('VariableService', () => {
     });
 
     it('should be created', () => {
-        const service: VariableService = TestBed.get(VariableService);
+        const service: VariableService = TestBed.inject(VariableService);
         expect(service).toBeTruthy();
     });
 });

@@ -13,7 +13,7 @@ describe('DashboardServiceService', () => {
     });
 
     it('should be created', () => {
-        const service: DashboardService = TestBed.get(DashboardService);
+        const service: DashboardService = TestBed.inject(DashboardService);
         expect(service).toBeTruthy();
     });
 });

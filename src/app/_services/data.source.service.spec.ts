@@ -13,7 +13,7 @@ describe('DataSourceService', () => {
     });
 
     it('should be created', () => {
-        const service: DataSourceService = TestBed.get(DataSourceService);
+        const service: DataSourceService = TestBed.inject(DataSourceService);
         expect(service).toBeTruthy();
     });
 });
