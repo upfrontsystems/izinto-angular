@@ -15,6 +15,8 @@ import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
 import {AuthenticationService} from '../_services/authentication.service';
+import {Script} from '../_models/script';
+import {ScriptDialogComponent} from './script/script.dialog.component';
 import {SingleStatService} from '../_services/single.stat.service';
 import {CopyService} from '../_services/copy.service';
 
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
     dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
+    addedScript: Script;
     dateViews: DashboardView[] = [];
     dateView = 'Month';
     private range = {
@@ -67,6 +70,10 @@ export class DashboardComponent implements OnInit {
         {
             icon: 'add',
             label: 'Add Single Stat',
+        },
+        {
+            icon: 'add',
+            label: 'Add Script',
         }
     ];
     today = moment();
@@ -134,6 +141,8 @@ export class DashboardComponent implements OnInit {
             this.addSingleStat();
         } else if (label === 'Paste Single Stat') {
             this.pasteSingleStat();
+        } else if (label === 'Add Script') {
+            this.addScript();
         }
     }
 
@@ -176,6 +185,20 @@ export class DashboardComponent implements OnInit {
         this.copyService.pasteSingleStat(this.dashboard.id).subscribe(resp => {
             this.addedSingleStat = resp;
             this.copyService.clearCopied('single_stat');
+        });
+    }
+
+    addScript() {
+        const dialogRef = this.dialog.open(ScriptDialogComponent, {
+            width: '600px',
+            data: {script: {dashboard_id: this.dashboardId}},
+            disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.addedScript = result;
+            }
         });
     }
 

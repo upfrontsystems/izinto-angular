@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>{{state}} Script</h1>
+<div mat-dialog-content>
+    <form [formGroup]="form" autocomplete="off">
+        <div fxLayout="row wrap">
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Title" [formControl]="form.get('title')"
+                           autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <mat-label>Script</mat-label>
+                    <textarea matInput [formControl]="form.get('content')" cdkAutosizeMinRows="10" cdkTextareaAutosize></textarea>
+                </mat-form-field>
+            </div>
+
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <span fxFlex></span>
+    <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
+    <button class="pull-right" mat-button [disabled]="!formValid()" (click)="submit()" color="primary" cdkFocusInitial>
+        Submit
+    </button>
+</div>

@@ -1,16 +1,8 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {Chart} from '../../_models/chart';
-import * as d3Trans from 'd3-transition';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
-import * as d3 from 'd3-selection';
 import {Record} from '../../_models/record';
-import * as d3Scale from 'd3-scale';
-import * as d3Array from 'd3-array';
-import * as d3TimeFormat from 'd3-time-format';
-import * as d3Axis from 'd3-axis';
-import * as d3Shape from 'd3-shape';
-import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import { MatDialog } from '@angular/material/dialog';
 import {QueryBaseComponent, groupByValues} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
@@ -18,6 +10,14 @@ import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.d
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
+import * as d3 from 'd3-selection';
+import * as d3Trans from 'd3-transition';
+import * as d3Scale from 'd3-scale';
+import * as d3Array from 'd3-array';
+import * as d3TimeFormat from 'd3-time-format';
+import * as d3Axis from 'd3-axis';
+import * as d3Shape from 'd3-shape';
+import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
 
 

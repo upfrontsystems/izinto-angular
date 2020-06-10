@@ -34,6 +34,8 @@
                                       [dateRange]="dateRange" [variables]="dashboard.variables"
                                       [dataSources]="dataSources"></app-single-stat-list>
 
+                <app-script-list [dashboardId]="dashboardId" [addedScript]="addedScript"></app-script-list>
+
                 <app-chart-list appMouseListener appTouchListener
                                 [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
                                 [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="startDate"
