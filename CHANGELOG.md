@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file. See [standa
 * [#68](https://github.com/upfrontsystems/izinto-angular/issues/68) Copy / Paste Chart
 * [#115](https://github.com/upfrontsystems/izinto-angular/issues/115) Add copy and paste single stat function
 * [#121](https://github.com/upfrontsystems/izinto-angular/issues/121) Rename order column to index on Dashboard
+* Upgrade Angular to version 9
+* [#123](https://github.com/upfrontsystems/izinto-angular/issues/123) Export chart data to CSV
+
 
 ## 1.0.0
 

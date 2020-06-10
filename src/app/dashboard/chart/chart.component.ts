@@ -3,8 +3,8 @@ import {Chart} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
 import {Record} from '../../_models/record';
-import { MatDialog } from '@angular/material/dialog';
-import {QueryBaseComponent, groupByValues} from '../query.base.component';
+import {MatDialog} from '@angular/material/dialog';
+import {groupByValues, QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
@@ -19,6 +19,7 @@ import * as d3Axis from 'd3-axis';
 import * as d3Shape from 'd3-shape';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
+import {saveAs} from 'file-saver';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Input() endDate: Date;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
+    public windowWidth: any;
     private dataSets = [];
     private scales = [];
     private chartHeight = 250;
@@ -40,16 +42,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     private innerWidth = 0;
     private innerHeight = 0;
     private legendHeight = 30;
-    public windowWidth: any;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
-
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
-        const width = event.target.innerWidth;
-        if (width && this.windowWidth !== width) {
-            this.buildChart();
-        }
-    }
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -91,6 +84,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         });
     }
 
+    @HostListener('window:resize', ['$event'])
+    onResize(event) {
+        const width = event.target.innerWidth;
+        if (width && this.windowWidth !== width) {
+            this.buildChart();
+        }
+    }
+
     ngOnChanges(changes) {
         const dateRange = changes.dateRange;
         const groupBy = changes.groupBy;
@@ -110,7 +111,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.checkCanEdit();
 
         if (this.chart.type === 'Wind Arrow') {
-            this.chart.fillFunc = function(value) {
+            this.chart.fillFunc = function (value) {
                 return d3Scale.scaleSequential(d3ScaleChromatic.interpolateRdYlBu)
                     .domain([20, 0])(value);
             };
@@ -161,6 +162,35 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     copyChart() {
         this.copyService.copy('chart', this.chart);
         this.alertService.success('Chart copied', false, 2000);
+    }
+
+    // download chart data as csv file
+    downloadCSV() {
+        const query = this.formatQuery(this.chart.query, this.chart.group_by, this.chart.data_source);
+        this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
+            if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
+
+                const dataSets = [];
+                for (const series of resp['results'][0]['series']) {
+                    const headers = series['columns'];
+                    const csv = [];
+                    // format to csv
+                    for (const record of series['values']) {
+                        const date = new Date(record[0]);
+                        if (date < this.startDate || date > this.endDate) {
+                            continue;
+                        }
+                        csv.push(record.join(','));
+                    }
+                    csv.unshift(headers.join(','));
+                    const csvArray = csv.join('\r\n');
+                    dataSets.push(csvArray);
+                }
+
+                const blob = new Blob(dataSets, {type: 'text/csv'});
+                saveAs(blob, this.chart.title + '.csv');
+            }
+        });
     }
 
     loadDataSet() {
@@ -349,12 +379,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('height', '2')
                 .attr('fill', colors[dix]);
             const label = legendGroup.append('text')
-                .style('font-weight', '400')
-                .attr('class', 'legend-label dataset-' + dix)
-                .attr('x', xOffset + rectWidth + padding)
-                .attr('y', yOffset)
-                .attr('fill', 'black')
-                .text(fieldName + ': '),
+                    .style('font-weight', '400')
+                    .attr('class', 'legend-label dataset-' + dix)
+                    .attr('x', xOffset + rectWidth + padding)
+                    .attr('y', yOffset)
+                    .attr('fill', 'black')
+                    .text(fieldName + ': '),
                 bBox = (label.node() as SVGSVGElement).getBBox();
             legendGroup.append('text')
                 .style('font-weight', '600')
@@ -408,23 +438,23 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             const bBox = (legend.select('text.legend-label.dataset-' + dix).node() as SVGSVGElement).getBBox();
             legend
                 .select('text.legend-value.dataset-' + dix)
-                    .text(function (): any {
-                        if (chart_type === 'Wind Arrow' && dix === 1) {
-                            // TODO: unit for wind speed is hardcoded
-                            return record.value.toFixed(decimals) + ' m/s';
-                        } else {
-                            return record.value.toFixed(decimals) + ' ' + record.unit;
-                        }
-                    })
-                    .attr('x', bBox.x + bBox.width + 5);
+                .text(function (): any {
+                    if (chart_type === 'Wind Arrow' && dix === 1) {
+                        // TODO: unit for wind speed is hardcoded
+                        return record.value.toFixed(decimals) + ' m/s';
+                    } else {
+                        return record.value.toFixed(decimals) + ' ' + record.unit;
+                    }
+                })
+                .attr('x', bBox.x + bBox.width + 5);
         }
 
         // update date label
         tooltip
             .select('text.dataset-date')
-                .text(function (): any {
-                    return d3TimeFormat.timeFormat('%d %B, %H:%M')(xdate as any);
-                });
+            .text(function (): any {
+                return d3TimeFormat.timeFormat('%d %B, %H:%M')(xdate as any);
+            });
 
         const boxWidth = (tooltip.select('text.dataset-date').node() as SVGSVGElement).getBBox().width;
 

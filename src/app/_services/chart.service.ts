@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Chart} from '../_models/chart';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {DataSource} from '../_models/data.source';
-import {Dashboard} from '../_models/dashboard';
+import {HttpClient} from '@angular/common/http';
 
 
 @Injectable({

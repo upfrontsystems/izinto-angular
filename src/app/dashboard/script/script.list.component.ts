@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {Script} from '../../_models/script';
 import {ScriptService} from '../../_services/script.service';
 import {ScriptDialogComponent} from './script.dialog.component';
