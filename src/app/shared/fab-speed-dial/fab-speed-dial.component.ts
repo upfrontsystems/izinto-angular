@@ -18,7 +18,7 @@ export class FabSpeedDialComponent implements OnInit {
     @Input() text: string;
     @Output() buttonClick = new EventEmitter<string>();
 
-    visible = true;
+    hidden = false;
     state = 'inactive';
     buttons = [];
     scrollTop = 0;
@@ -32,7 +32,7 @@ export class FabSpeedDialComponent implements OnInit {
             .pipe(map((event: CdkScrollable) => window.scrollY))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
-                    this.visible = newScrollTop - this.scrollTop > 0;
+                    this.hidden = newScrollTop - this.scrollTop > 0;
                     this.scrollTop = newScrollTop;
                 }
             }));
