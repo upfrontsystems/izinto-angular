@@ -4,13 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 0.5
 ### Issue Fixes
-* [#68](https://github.com/upfrontsystems/izinto-angular/issues/68) Copy / Paste Chart
-* [#115](https://github.com/upfrontsystems/izinto-angular/issues/115) Add copy and paste single stat function
-* [#121](https://github.com/upfrontsystems/izinto-angular/issues/121) Rename order column to index on Dashboard
-
-## 1.0.0
-
-### Issue Fixes
 * [#13](https://github.com/upfrontsystems/izinto-angular/issues/13) add variables to dashboard
 * [#14](https://github.com/upfrontsystems/izinto-angular/issues/14) add collections
 * [#14](https://github.com/upfrontsystems/izinto-angular/issues/14) add dashboards in collections reorder
@@ -48,3 +41,7 @@ All notable changes to this project will be documented in this file. See [standa
 * [#67](https://github.com/upfrontsystems/izinto-angular/issues/67) fix forbidden error on scroll
 * [#111](https://github.com/upfrontsystems/izinto-angular/issues/67) Embed D3.js visualisations as scripts
 * [#129](https://github.com/upfrontsystems/izinto-angular/issues/67) fix error on scroll
+* [#68](https://github.com/upfrontsystems/izinto-angular/issues/68) Copy / Paste Chart
+* [#115](https://github.com/upfrontsystems/izinto-angular/issues/115) Add copy and paste single stat function
+* [#121](https://github.com/upfrontsystems/izinto-angular/issues/121) Rename order column to index on Dashboard
+* [#128](https://github.com/upfrontsystems/izinto-angular/issues/128) Hide fab icons on scroll
