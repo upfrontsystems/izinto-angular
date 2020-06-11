@@ -123,6 +123,7 @@ export class DashboardComponent implements OnInit {
     getDashboard() {
         this.dashboardService.getById(this.dashboardId).subscribe(resp => {
             this.dashboard = resp;
+            this.dashboardService.currentDashboard.emit(this.dashboard);
         });
     }
 

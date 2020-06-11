@@ -47,40 +47,49 @@
                     </a>
                 </div>
 
-                <!-- ============================================================== -->
-                <!-- sidebar toggle -->
-                <!-- ============================================================== -->
-                <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
-                    <mat-icon>menu</mat-icon>
-                </button>
-                <button mat-icon-button routerLink="/">
-                    <mat-icon>home</mat-icon>
-                </button>
-                <button mat-icon-button (click)="toggleDateSelect()" *ngIf="router.url.includes('/dashboards/')">
-                    <mat-icon>date_range</mat-icon>
-                </button>
-                <span fxFlex></span>
-                <!-- ============================================================== -->
-                <!-- app header component - style you can find in header.scss / header.component.ts-->
-                <!-- ============================================================== -->
-                <app-header></app-header>
-                <!-- ============================================================== -->
-                <!-- settings dropdown -->
-                <!-- ============================================================== -->
-                <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
-                        mat-icon-button class="ml-xs overflow-visible">
-                    <mat-icon>settings</mat-icon>
-                </button>
-                <mat-menu #settings="matMenu" class="mymegamenu">
-                    <button mat-menu-item [routerLink]="['/users']">
-                        <mat-icon>people_alt</mat-icon>
-                        Users
+                <ng-container *ngIf="mobileQuery.matches || !mobileQuery.matches && !router.url.includes('/dashboards/')">
+                    <!-- ============================================================== -->
+                    <!-- sidebar toggle -->
+                    <!-- ============================================================== -->
+                    <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+                        <mat-icon>menu</mat-icon>
                     </button>
-                    <button mat-menu-item [routerLink]="['/datasources']">
-                        <mat-icon>table_chart</mat-icon>
-                        Data Sources
+                    <button mat-icon-button routerLink="/">
+                        <mat-icon>home</mat-icon>
                     </button>
-                </mat-menu>
+                    <span fxFlex></span>
+                    <!-- ============================================================== -->
+                    <!-- app header component - style you can find in header.scss / header.component.ts-->
+                    <!-- ============================================================== -->
+                    <app-header></app-header>
+                    <!-- ============================================================== -->
+                    <!-- settings dropdown -->
+                    <!-- ============================================================== -->
+                    <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
+                            mat-icon-button class="ml-xs overflow-visible">
+                        <mat-icon>settings</mat-icon>
+                    </button>
+                    <mat-menu #settings="matMenu" class="mymegamenu">
+                        <button mat-menu-item [routerLink]="['/users']">
+                            <mat-icon>people_alt</mat-icon>
+                            Users
+                        </button>
+                        <button mat-menu-item [routerLink]="['/datasources']">
+                            <mat-icon>table_chart</mat-icon>
+                            Data Sources
+                        </button>
+                    </mat-menu>
+                </ng-container>
+                <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/dashboards/')">
+                    <button mat-icon-button [routerLink]="parentURL">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <span>{{collectionTitle}}</span>
+                    <span fxFlex></span>
+                    <button mat-icon-button (click)="toggleDateSelect()">
+                        <mat-icon>date_range</mat-icon>
+                    </button>
+                </ng-container>
             </mat-toolbar>
             <!-- ============================================================== -->
             <!-- End Topbar - style you can find in pages.scss -->

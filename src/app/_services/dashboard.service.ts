@@ -9,7 +9,8 @@ import {DashboardView} from '../_models/dashboard_view';
 })
 export class DashboardService {
 
-    toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>()
+    toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>();
+    currentDashboard: EventEmitter<Dashboard> = new EventEmitter<Dashboard>();
 
     constructor(private http: HttpClient) {
     }

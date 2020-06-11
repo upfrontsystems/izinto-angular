@@ -1,4 +1,3 @@
-import * as $ from 'jquery';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -11,6 +10,7 @@ import { map } from 'rxjs/operators';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {Router} from '@angular/router';
 
@@ -20,7 +20,7 @@ import {Router} from '@angular/router';
     templateUrl: 'full.component.html',
     styles: ['.site-title {font-family: Dosis, sans-serif; font-size: 36px; color: black}']
 })
-export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FullComponent implements OnInit, OnDestroy {
     mobileQuery: MediaQueryList;
     dir = 'ltr';
     green: boolean;
@@ -31,7 +31,10 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
     danger: boolean;
     sidebarOpened = false;
     dateSelectOpened = false;
+    currentDashboard = undefined;
     scrollTop = 0;
+    parentURL = '/';
+    collectionTitle = undefined;
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;
@@ -41,6 +44,7 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
         changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher,
         public authService: AuthenticationService,
+        private collectionService: CollectionService,
         private dashboardService: DashboardService,
         private scrollDispatcher: ScrollDispatcher,
         private ngZone: NgZone,
@@ -53,6 +57,15 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ngOnInit() {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
+        this.dashboardService.currentDashboard.subscribe(dashboard => {
+            this.currentDashboard = dashboard;
+            this.parentURL = '/collections/' + dashboard.collection_id;
+            if (!this.collectionTitle) {
+                this.collectionService.getById(this.currentDashboard.collection_id).subscribe(resp => {
+                    this.collectionTitle = resp.title;
+                });
+            }
+        });
         this.scrollDispatcher.scrolled()
             .pipe(map((event: CdkScrollable) => window.scrollY))
             .subscribe(newScrollTop => this.ngZone.run(() => {
@@ -71,10 +84,4 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
         this.mobileQuery.removeListener(this._mobileQueryListener);
     }
 
-    ngAfterViewInit() {
-        // This is for the topbar search
-        (<any>$('.srh-btn, .cl-srh-btn')).on('click', function () {
-            (<any>$('.app-search')).toggle(200);
-        });
-    }
 }
