@@ -1,10 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { fabSpeedDialAnimations } from './fab-speed-dial.animations';
-import {Collection} from '../../_models/collection';
-import {CollectionService} from '../../_services/collection.service';
-import {DashboardService} from '../../_services/dashboard.service';
-import {ChartService} from '../../_services/chart.service';
-import {SingleStatService} from '../../_services/single.stat.service';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {CopyService} from '../../_services/copy.service';
 
 @Component({
@@ -25,7 +21,8 @@ export class FabSpeedDialComponent {
     state = 'inactive';
     buttons = [];
 
-    constructor(protected copyService: CopyService) { }
+    constructor(protected copyService: CopyService,
+                private scrollDispatcher: ScrollDispatcher) { }
 
     showItems() {
         this.state = 'active';
