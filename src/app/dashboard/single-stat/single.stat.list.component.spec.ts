@@ -8,6 +8,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import {AlertService} from '../../_services/alert.service';
+import {AuthenticationService} from '../../_services/authentication.service';
+import {CopyService} from '../../_services/copy.service';
+import {DataSourceService} from '../../_services/data.source.service';
+import {SingleStatService} from '../../_services/single.stat.service';
 
 describe('SingleStatListComponent', () => {
     let component: SingleStatListComponent;
@@ -19,7 +23,7 @@ describe('SingleStatListComponent', () => {
             imports: [FormsModule, ReactiveFormsModule, RouterTestingModule, MaterialModule, BrowserAnimationsModule,
                 HttpClientTestingModule],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
-            providers: [AlertService]
+            providers: [AlertService, AuthenticationService, CopyService, DataSourceService, SingleStatService]
         })
             .compileComponents();
     }));
