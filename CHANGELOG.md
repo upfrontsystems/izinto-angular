@@ -47,3 +47,4 @@ All notable changes to this project will be documented in this file. See [standa
 * [#83](https://github.com/upfrontsystems/izinto-angular/issues/83) users can still delete/edit/copy
 * [#67](https://github.com/upfrontsystems/izinto-angular/issues/67) fix forbidden error on scroll
 * [#111](https://github.com/upfrontsystems/izinto-angular/issues/67) Embed D3.js visualisations as scripts
+* [#129](https://github.com/upfrontsystems/izinto-angular/issues/67) fix error on scroll
