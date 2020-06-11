@@ -427,7 +427,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
             const record = this.dataSets[dix][rix];
             if (record === undefined) {
-                return;
+                continue;
             }
 
             tooltip
