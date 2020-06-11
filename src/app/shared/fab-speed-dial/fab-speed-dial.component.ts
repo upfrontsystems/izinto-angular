@@ -1,11 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnInit, Output} from '@angular/core';
 import { fabSpeedDialAnimations } from './fab-speed-dial.animations';
-import {Collection} from '../../_models/collection';
-import {CollectionService} from '../../_services/collection.service';
-import {DashboardService} from '../../_services/dashboard.service';
-import {ChartService} from '../../_services/chart.service';
-import {SingleStatService} from '../../_services/single.stat.service';
+import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
 import {CopyService} from '../../_services/copy.service';
+import {map} from 'rxjs/operators';
 
 @Component({
     selector: 'app-fab-speed-dial',
@@ -13,7 +10,7 @@ import {CopyService} from '../../_services/copy.service';
     styleUrls: ['./fab-speed-dial.component.scss'],
     animations: fabSpeedDialAnimations
 })
-export class FabSpeedDialComponent {
+export class FabSpeedDialComponent implements OnInit {
 
     @Input()
     fabButtons: {icon: string, link: string, label: string}[];
@@ -21,11 +18,25 @@ export class FabSpeedDialComponent {
     @Input() text: string;
     @Output() buttonClick = new EventEmitter<string>();
 
-    visible = false;
+    visible = true;
     state = 'inactive';
     buttons = [];
+    scrollTop = 0;
 
-    constructor(protected copyService: CopyService) { }
+    constructor(protected copyService: CopyService,
+                private ngZone: NgZone,
+                private scrollDispatcher: ScrollDispatcher) { }
+
+    ngOnInit() {
+        this.scrollDispatcher.scrolled()
+            .pipe(map((event: CdkScrollable) => window.scrollY))
+            .subscribe(newScrollTop => this.ngZone.run(() => {
+                if (newScrollTop !== this.scrollTop) {
+                    this.visible = newScrollTop - this.scrollTop > 0;
+                    this.scrollTop = newScrollTop;
+                }
+            }));
+    }
 
     showItems() {
         this.state = 'active';

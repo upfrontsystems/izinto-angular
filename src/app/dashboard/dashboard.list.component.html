@@ -1,6 +1,6 @@
 <div cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
     <ng-container *ngFor="let dashboard of dashboards">
-        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
+        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" [cdkDragDisabled]="!canEdit" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
             <div fxFlex="100%">
                 <mat-card>
                     <mat-card-content>

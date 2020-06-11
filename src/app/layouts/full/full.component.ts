@@ -48,27 +48,19 @@ export class FullComponent implements OnInit, OnDestroy, AfterViewInit {
     ) {
         this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-        this.mobileQuery.addListener(this._mobileQueryListener);
+        this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit() {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.scrollDispatcher.scrolled()
-            .pipe(map((event: CdkScrollable) => this.getScrollPosition(event)))
+            .pipe(map((event: CdkScrollable) => window.scrollY))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
                     this.toolbarHidden = newScrollTop - this.scrollTop > 0;
                     this.scrollTop = newScrollTop;
                 }
             }));
-    }
-
-    getScrollPosition(event) {
-        if (event) {
-            return event.getElementRef().nativeElement.scrollTop;
-        } else {
-            return window.scrollY;
-        }
     }
 
     toggleDateSelect() {

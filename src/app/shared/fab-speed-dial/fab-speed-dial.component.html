@@ -2,7 +2,7 @@
      *ngIf="state==='active'"
      (click)="onToggleFab()">
 </div>
-<div class="fab-container" *ngIf="fabButtons.length == 1">
+<div class="fab-container" *ngIf="fabButtons.length == 1" [class.hidden]="visible">
     <span *ngFor="let btn of fabButtons">
         <button (click)="onButtonClick(btn.label)"
                 mat-fab
@@ -13,7 +13,7 @@
         </button>
     </span>
 </div>
-<div class="fab-container" *ngIf="fabButtons.length > 1">
+<div class="fab-container" *ngIf="fabButtons.length > 1" [class.hidden]="visible">
     <button *ngIf="!text" mat-fab color="primary" class="fab-toggler"
             (click)="onToggleFab()">
         <i class="material-icons" [@fabToggler]="{value: state}">add</i>
