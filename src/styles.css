@@ -31,7 +31,7 @@ a.link-title {
     box-shadow: none !important;
 }
 
-/* fix ngx-daterangepicker-material popup being transparent
+/* fix ngx-daterangepicker-material popup being transparent */
 ngx-daterangepicker-material > div {
     background: white;
 }

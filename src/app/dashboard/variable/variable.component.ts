@@ -1,7 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {Variable} from '../../_models/variable';
 import {VariableService} from '../../_services/variable.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
     selector: 'app-variable',
@@ -23,12 +23,17 @@ export class VariableComponent implements OnInit {
                 private fb: FormBuilder) {
     }
 
+    // close editor on esc key
+    @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+        this.editing = false;
+    }
+
     ngOnInit() {
         this.adding = this.variable.id === undefined;
         this.form = this.fb.group({
             id: this.variable.id,
-            name: this.variable.name,
-            value: this.variable.value,
+            name: [this.variable.name, [Validators.required, Validators.pattern(/^[a-zA-Z0-9_-]*$/)]],
+            value: [this.variable.value, Validators.required],
             dashboard_id: this.variable.dashboard_id,
             index: this.index
         });

@@ -25,6 +25,12 @@
                     <input matInput placeholder="" [formControl]="form.get('name')"
                            autocomplete="off">
                 </mat-form-field>
+                <small *ngIf="form.get('name').hasError('required') && form.get('name').touched"
+                    class="text-danger support-text">Variable name required
+                </small>
+                <small *ngIf="form.get('name').hasError('pattern') && form.get('name').touched"
+                    class="text-danger support-text">Only alphanumeric, "-" and "_" characters allowed
+                </small>
             </div>
 
             <div fxFlex="40">
@@ -32,10 +38,13 @@
                     <input matInput placeholder="" [formControl]="form.get('value')"
                            autocomplete="off">
                 </mat-form-field>
+                <small *ngIf="form.get('value').hasError('required') && form.get('value').touched"
+                    class="text-danger support-text">Variable value required
+                </small>
             </div>
 
             <div fxFlex="30" class="mat-cell">
-                <button class="mat-button pull-right m-t-10" (click)="submit()">
+                <button class="mat-button pull-right m-t-10" [disabled]="form.invalid" (click)="submit()">
                     <span>Submit</span>
                 </button>
             </div>

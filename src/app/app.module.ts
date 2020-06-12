@@ -50,7 +50,6 @@ import { SpinnerComponent } from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
 import { VariableComponent } from './dashboard/variable/variable.component';
-import { VariableDialogComponent } from './dashboard/variable/variable.dialog.component';
 import { QueryBaseComponent } from './dashboard/query.base.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -93,7 +92,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         UserComponent,
         UserDialogComponent,
         VariableComponent,
-        VariableDialogComponent,
         DataSourceDialogComponent,
         QueryBaseComponent,
         LandingpageComponent
@@ -122,8 +120,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         DataSourceDialogComponent,
         SingleStatDialogComponent,
         ScriptDialogComponent,
-        UserDialogComponent,
-        VariableDialogComponent
+        UserDialogComponent
     ],
     providers: [
         AlertService,

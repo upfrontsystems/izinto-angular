@@ -64,7 +64,7 @@ export class QueryBaseComponent {
         query = query.replace(/:group_by:/g, this.groupByForView(chartGroupBy));
 
         for (const variable of this.variables) {
-            const re = new RegExp(variable.name, 'g');
+            const re = new RegExp(':' + variable.name + ':', 'g');
             query = query.replace(re, variable.value);
         }
 

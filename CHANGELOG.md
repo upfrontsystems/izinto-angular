@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 * [#121](https://github.com/upfrontsystems/izinto-angular/issues/121) Rename order column to index on Dashboard
 * Upgrade Angular to version 9
 * [#123](https://github.com/upfrontsystems/izinto-angular/issues/123) Export chart data to CSV
+* [#125](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix setting variable name
 
 
 ## 1.0.0
