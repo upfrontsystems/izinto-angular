@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
@@ -10,14 +10,12 @@ import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.compon
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
 import {DataSourceService} from '../_services/data.source.service';
-import {ChartService} from '../_services/chart.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
 import {AuthenticationService} from '../_services/authentication.service';
 import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
-import {SingleStatService} from '../_services/single.stat.service';
 import {CopyService} from '../_services/copy.service';
 
 @Component({
