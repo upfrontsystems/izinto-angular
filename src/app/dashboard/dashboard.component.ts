@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit {
                 protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-        this.mobileQuery.addListener(this._mobileQueryListener);
+        this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit() {
