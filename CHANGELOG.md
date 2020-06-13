@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Upgrade Angular to version 9
 * [#123](https://github.com/upfrontsystems/izinto-angular/issues/123) Export chart data to CSV
 * [#125](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix setting variable name
+* [#137](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix collection title
 
 
 ## 1.0.0

@@ -59,10 +59,11 @@ export class FullComponent implements OnInit, OnDestroy {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             this.currentDashboard = dashboard;
-            this.parentURL = '/collections/' + dashboard.collection_id;
-            if (!this.collectionTitle) {
+            const parentURL = '/collections/' + dashboard.collection_id;
+            if (parentURL !== this.parentURL) {
                 this.collectionService.getById(this.currentDashboard.collection_id).subscribe(resp => {
                     this.collectionTitle = resp.title;
+                    this.parentURL = parentURL;
                 });
             }
         });
