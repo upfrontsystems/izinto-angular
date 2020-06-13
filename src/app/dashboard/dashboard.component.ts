@@ -131,6 +131,15 @@ export class DashboardComponent implements OnInit {
         });
     }
 
+    dateSelectVisible() {
+        // Always show the date selector on bigger screens
+        if (this.mobileQuery.matches) {
+            return true;
+        } else {
+            return this.dateSelectOpened;
+        }
+    }
+
     fabClick(label) {
         if (label === 'Add Chart') {
             this.addChart();
