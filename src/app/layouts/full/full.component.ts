@@ -68,7 +68,7 @@ export class FullComponent implements OnInit, OnDestroy {
             }
         });
         this.scrollDispatcher.scrolled()
-            .pipe(map((event: CdkScrollable) => window.scrollY))
+            .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
                     this.toolbarHidden = newScrollTop - this.scrollTop > 0;

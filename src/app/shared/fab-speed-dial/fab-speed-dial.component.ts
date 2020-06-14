@@ -29,7 +29,7 @@ export class FabSpeedDialComponent implements OnInit {
 
     ngOnInit() {
         this.scrollDispatcher.scrolled()
-            .pipe(map((event: CdkScrollable) => window.scrollY))
+            .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
                     this.hidden = newScrollTop - this.scrollTop > 0;
