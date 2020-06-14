@@ -84,7 +84,7 @@
                     <button mat-icon-button [routerLink]="parentURL">
                         <mat-icon>keyboard_backspace</mat-icon>
                     </button>
-                    <span>{{collectionTitle}}</span>
+                    <span>{{this.currentDashboard?.title}}</span>
                     <span fxFlex></span>
                     <button mat-icon-button (click)="toggleDateSelect()">
                         <mat-icon>date_range</mat-icon>

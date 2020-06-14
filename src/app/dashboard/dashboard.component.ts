@@ -17,6 +17,7 @@ import {AuthenticationService} from '../_services/authentication.service';
 import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
 import {CopyService} from '../_services/copy.service';
+import {CollectionService} from '../_services/collection.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
     canEdit = false;
     dashboardId: number;
     dashboard: Dashboard;
+    parent: any;
     dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
@@ -88,6 +90,7 @@ export class DashboardComponent implements OnInit {
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
+                protected collectionService: CollectionService,
                 protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
@@ -122,6 +125,19 @@ export class DashboardComponent implements OnInit {
         this.dashboardService.getById(this.dashboardId).subscribe(resp => {
             this.dashboard = resp;
             this.dashboardService.currentDashboard.emit(this.dashboard);
+            if (resp.collection_id) {
+                this.collectionService.getById(resp.collection_id).subscribe(collection => {
+                    this.parent = {
+                        title: collection.title,
+                        url: '/collections/' + collection.id
+                    };
+                });
+            } else {
+                this.parent = {
+                    title: 'Home',
+                    url: '/'
+                };
+            }
         });
     }
 

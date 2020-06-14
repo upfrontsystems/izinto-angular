@@ -34,7 +34,6 @@ export class FullComponent implements OnInit, OnDestroy {
     currentDashboard = undefined;
     scrollTop = 0;
     parentURL = '/';
-    collectionTitle = undefined;
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;
@@ -59,13 +58,7 @@ export class FullComponent implements OnInit, OnDestroy {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             this.currentDashboard = dashboard;
-            const parentURL = '/collections/' + dashboard.collection_id;
-            if (parentURL !== this.parentURL) {
-                this.collectionService.getById(this.currentDashboard.collection_id).subscribe(resp => {
-                    this.collectionTitle = resp.title;
-                    this.parentURL = parentURL;
-                });
-            }
+            this.parentURL = '/collections/' + dashboard.collection_id;
         });
         this.scrollDispatcher.scrolled()
             .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))

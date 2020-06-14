@@ -1026,3 +1026,12 @@ list inline
 #dashboard div.chart-row:hover button.mat-menu-trigger {
     display:inline;
 }
+
+.page-title {
+    font-weight: 500;
+    margin: 0.5em 0 0.25em;
+}
+
+.page-title a {
+    color: $themecolor;
+}
