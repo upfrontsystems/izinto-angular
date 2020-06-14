@@ -9,7 +9,7 @@
 
 <div fxLayout="row wrap">
     <div fxFlex="100">
-        <app-dashboard-list [dashboards]="collection?.dashboards" (edited)="dashboardEdited($event)"
+        <app-dashboard-list [dashboards]="sortedDashboards()" (edited)="dashboardEdited($event)"
                     (deleted)="dashboardDeleted($event)" (reordered)="dashboardReordered($event)"></app-dashboard-list>
     </div>
 </div>

@@ -56,6 +56,12 @@ export class CollectionComponent implements OnInit {
         });
     }
 
+    sortedDashboards() {
+        if (this.collection) {
+            return this.collection.dashboards.sort((a, b) => a.index - b.index);
+        }
+    }
+
     addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',

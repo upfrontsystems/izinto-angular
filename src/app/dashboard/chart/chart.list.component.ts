@@ -43,7 +43,7 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
 
     getCharts() {
         this.chartService.getCharts({dashboard_id: this.dashboardId}).subscribe(charts => {
-            this.charts = charts;
+            this.charts = charts.sort((a, b) => a.index - b.index);
         });
     }
 
