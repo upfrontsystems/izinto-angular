@@ -112,7 +112,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
                 const rec = new Record();
                 rec.id = singleStat.id;
                 rec.text = singleStat.title;
-                if (resp['results'][0].hasOwnProperty('series')) {
+                if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                     const series = resp['results'][0]['series'][resp['results'][0]['series'].length - 1];
                     const record = series['values'][series['values'].length - 1];
                     const val = +record[1].toFixed(singleStat.decimals);

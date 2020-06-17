@@ -171,16 +171,45 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
 
                 const dataSets = [];
-                for (const series of resp['results'][0]['series']) {
-                    const headers = series['columns'];
+                const seriesList = resp['results'][0]['series'];
+                if (seriesList.length === 1) {
                     const csv = [];
+                    csv.push(seriesList[0]['columns'].join(','));
                     // format to csv
-                    for (const record of series['values']) {
+                    for (const record of seriesList[0]['values']) {
                         const date = new Date(record[0]);
                         if (date < this.startDate || date > this.endDate) {
                             continue;
                         }
                         csv.push(record.join(','));
+                    }
+                    const csvArray = csv.join('\r\n');
+                    dataSets.push(csvArray);
+                } else {
+                    const csv = seriesList[0]['values'].map(row => {
+                        return [row[0]];
+                    });
+                    const headers = [];
+                    let xHeader = '';
+                    // include multiple series id as headers
+                    for (const series of seriesList) {
+                        const values = Object.keys(series['tags']).map(function (key) {
+                            return series['tags'][key];
+                        });
+                        headers.push(values[0]);
+                        xHeader = series['columns'][0];
+                    }
+                    headers.unshift(xHeader);
+
+                    // format record to csv
+                    for (const series of seriesList) {
+                        for (let rIx = 0; rIx < series['values'].length; rIx += 1) {
+                            const date = new Date(series['values'][rIx][0]);
+                            if (date < this.startDate || date > this.endDate) {
+                                continue;
+                            }
+                            csv[rIx].push(series['values'][rIx][1]);
+                        }
                     }
                     csv.unshift(headers.join(','));
                     const csvArray = csv.join('\r\n');
