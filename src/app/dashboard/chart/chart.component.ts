@@ -20,6 +20,7 @@ import * as d3Shape from 'd3-shape';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
 import {saveAs} from 'file-saver';
+import {lab} from 'd3-color';
 
 
 @Component({
@@ -235,6 +236,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 const groupByValue = groupByValues[this.groupByForView(this.chart.group_by)];
                 for (const series of resp['results'][0]['series']) {
                     const datasets = [];
+                    const tags = Object.keys(series['tags']).map(function (key) {
+                        return series['tags'][key];
+                    });
+                    const tag = tags[0];
+
                     for (const record of series['values']) {
                         const date = new Date(record[0]);
                         if (date < this.startDate || date > this.endDate) {
@@ -254,8 +260,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             const rec = new Record();
                             rec.date = date;
                             rec.unit = this.chart.unit || '';
-                            rec.fieldName = series['columns'][index + 1];
+                            rec.fieldName = series['columns'][index + 1] + ': ' + tag;
                             rec.value = val;
+                            rec.header = tag;
                             if (val !== null) {
                                 datasets[index].push(rec);
                             }
@@ -266,6 +273,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                         this.dataSets.push(dataset);
                     }
                 }
+            } else if (resp['error']) {
+                this.alertService.error(resp['error']);
             }
             this.buildChart();
         }, err => {
@@ -382,12 +391,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const legendGroup = svg.append('g')
                 .attr('class', 'legend g-' + this.chart.id),
             colors = this.chart.color.split(','),
-            labels = this.chart.labels;
+            labels = this.buildLegendLabels();
         let yOffset = this.chartHeight - 30 - this.legendHeight,
             xOffset = 0;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const dataset = this.dataSets[dix],
-                fieldName = labels && labels.split(',')[dix] || dataset[0].fieldName,
+                header = dataset[0].header,
+                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
                 padding = 5,
                 rectWidth = 10,
                 recordValueWidth = 15 * 10,
@@ -423,6 +433,22 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('fill', 'black');
         }
 
+    }
+
+    // build legend labels from label mapping
+    buildLegendLabels() {
+        const labels = this.chart.labels;
+        if (!labels) {
+            return [];
+        }
+        if (labels.includes(':')) {
+            const mapping = {};
+            for (const value of labels.split(',')) {
+                mapping[value.split(':')[0].trim()] = value.split(':')[1].trim();
+            }
+            return mapping;
+        }
+        return labels.split(',');
     }
 
     mouseover() {

@@ -7,4 +7,5 @@
     text: String;
     fieldName: String;
     value: Number;
+    header: string;
 }
