@@ -234,13 +234,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 // a result can have multiple series, each series is a separate dataset
-                const groupByValue = groupByValues[this.groupByForView(this.chart.group_by)];
-                for (const series of resp['results'][0]['series']) {
+                const groupByValue = groupByValues[this.groupByForView(this.chart.group_by)],
+                    seriesList = resp['results'][0]['series'];
+                for (const series of seriesList) {
                     const datasets = [];
-                    const tags = Object.keys(series['tags']).map(function (key) {
-                        return series['tags'][key];
-                    });
-                    const tag = tags[0];
+                    let tag;
+                    if (seriesList.length > 1) {
+                        const tags = Object.keys(series['tags']).map(function (key) {
+                            return series['tags'][key];
+                        });
+                        tag = tags[0];
+                    }
 
                     for (const record of series['values']) {
                         const date = new Date(record[0]);
@@ -261,9 +265,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                             const rec = new Record();
                             rec.date = date;
                             rec.unit = this.chart.unit || '';
-                            rec.fieldName = series['columns'][index + 1] + ': ' + tag;
+                            if (tag) {
+                                rec.fieldName = series['columns'][index + 1] + ': ' + tag;
+                            } else {
+                                rec.fieldName = series['columns'][index + 1];
+                            }
                             rec.value = val;
-                            rec.header = tag;
+                            rec.header = tag || rec.fieldName;
                             if (val !== null) {
                                 datasets[index].push(rec);
                             }
@@ -399,10 +407,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let yOffset = this.chartHeight - 30 - this.legendHeight,
             xOffset = 0;
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            const dataset = this.dataSets[dix],
-                header = dataset[0].header,
-                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
-                padding = 5,
+            const dataset = this.dataSets[dix];
+            if (dataset.length === 0) {
+                continue;
+            }
+            const header = dataset[0].header,
+                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header);
+            const padding = 5,
                 rectWidth = 10,
                 recordValueWidth = 15 * 10,
                 labelWidth = fieldName.length * 10,
