@@ -83,6 +83,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 this.mousemove(event.changedTouches[0].clientX - bounds.left, event.changedTouches[0].clientY - bounds.bottom);
             }
         });
+        mouseListener.click.subscribe(event => {
+            event.preventDefault();
+            const target = event.target as HTMLElement;
+            if (target.matches('rect')) {
+                // calculate x coordinate within chart
+                const bounds = target.getBoundingClientRect();
+                this.mouseclick(event.clientX - bounds.left, event.clientY - bounds.bottom);
+            }
+            event.preventDefault();
+        });
     }
 
     @HostListener('window:resize', ['$event'])
@@ -432,7 +442,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('y', yOffset)
                 .attr('fill', 'black');
         }
-
     }
 
     // build legend labels from label mapping
@@ -525,6 +534,48 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             tooltip
                 .select('g.tooltip')
                 .attr('transform', 'translate(0, 0)');
+        }
+    }
+
+    mouseclick(xcoord, ycoord) {
+        if (this.dataSets.length === 0) {
+            return;
+        }
+        const yOffset = 0 - this.legendHeight;
+        if (yOffset >= ycoord) {
+            return;
+        }
+
+        const labels = this.buildLegendLabels();
+        let seriesIx = 0;
+        let xOffset = 0;
+
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            const dataset = this.dataSets[dix],
+                header = dataset[0].header,
+                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
+                rectWidth = 10,
+                recordValueWidth = 15 * 10,
+                labelWidth = fieldName.length * 10,
+                legendWidth = rectWidth + labelWidth + recordValueWidth;
+            if (dix > 0) {
+                xOffset += legendWidth;
+            }
+            // wrap to next line if legend does not fit
+            if (xOffset + legendWidth > this.innerWidth) {
+                xOffset = 0;
+            }
+
+            if (xOffset >= xcoord) {
+                seriesIx = dix - 1;
+                break;
+            }
+        }
+        this.dataSets.splice(seriesIx, 1);
+        if (this.chart.type === 'Line') {
+            this.removeLineSeries(seriesIx);
+        } else {
+            this.removeBarSeries(seriesIx);
         }
     }
 
@@ -786,6 +837,25 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             this.toolTip(d3.select('svg.chart-' + this.chart.id));
         }
 
+    }
+
+    removeBarSeries(index) {
+        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
+        const trans: any = 1000;
+        const barChart = svg.select('g.chart-' + this.chart.id);
+        const bar_selector = 'dataset-' + index;
+        barChart.selectAll('rect.' + bar_selector).remove();
+        svg.select('g.chart-' + index + ' path.line')
+            .transition(trans).remove();
+        this.legend(svg);
+    }
+
+    removeLineSeries(index) {
+        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
+        const trans: any = 1000;
+        svg.select('g.line-chart-' + index + ' path.line')
+            .transition(trans).remove();
+        this.legend(svg);
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {

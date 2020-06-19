@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 * [#125](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix setting variable name
 * [#137](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix collection title
 * [#113](https://github.com/upfrontsystems/izinto-angular/issues/113) Fix multiple series labels
+* [#134](https://github.com/upfrontsystems/izinto-angular/issues/134) Remove series from chart on legend click
 
 
 ## 1.0.0

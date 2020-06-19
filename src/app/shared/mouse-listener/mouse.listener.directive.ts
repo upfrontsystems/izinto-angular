@@ -15,6 +15,8 @@ export class MouseListenerDirective {
     public out = this.outSub.asObservable();
     private moveSub = new Subject<MouseEvent>();
     public move = this.moveSub.asObservable();
+    private clickSub = new Subject<MouseEvent>();
+    public click = this.clickSub.asObservable();
 
     @HostListener('mouseover', ['$event']) onMouseOver(event: MouseEvent) {
         this.overSub.next(event);
@@ -26,5 +28,11 @@ export class MouseListenerDirective {
 
     @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent) {
         this.moveSub.next(event);
+    }
+
+    @HostListener('click', ['$event']) onMouseClick(event: MouseEvent) {
+        event.preventDefault();
+        this.clickSub.next(event);
+        event.preventDefault();
     }
 }
