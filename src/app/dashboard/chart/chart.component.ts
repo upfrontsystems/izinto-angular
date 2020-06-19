@@ -555,23 +555,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         } else {
             this.removeBarSeries(seriesIdx);
         }
-
-        const dataSet = this.toggledSeres[seriesIdx] ? this.dataSets.splice(seriesIdx, 1) : this.dataSets;
-        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
-            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
-            const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
-            svg.select('g.grid')
-            .call(gridLines)
-            .call(g => g.selectAll('.tick line')
-                .attr('x1', 10)
-                .attr('stroke-opacity', 0.5)
-                .attr('stroke-dasharray', '2,2'))
-            .call(g => g.selectAll('.tick text')
-                .attr('x', -10)
-                .attr('dy', -4))
-            .call(g => g.select('.domain')
-                .remove());
-
     }
 
     removeBarSeries(index) {
