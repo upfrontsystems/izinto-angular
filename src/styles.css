@@ -35,3 +35,7 @@ a.link-title {
 ngx-daterangepicker-material > div {
     background: white;
 }
+
+.legend-label, .legend-value {
+    cursor: pointer;
+}

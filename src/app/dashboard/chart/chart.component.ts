@@ -44,6 +44,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     private innerHeight = 0;
     private legendHeight = 30;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
+    toggledSeres = {};
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -543,6 +544,52 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         } else {
             this.removeBarSeries(seriesIdx);
         }
+
+        const dataSet = this.toggledSeres[seriesIdx] ? this.dataSets.splice(seriesIdx, 1) : this.dataSets;
+        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
+            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
+            const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
+            svg.select('g.grid')
+            .call(gridLines)
+            .call(g => g.selectAll('.tick line')
+                .attr('x1', 10)
+                .attr('stroke-opacity', 0.5)
+                .attr('stroke-dasharray', '2,2'))
+            .call(g => g.selectAll('.tick text')
+                .attr('x', -10)
+                .attr('dy', -4))
+            .call(g => g.select('.domain')
+                .remove());
+
+    }
+
+    removeBarSeries(index) {
+        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
+        const trans: any = 1000;
+        if (this.toggledSeres[index]) {
+            svg.select('g.chart-' + this.chart.id).selectAll('rect.' + 'dataset-' + index)
+                .transition(trans).attr('opacity', 1);
+            this.toggledSeres[index] = false;
+        } else {
+            svg.select('g.chart-' + this.chart.id).selectAll('rect.' + 'dataset-' + index)
+                .transition(trans).attr('opacity', 0);
+            this.toggledSeres[index] = true;
+        }
+    }
+
+    removeLineSeries(index) {
+        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
+        const trans: any = 1000;
+
+        if (this.toggledSeres[index]) {
+            svg.select('g.line-chart-' + index + ' path.line')
+                .transition(trans).style('stroke-opacity', 1);
+            this.toggledSeres[index] = false;
+        } else {
+            svg.select('g.line-chart-' + index + ' path.line')
+                .transition(trans).style('stroke-opacity', 0);
+            this.toggledSeres[index] = true;
+        }
     }
 
     xAxisInterval(width) {
@@ -803,25 +850,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             this.toolTip(d3.select('svg.chart-' + this.chart.id));
         }
 
-    }
-
-    removeBarSeries(index) {
-        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
-        const trans: any = 1000;
-        const barChart = svg.select('g.chart-' + this.chart.id);
-        const bar_selector = 'dataset-' + index;
-        barChart.selectAll('rect.' + bar_selector).remove();
-        svg.select('g.chart-' + index + ' path.line')
-            .transition(trans).remove();
-        this.legend(svg);
-    }
-
-    removeLineSeries(index) {
-        const svg = d3.select('svg.chart-' + this.chart.id + ' > g');
-        const trans: any = 1000;
-        svg.select('g.line-chart-' + index + ' path.line')
-            .transition(trans).remove();
-        this.legend(svg);
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
