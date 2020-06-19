@@ -46,7 +46,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
                     icon: 'library_books'
                 };
                 menuitem['children'] = [];
-                for (const dashboard of collection['dashboards']) {
+                const dashboards = collection['dashboards'].sort((a,b) => a.index - b.index);
+                for (const dashboard of dashboards) {
                     menuitem['children'].push(
                         {
                             state: dashboard.id,
