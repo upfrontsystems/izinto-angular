@@ -83,16 +83,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 this.mousemove(event.changedTouches[0].clientX - bounds.left, event.changedTouches[0].clientY - bounds.bottom);
             }
         });
-        mouseListener.click.subscribe(event => {
-            event.preventDefault();
-            const target = event.target as HTMLElement;
-            if (target.matches('rect')) {
-                // calculate x coordinate within chart
-                const bounds = target.getBoundingClientRect();
-                this.mouseclick(event.clientX - bounds.left, event.clientY - bounds.bottom);
-            }
-            event.preventDefault();
-        });
     }
 
     @HostListener('window:resize', ['$event'])
@@ -387,11 +377,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             .attr('font-family', 'Poppins')
             .attr('fill', 'black');
 
+        // overlay to capture mouse move events on chart
+        // it doesn't cover the full `chartHeight` to ensure that click events on legends can fire
         svg.append('rect')
             .attr('transform', 'translate(' + this.margin.left + ',0)')
             .attr('class', 'overlay')
             .attr('width', this.innerWidth)
-            .attr('height', this.chartHeight)
+            .attr('height', this.chartHeight - this.margin.bottom)
             .attr('fill', 'none')
             .attr('pointer-events', 'all');
     }
@@ -400,6 +392,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         svg.selectAll('g.legend').remove();
         const legendGroup = svg.append('g')
                 .attr('class', 'legend g-' + this.chart.id),
+            chart = this,
             colors = this.chart.color.split(','),
             labels = this.buildLegendLabels();
         let yOffset = this.chartHeight - 30 - this.legendHeight,
@@ -424,12 +417,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             legendGroup.append('rect')
                 .attr('x', xOffset)
                 .attr('y', yOffset - 5)
+                .attr('series-index', dix)
+                .on('click', function() { chart.toggleSeries(this); })
                 .attr('width', '10')
                 .attr('height', '2')
                 .attr('fill', colors[dix]);
             const label = legendGroup.append('text')
                     .style('font-weight', '400')
                     .attr('class', 'legend-label dataset-' + dix)
+                    .attr('series-index', dix)
+                    .on('click', function() { chart.toggleSeries(this); })
                     .attr('x', xOffset + rectWidth + padding)
                     .attr('y', yOffset)
                     .attr('fill', 'black')
@@ -438,6 +435,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             legendGroup.append('text')
                 .style('font-weight', '600')
                 .attr('class', 'legend-value dataset-' + dix)
+                .attr('series-index', dix)
+                .on('click', function() { chart.toggleSeries(this); })
                 .attr('x', bBox.x + bBox.width + padding)
                 .attr('y', yOffset)
                 .attr('fill', 'black');
@@ -537,45 +536,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }
     }
 
-    mouseclick(xcoord, ycoord) {
-        if (this.dataSets.length === 0) {
-            return;
-        }
-        const yOffset = 0 - this.legendHeight;
-        if (yOffset >= ycoord) {
-            return;
-        }
-
-        const labels = this.buildLegendLabels();
-        let seriesIx = 0;
-        let xOffset = 0;
-
-        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            const dataset = this.dataSets[dix],
-                header = dataset[0].header,
-                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
-                rectWidth = 10,
-                recordValueWidth = 15 * 10,
-                labelWidth = fieldName.length * 10,
-                legendWidth = rectWidth + labelWidth + recordValueWidth;
-            if (dix > 0) {
-                xOffset += legendWidth;
-            }
-            // wrap to next line if legend does not fit
-            if (xOffset + legendWidth > this.innerWidth) {
-                xOffset = 0;
-            }
-
-            if (xOffset >= xcoord) {
-                seriesIx = dix - 1;
-                break;
-            }
-        }
-        this.dataSets.splice(seriesIx, 1);
+    toggleSeries(element) {
+        const seriesIdx = element.getAttribute('series-index');
         if (this.chart.type === 'Line') {
-            this.removeLineSeries(seriesIx);
+            this.removeLineSeries(seriesIdx);
         } else {
-            this.removeBarSeries(seriesIx);
+            this.removeBarSeries(seriesIdx);
         }
     }
 
@@ -660,7 +626,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('height', this.chartHeight);
             d3.select('div.chart-' + this.chart.id + ' rect.overlay')
                 .attr('width', this.chartWidth)
-                .attr('height', this.chartHeight);
+                .attr('height', this.chartHeight - this.margin.bottom);
         }
 
         this.legend(svg);
@@ -798,7 +764,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('height', this.chartHeight);
             d3.select('div.chart-' + this.chart.id + ' rect.overlay')
                 .attr('width', this.chartWidth)
-                .attr('height', this.chartHeight);
+                .attr('height', this.chartHeight - this.margin.bottom);
             dataSet.forEach((dataset, index) => {
                 svg.select('g.line-chart-' + index + ' path.line')
                     .transition(trans)
