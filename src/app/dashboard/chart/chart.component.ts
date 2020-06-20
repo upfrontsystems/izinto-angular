@@ -293,19 +293,22 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     buildChart() {
         this.setChartDimensions();
-        const hidden = this.hiddenSeries,
-            visibleSeries = this.dataSets.filter(function (e, i) {
-            return hidden.indexOf(i) === -1;
-        });
         if (this.chart.type === 'Line') {
-            this.lineChart(visibleSeries);
+            this.lineChart(this.dataSets);
         } else if (this.chart.type === 'Bar') {
-            this.barChart(visibleSeries);
+            this.barChart(this.dataSets);
         } else if (this.chart.type === 'Wind Arrow') {
-            this.windArrows(visibleSeries);
+            this.windArrows(this.dataSets);
         } else {
-            this.barChart(visibleSeries);
+            this.barChart(this.dataSets);
         }
+    }
+
+    visibleSeries() {
+        const hidden = this.hiddenSeries;
+        return this.dataSets.filter(function (e, i) {
+                return hidden.indexOf(i) === -1;
+            });
     }
 
     xAxisScale() {
@@ -612,7 +615,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     }
 
     barChart(dataSet) {
-        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
+        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries())).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged),
             gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
@@ -690,38 +693,37 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 bandwidth = this.barWidth(),
                 padding = bandwidth > 2 && 1 || 0,
                 update = barChart.selectAll('rect.' + bar_selector).data(dataset);
-            // barChart.selectAll('rect.' + bar_selector).remove();
-            update.exit().remove();
-            update.enter().append('rect')
-                .attr('class', bar_selector)
-                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
-                .attr('y', function (d: Record) {
-                    return height - yScale(d.value);
-                })
-                .attr('width', bandwidth - padding * 2)
-                .attr('height', function (d: Record) {
-                    return yScale(d.value);
-                })
-                .attr('fill', function (d: Record) {
-                    if (fillFunc) {
-                        return fillFunc(d.value);
-                    } else {
-                        return color.split(',')[index];
-                    }
-                });
-            update.transition()
-                .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
-                .attr('y', function (d: Record) {
-                    return height - yScale(d.value);
-                })
-                .attr('width', bandwidth - padding * 2)
-                .attr('height', function (d: Record) {
-                    return yScale(d.value);
-                });
-        });
-        this.hiddenSeries.forEach((index) => {
-            const trans: any = 1000;
-            barChart.selectAll('rect.dataset-' + index).remove();
+            if (this.hiddenSeries.indexOf(index) > -1) {
+                update.transition(<any>1000).remove();
+            } else {
+                update.exit().remove();
+                update.enter().append('rect')
+                    .attr('class', bar_selector)
+                    .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
+                    .attr('y', function (d: Record) {
+                        return height - yScale(d.value);
+                    })
+                    .attr('width', bandwidth - padding * 2)
+                    .attr('height', function (d: Record) {
+                        return yScale(d.value);
+                    })
+                    .attr('fill', function (d: Record) {
+                        if (fillFunc) {
+                            return fillFunc(d.value);
+                        } else {
+                            return color.split(',')[index];
+                        }
+                    });
+                update.transition()
+                    .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
+                    .attr('y', function (d: Record) {
+                        return height - yScale(d.value);
+                    })
+                    .attr('width', bandwidth - padding * 2)
+                    .attr('height', function (d: Record) {
+                        return yScale(d.value);
+                    });
+            }
         });
         if (create && dataSet.length > 0) {
             this.toolTip(d3.select('svg.chart-' + this.chart.id));
@@ -730,7 +732,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     lineChart(dataSet) {
 
-        const merged = this.arrayUnique([].concat.apply([], dataSet)).sort((a, b) => a.date - b.date),
+        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries())).sort((a, b) => a.date - b.date),
             gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth),
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged, false);
@@ -772,29 +774,30 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('height', this.chartHeight - this.margin.bottom);
         }
         dataSet.forEach((dataset, index) => {
-            const ch = svg.select('g.line-chart-' + index);
-            if (ch.empty()) {
-                const linechart = svg.append('g').attr('class', 'line-chart-' + index);
-                linechart.append('path')
-                    .datum(dataset)
-                    .attr('fill', 'none')
-                    .style('stroke', this.chart.color.split(',')[index])
-                    .style('stroke-width', '2px')
-                    .attr('class', 'line')
-                    .attr('d', line);
-                linechart.append('text')
-                    .attr('class', 'section-label')
-                    .attr('x', 0)
-                    .attr('y', -40)
-                    .attr('dy', '0.8em')
-                    .attr('fill', 'black')
-                    .text(this.chart.title);
+            if (this.hiddenSeries.indexOf(index) > -1) {
+                svg.select('g.line-chart-' + index).remove();
             } else {
-                ch.transition(trans).attr('d', line(dataset));
+                const ch = svg.select('g.line-chart-' + index);
+                if (ch.empty()) {
+                    const linechart = svg.append('g').attr('class', 'line-chart-' + index);
+                    linechart.append('path')
+                        .datum(dataset)
+                        .attr('fill', 'none')
+                        .style('stroke', this.chart.color.split(',')[index])
+                        .style('stroke-width', '2px')
+                        .attr('class', 'line')
+                        .attr('d', line);
+                    linechart.append('text')
+                        .attr('class', 'section-label')
+                        .attr('x', 0)
+                        .attr('y', -40)
+                        .attr('dy', '0.8em')
+                        .attr('fill', 'black')
+                        .text(this.chart.title);
+                } else {
+                    ch.select('path').transition(trans).attr('d', line(dataset));
+                }
             }
-        });
-        this.hiddenSeries.forEach((index) => {
-            svg.select('g.line-chart-' + index).remove();
         });
         this.legend(svg);
         const interval = this.xAxisInterval(this.innerWidth);
