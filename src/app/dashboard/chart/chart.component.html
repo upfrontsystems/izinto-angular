@@ -19,11 +19,10 @@
         <mat-icon>file_copy</mat-icon>
         <span>Copy</span>
     </button>
-    <button mat-menu-item class="pull-right" color="accent" (click)="downloadCSV()"
-            title="CSV Export">
-        <mat-icon>list_alt</mat-icon>
-        <span>CSV Export</span>
-    </button>
 </mat-menu>
-
 <div [class]="'d3-chart chart-container-' + chart.id"></div>
+<button mat-icon-button color="primary" class="pull-right download-csv" (click)="downloadCSV()"
+        title="Download CSV">
+    <mat-icon>cloud_download</mat-icon>
+</button>
+
