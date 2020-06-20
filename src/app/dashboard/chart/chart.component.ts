@@ -425,9 +425,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 recordValueWidth = 15 * 10,
                 labelWidth = fieldName.length * 10,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
-            if (dix > 0) {
-                xOffset += legendWidth;
-            }
             // wrap to next line if legend does not fit
             if (xOffset + legendWidth > this.innerWidth) {
                 xOffset = 0;
@@ -459,6 +456,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .attr('x', bBox.x + bBox.width + padding)
                 .attr('y', yOffset)
                 .attr('fill', 'black');
+            xOffset += legendWidth;
         }
     }
 
