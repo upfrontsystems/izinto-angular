@@ -515,18 +515,21 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 .style('display', null)
                 .select('.x-hover-line').attr('y2', markerHeight);
 
-            const bBox = (legend.select('text.legend-label.dataset-' + dix).node() as SVGSVGElement).getBBox();
-            legend
-                .select('text.legend-value.dataset-' + dix)
-                .text(function (): any {
-                    if (chart_type === 'Wind Arrow' && dix === 1) {
-                        // TODO: unit for wind speed is hardcoded
-                        return record.value.toFixed(decimals) + ' m/s';
-                    } else {
-                        return record.value.toFixed(decimals) + ' ' + record.unit;
-                    }
-                })
-                .attr('x', bBox.x + bBox.width + 5);
+            const legendText = legend.select('text.legend-label.dataset-' + dix).node() as SVGSVGElement;
+            if (legendText) {
+                const bBox = legendText.getBBox();
+                legend
+                    .select('text.legend-value.dataset-' + dix)
+                    .text(function (): any {
+                        if (chart_type === 'Wind Arrow' && dix === 1) {
+                            // TODO: unit for wind speed is hardcoded
+                            return record.value.toFixed(decimals) + ' m/s';
+                        } else {
+                            return record.value.toFixed(decimals) + ' ' + record.unit;
+                        }
+                    })
+                    .attr('x', bBox.x + bBox.width + 5);
+            }
         }
 
         // update date label
