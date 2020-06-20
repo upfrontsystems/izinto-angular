@@ -559,7 +559,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const seriesIdx = Number(element.getAttribute('series-index'));
         const ii = this.hiddenSeries.indexOf(seriesIdx);
         if (ii > -1) {
-            this.hiddenSeries.splice(ii);
+            this.hiddenSeries.splice(ii, 1);
         } else {
             this.hiddenSeries.push(seriesIdx);
         }
