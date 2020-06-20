@@ -430,32 +430,35 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                 xOffset = 0;
                 yOffset += 22;
             }
-            legendGroup.append('rect')
+            const seriesLegend = legendGroup.append('g')
+                .attr('class', 'series-legend')
+                .attr('series-index', dix)
+                .on('click', function() {chart.toggleSeries(this); });
+            let textFill = 'black',
+                rectFill = colors[dix];
+            if (this.hiddenSeries.indexOf(dix) > -1) {
+                textFill = rectFill = 'lightgray';
+            }
+            seriesLegend.append('rect')
                 .attr('x', xOffset)
                 .attr('y', yOffset - 5)
-                .attr('series-index', dix)
-                .on('click', function() { chart.toggleSeries(this); })
                 .attr('width', '10')
                 .attr('height', '2')
-                .attr('fill', colors[dix]);
-            const label = legendGroup.append('text')
+                .attr('fill', rectFill);
+            const label = seriesLegend.append('text')
                     .style('font-weight', '400')
                     .attr('class', 'legend-label dataset-' + dix)
-                    .attr('series-index', dix)
-                    .on('click', function() { chart.toggleSeries(this); })
                     .attr('x', xOffset + rectWidth + padding)
                     .attr('y', yOffset)
-                    .attr('fill', 'black')
+                    .attr('fill', textFill)
                     .text(fieldName + ': '),
                 bBox = (label.node() as SVGSVGElement).getBBox();
-            legendGroup.append('text')
+            seriesLegend.append('text')
                 .style('font-weight', '600')
                 .attr('class', 'legend-value dataset-' + dix)
-                .attr('series-index', dix)
-                .on('click', function() { chart.toggleSeries(this); })
                 .attr('x', bBox.x + bBox.width + padding)
                 .attr('y', yOffset)
-                .attr('fill', 'black');
+                .attr('fill', textFill);
             xOffset += legendWidth;
         }
     }
