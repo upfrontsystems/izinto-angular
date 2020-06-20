@@ -20,9 +20,8 @@
         <span>Copy</span>
     </button>
 </mat-menu>
-<div [class]="'d3-chart chart-container-' + chart.id"></div>
-<button mat-icon-button color="primary" class="pull-right download-csv" (click)="downloadCSV()"
+<button mat-icon-button class="pull-right download-csv" (click)="downloadCSV()"
         title="Download CSV">
     <mat-icon>cloud_download</mat-icon>
 </button>
-
+<div [class]="'d3-chart chart-container-' + chart.id"></div>

@@ -1015,16 +1015,20 @@ list inline
     }
 }
 
-#dashboard button.mat-menu-trigger {
-    display:none;
-}
+#dashboard {
+    button.download-csv,
+    button.mat-menu-trigger {
+        display:none;
+    }
 
-#dashboard mat-card.single-stat:hover button.mat-menu-trigger {
-    display:inline;
-}
+    mat-card.single-stat:hover button.mat-menu-trigger {
+        display:inline;
+    }
 
-#dashboard div.chart-row:hover button.mat-menu-trigger {
-    display:inline;
+    div.chart-row:hover button.download-csv,
+    div.chart-row:hover button.mat-menu-trigger {
+        display:inline;
+    }
 }
 
 .page-title {
