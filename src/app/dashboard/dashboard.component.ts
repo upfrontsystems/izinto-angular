@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     addedSingleStat: SingleStat;
     addedScript: Script;
     dateViews: DashboardView[] = [];
-    dateView = 'Month';
+    dateView = 'Week';
     private range = {
         'Hour': {'count': 1, 'unit': 'h'},
         'Day': {'count': 1, 'unit': 'd'},
