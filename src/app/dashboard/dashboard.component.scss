@@ -54,6 +54,8 @@ g.grid g.tick line {
 
 .stat-header {
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-value {

@@ -1035,3 +1035,9 @@ list inline
 .page-title a {
     color: $themecolor;
 }
+
+.dashboard-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
