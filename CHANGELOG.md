@@ -56,4 +56,4 @@ Issue Fixes
 * [#134](https://github.com/upfrontsystems/izinto-angular/issues/134) Remove series from chart on legend click
 * [#137](https://github.com/upfrontsystems/izinto-angular/issues/125) Fix collection title
 * [#139](https://github.com/upfrontsystems/izinto-angular/issues/139) Upgrade Angular to version 9
-
+* [#95](https://github.com/upfrontsystems/izinto-angular/issues/95) Add 3h interval to query
