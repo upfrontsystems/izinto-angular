@@ -20,7 +20,6 @@ import * as d3Shape from 'd3-shape';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
 import {saveAs} from 'file-saver';
-import {lab} from 'd3-color';
 
 
 @Component({
@@ -36,6 +35,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     public windowWidth: any;
+    hiddenSeries = [];
     private dataSets = [];
     private scales = [];
     private chartHeight = 250;
@@ -44,7 +44,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     private innerHeight = 0;
     private legendHeight = 30;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
-    hiddenSeries = [];
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -188,32 +187,45 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
                     const csvArray = csv.join('\r\n');
                     dataSets.push(csvArray);
                 } else {
-                    const csv = seriesList[0]['values'].map(row => {
-                        return [row[0]];
-                    });
                     const headers = [];
                     let xHeader = '';
+                    let xAxisList = [];
                     // include multiple series id as headers
                     for (const series of seriesList) {
+                        if (series['values'].length > xAxisList.length) {
+                            xAxisList = series['values'];
+                        }
                         const values = Object.keys(series['tags']).map(function (key) {
                             return series['tags'][key];
                         });
                         headers.push(values[0]);
                         xHeader = series['columns'][0];
                     }
+
+                    // use longest series of x axis values
+                    const placeholder = [];
+                    for (const series of seriesList) {
+                        placeholder.push('');
+                    }
+                    const csv = xAxisList.map(xaxis => {
+                        const row = [xaxis[0]];
+                        return row.concat(placeholder);
+                    });
+
                     headers.unshift(xHeader);
 
                     // format record to csv
-                    for (const series of seriesList) {
+                    for (let sIx = 0; sIx < seriesList.length; sIx += 1) {
+                        const series = seriesList[sIx];
                         for (let rIx = 0; rIx < series['values'].length; rIx += 1) {
                             const date = new Date(series['values'][rIx][0]);
                             if (date < this.startDate || date > this.endDate) {
                                 continue;
                             }
-                            csv[rIx].push(series['values'][rIx][1]);
+                            csv[rIx][sIx + 1] = series['values'][rIx][1];
                         }
                     }
-                    csv.unshift(headers.join(','));
+                    csv.unshift(headers);
                     const csvArray = csv.join('\r\n');
                     dataSets.push(csvArray);
                 }
@@ -307,8 +319,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     visibleSeries() {
         const hidden = this.hiddenSeries;
         return this.dataSets.filter(function (e, i) {
-                return hidden.indexOf(i) === -1;
-            });
+            return hidden.indexOf(i) === -1;
+        });
     }
 
     xAxisScale() {
@@ -433,7 +445,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             const seriesLegend = legendGroup.append('g')
                 .attr('class', 'series-legend')
                 .attr('series-index', dix)
-                .on('click', function() {chart.toggleSeries(this); });
+                .on('click', function () {
+                    chart.toggleSeries(this);
+                });
             let textFill = 'black',
                 rectFill = colors[dix];
             if (this.hiddenSeries.indexOf(dix) > -1) {
