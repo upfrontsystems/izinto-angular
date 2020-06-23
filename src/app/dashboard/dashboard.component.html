@@ -22,7 +22,7 @@
                     <input type="text" matInput ngxDaterangepickerMd
                            [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
                            timePicker="true" [timePicker24Hour]="!mobileQuery.matches" [maxDate]="today"
-                           [autoApply]="false" (datesUpdated)="updateRange($event)"
+                           [autoApply]="false" (ngModelChange)="updateRange($event)"
                            class="form-control date-range-picker"/>
                     <button mat-icon-button (click)="updateDateCounter(-1)">
                         <mat-icon>keyboard_arrow_right</mat-icon>
