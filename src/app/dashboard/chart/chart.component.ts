@@ -592,9 +592,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         } else if (this.view === 'Day') {
             return interval > 24 && 24 || interval;
         } else if (this.view === 'Week') {
-            return interval > 7 && 7 || interval;
+            return ( this.endDate.getTime() - this.startDate.getTime() ) / 86400000;
         } else if (this.view === 'Month') {
-            return interval > 30 && 30 || interval;
+            return interval > 30 && 30 || ( this.endDate.getTime() - this.startDate.getTime() ) / 86400000;
+        } else if (this.view === 'Year') {
+            return interval > 12 && 12 || interval;
         }
         return interval;
     }
