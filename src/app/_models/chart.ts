@@ -3,6 +3,18 @@ import {DashboardView} from './dashboard_view';
 
 export const ChartTypes = ['Bar', 'Line', 'Wind Arrow'];
 export type ChartType = 'Bar' | 'Line' | 'Wind Arrow';
+export const GroupBy = ['auto', '10s', '1m', '5m', '10m', '30m', '1h', '3h', '6h', '1d', '7d'];
+export const GroupByValues = {
+    '10s': 10,
+    '1m': 60,
+    '5m': 300,
+    '30m': 60 * 30,
+    '1h': 60 * 60,
+    '6h': 60 * 60 * 6,
+    '1d': 60 * 60 * 24,
+    '7d': 60 * 60 * 24 * 7
+};
+export const AutoGroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
 
 export class ChartGroupBy {
     chart_id: number;

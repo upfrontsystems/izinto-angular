@@ -4,17 +4,7 @@ import {DataSource} from '../_models/data.source';
 import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
 import {AlertService} from '../_services/alert.service';
-
-export const groupByValues = {
-    '10s': 10,
-    '1m': 60,
-    '5m': 300,
-    '30m': 60 * 30,
-    '1h': 60 * 60,
-    '6h': 60 * 60 * 6,
-    '1d': 60 * 60 * 24,
-    '7d': 60 * 60 * 24 * 7
-};
+import {AutoGroupBy, GroupByValues} from '../_models/chart';
 
 @Component({
     selector: 'app-query-base',
@@ -26,7 +16,6 @@ export class QueryBaseComponent {
     @Input() dataSources: DataSource[];
     @Input() dateRange: string;
     @Input() dateViews: DashboardView[];
-    autoGroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d'};
     canEdit = false;
 
     constructor(protected alertService: AlertService,
@@ -47,7 +36,7 @@ export class QueryBaseComponent {
         }
 
         if (groupByValue === 'auto') {
-            groupByValue = this.autoGroupBy[this.view];
+            groupByValue = AutoGroupBy[this.view];
         }
 
         return groupByValue;
@@ -58,7 +47,7 @@ export class QueryBaseComponent {
             return '';
         }
 
-        const groupByValue = groupByValues[this.groupByForView(chartGroupBy)];
+        const groupByValue = GroupByValues[this.groupByForView(chartGroupBy)];
 
         query = query.replace(/:range:/g, this.dateRange);
         query = query.replace(/:group_by:/g, this.groupByForView(chartGroupBy));

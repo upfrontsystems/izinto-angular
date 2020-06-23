@@ -1,11 +1,10 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {Chart, ChartTypes} from '../../_models/chart';
+import {Chart, ChartTypes, GroupBy} from '../../_models/chart';
 import {DataSource} from '../../_models/data.source';
 import {ChartService} from '../../_services/chart.service';
 import {DashboardView} from '../../_models/dashboard_view';
-import {GroupBy} from '../../_models/dashboard';
 
 @Component({
     selector: 'app-chart-dialog',

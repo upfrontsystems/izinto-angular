@@ -1,10 +1,10 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
-import {Chart} from '../../_models/chart';
+import {Chart, GroupByValues} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
 import {Record} from '../../_models/record';
 import {MatDialog} from '@angular/material/dialog';
-import {groupByValues, QueryBaseComponent} from '../query.base.component';
+import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
 import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
@@ -246,7 +246,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 // a result can have multiple series, each series is a separate dataset
-                const groupByValue = groupByValues[this.groupByForView(this.chart.group_by)],
+                const groupByValue = GroupByValues[this.groupByForView(this.chart.group_by)],
                     seriesList = resp['results'][0]['series'];
                 for (const series of seriesList) {
                     const datasets = [];
@@ -623,7 +623,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     barWidth() {
         const groupBy = this.groupByForView(this.chart.group_by),
-            groupByValue = groupByValues[groupBy],
+            groupByValue = GroupByValues[groupBy],
             xAxisScale = this.xAxisScale(),
             tickTime = new Date(this.startDate);
         tickTime.setTime(this.startDate.getTime() + groupByValue * 1000);
