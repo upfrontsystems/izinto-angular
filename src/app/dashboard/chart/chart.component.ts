@@ -586,19 +586,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     xAxisInterval(width) {
         const interval = width / 50;
-        const timeCount = this.endDate.getTime() - this.startDate.getTime();
+        const dayCount = (this.endDate.getTime() - this.startDate.getTime()) / GroupByValues[AutoGroupBy[this.view]] / 1000;
         if (this.view === 'Hour') {
             return interval;
-        } else if (this.view === 'Day') {
-            return interval > 24 && 24 || interval;
-        } else if (this.view === 'Week') {
-            return interval > 7 && 7 || timeCount  / GroupByValues[AutoGroupBy[this.view]];
-        } else if (this.view === 'Month') {
-            return interval > 30 && 30 || timeCount  / GroupByValues[AutoGroupBy[this.view]];
-        } else if (this.view === 'Year') {
-            return interval > 12 && 12 || interval;
+        } else {
+            return interval > dayCount && dayCount || interval;
         }
-        return interval;
     }
 
     tickFormat() {
