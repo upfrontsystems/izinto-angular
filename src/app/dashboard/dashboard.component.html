@@ -8,7 +8,8 @@
 <div fxLayout="row wrap" id="dashboard">
     <div fxFlex="100">
         <mat-card *ngIf="dashboard">
-            <mat-toolbar class="no-shadow sticky-toolbar date-range-toolbar" fxLayout="row" fxLayout.xs="column" *ngIf="dateSelectVisible()">
+            <mat-toolbar class="no-shadow sticky-toolbar date-range-toolbar" fxLayout="row" fxLayout.xs="column"
+                         *ngIf="dateSelectVisible()">
                 <mat-toolbar-row fxFlex fxFlex.xs="100">
                     <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
                             [class.active]="dateView == view.name">{{view.name}}
