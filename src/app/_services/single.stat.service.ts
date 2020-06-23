@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {SingleStat} from '../_models/single.stat';
-import {Chart} from '../_models/chart';
 
 @Injectable({
   providedIn: 'root'

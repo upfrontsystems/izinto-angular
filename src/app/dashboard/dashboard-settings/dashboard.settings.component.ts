@@ -3,14 +3,11 @@ import {DashboardComponent} from '../dashboard.component';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import {ChartService} from '../../_services/chart.service';
 import {DashboardService} from '../../_services/dashboard.service';
-import {SingleStatService} from '../../_services/single.stat.service';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {CopyService} from '../../_services/copy.service';
-import {Collection} from '../../_models/collection';
 import {CollectionService} from '../../_services/collection.service';
 
 @Component({

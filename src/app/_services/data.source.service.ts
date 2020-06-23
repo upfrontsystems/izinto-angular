@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {DataSource} from '../_models/data.source';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataSourceService {
-    private queryURL = '/query?q=';
 
     constructor(private http: HttpClient) {
     }
@@ -33,29 +32,5 @@ export class DataSourceService {
 
     loadDataQuery(dataSoureId, query) {
         return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'});
-    }
-
-    getDevices(dataSource: DataSource) {
-        const url = dataSource.url + this.queryURL + encodeURIComponent('SHOW TAG VALUES ON \"izintorain\" ' +
-            'FROM \"measurement\" WITH KEY = \"dev_id\"');
-
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
-            })
-        };
-
-        return this.http.get(url, httpOptions);
-    }
-
-    selectDevice(url, dataSource: DataSource) {
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'Authorization': 'Basic ' + btoa(dataSource.username + ':' + dataSource.password)
-            })
-        };
-        return this.http.get(url, httpOptions);
     }
 }

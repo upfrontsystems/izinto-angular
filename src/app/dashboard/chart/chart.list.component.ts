@@ -4,7 +4,6 @@ import {ChartService} from '../../_services/chart.service';
 import {QueryBaseComponent} from '../query.base.component';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
-import {CopyService} from '../../_services/copy.service';
 
 @Component({
     selector: 'app-chart-list',

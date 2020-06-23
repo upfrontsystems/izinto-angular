@@ -5,8 +5,6 @@ import {map} from 'rxjs/operators';
 
 import {Role} from '../_models/role';
 import {User} from '../_models/user';
-import {CollectionService} from './collection.service';
-import {DashboardService} from './dashboard.service';
 import {CopyService} from './copy.service';
 
 @Injectable({providedIn: 'root'})

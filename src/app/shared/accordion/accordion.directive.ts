@@ -1,7 +1,5 @@
 import {
   Directive,
-  OnInit,
-  AfterViewInit,
   AfterContentChecked
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';

@@ -8,7 +8,6 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { MediaMatcher } from '@angular/cdk/layout';
 import {CollectionService} from '../../../_services/collection.service';
 import {DashboardService} from '../../../_services/dashboard.service';
-import {Chart} from '../../../_models/chart';
 import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({

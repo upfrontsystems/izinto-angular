@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';
-import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {AlertService} from '../_services/alert.service';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';

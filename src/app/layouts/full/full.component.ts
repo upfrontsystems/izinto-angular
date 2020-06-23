@@ -4,7 +4,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    AfterViewInit, OnInit, NgZone
+    OnInit,
+    NgZone
 } from '@angular/core';
 import { map } from 'rxjs/operators';
 
