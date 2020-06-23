@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
-import {Chart, GroupByValues} from '../../_models/chart';
+import {AutoGroupBy, Chart, GroupByValues} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
 import {Record} from '../../_models/record';
@@ -586,15 +586,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     xAxisInterval(width) {
         const interval = width / 50;
-
+        const timeCount = this.endDate.getTime() - this.startDate.getTime();
         if (this.view === 'Hour') {
             return interval;
         } else if (this.view === 'Day') {
             return interval > 24 && 24 || interval;
         } else if (this.view === 'Week') {
-            return ( this.endDate.getTime() - this.startDate.getTime() ) / 86400000;
+            return interval > 7 && 7 || timeCount  / GroupByValues[AutoGroupBy[this.view]];
         } else if (this.view === 'Month') {
-            return interval > 30 && 30 || ( this.endDate.getTime() - this.startDate.getTime() ) / 86400000;
+            return interval > 30 && 30 || timeCount  / GroupByValues[AutoGroupBy[this.view]];
         } else if (this.view === 'Year') {
             return interval > 12 && 12 || interval;
         }
@@ -605,6 +605,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let fmt = '%d %b';
         if (this.view === 'Hour' || this.view === 'Day') {
             fmt = '%H:%M';
+        } else if (this.view === 'Year') {
+            fmt = '%b %Y';
         }
         return d3TimeFormat.timeFormat(fmt);
     }

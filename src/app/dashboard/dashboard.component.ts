@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     addedSingleStat: SingleStat;
     addedScript: Script;
     dateViews: DashboardView[] = [];
-    dateView = 'Week';
+    dateView = 'Year';
     private range = {
         'Hour': {'count': 1, 'unit': 'h'},
         'Day': {'count': 1, 'unit': 'd'},
@@ -45,8 +45,8 @@ export class DashboardComponent implements OnInit {
         'Year': {'count': 365, 'unit': 'd'}
     };
     dateFormat = {
-        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'D MMM YYYY',
-        'mobile': {'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'D MMM YYYY',
+        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
+        'mobile': {'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
         }
     };
     groupBy = 'auto';
