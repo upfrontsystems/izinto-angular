@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{state}} Dashboard</h1>
 <div mat-dialog-content>
-    <form [formGroup]="form" autocomplete="off">
+    <div [formGroup]="form" autocomplete="off">
         <div fxLayout="row wrap">
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
@@ -23,7 +23,7 @@
                     <mat-select [formControl]="form.get('users')" placeholder="Users" [multiple]="true" #userSelect>
                         <mat-option>
                             <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
-                                placeholderLabel="Search users" noEntriesFoundLabel="No users found">
+                                                   placeholderLabel="Search users" noEntriesFoundLabel="No users found">
                             </ngx-mat-select-search>
                         </mat-option>
                         <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
@@ -33,12 +33,45 @@
                 </mat-form-field>
             </div>
 
+            <mat-label style="width: 100%">Variables</mat-label>
+            <button mat-icon-button color="primary" (click)="addVariable()">
+                <mat-icon>add</mat-icon>
+                Add Variable
+            </button>
+            <div *ngFor="let variable of variablesRows.controls; let i = index" formArrayName="variables" fxFlex="100">
+                <div fxLayout="column">
+                    <div [formGroupName]="i" class="m-l-40" fxFlex="100" fxLayout="row">
+                        <div fxFlex="30" class="p-r-20">
+                            <mat-form-field style="width: 100%" floatLabel="never">
+                                <input matInput placeholder="Name" formControlName="name"
+                                       autocomplete="off">
+                            </mat-form-field>
+                        </div>
+
+                        <div fxFlex="40">
+                            <mat-form-field style="width: 100%" floatLabel="never">
+                                <input matInput placeholder="Value" formControlName="value"
+                                       autocomplete="off" class="text-right">
+                            </mat-form-field>
+                        </div>
+
+                        <div fxFlex="30">
+                            <button mat-icon-button class="pull-right hover-action m-t-10" color="warn"
+                                    (click)="deleteVariable(i)" title="Delete">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </form>
+    </div>
 </div>
 <div mat-dialog-actions>
     <span fxFlex></span>
     <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
     <button class="pull-right" mat-button [disabled]="!formValid()"
-            (click)="submit()" color="primary" cdkFocusInitial>Submit</button>
+            (click)="submit()" color="primary" cdkFocusInitial>Submit
+    </button>
 </div>

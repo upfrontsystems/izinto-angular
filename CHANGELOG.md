@@ -59,4 +59,5 @@ Issue Fixes
 * [#95](https://github.com/upfrontsystems/izinto-angular/issues/95) Add 3h interval to query
 * [#48](https://github.com/upfrontsystems/izinto-angular/issues/48) Add Year dashboard view
 * [#84](https://github.com/upfrontsystems/izinto-angular/issues/84) calculate x interval for month and week
-    
+* [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) edit dashboard in context
+  

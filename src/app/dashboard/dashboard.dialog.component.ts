@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import {Dashboard} from '../_models/dashboard';
@@ -19,6 +19,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
 
     public form: FormGroup;
     dashboard: Dashboard;
+    variablesRows: FormArray = this.fb.array([]);
     state: string;
     public userNameFilter: FormControl = new FormControl();
     public searching = false;
@@ -47,12 +48,26 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
             description: this.dashboard.description,
             collection_id: this.dashboard.collection_id,
             users: [this.dashboard.users],
-            variables: [this.dashboard.variables]
+            variables: this.variablesRows
         };
         this.form = this.fb.group(formData);
         this.filteredUsers.next(this.dashboard.users);
 
+        this.addFormVariables();
         this.onFormChanges();
+    }
+
+    addFormVariables() {
+        // add each variable to form
+        this.dashboard.variables.forEach(variable => {
+            // add validation and disabled to form row
+            const row = this.fb.group({
+                id: variable.id,
+                name: [variable.name, Validators.required],
+                value: [variable.value, Validators.required],
+            });
+            this.variablesRows.push(row);
+        });
     }
 
     ngAfterViewInit() {
@@ -89,13 +104,24 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         });
     }
 
+    addVariable() {
+        const row = this.fb.group({
+            name: ['', Validators.required],
+            value: ['', Validators.required],
+        });
+        this.variablesRows.push(row);
+    }
+
+    deleteVariable(index) {
+        this.variablesRows.removeAt(index);
+    }
+
     formValid() {
         return this.form.valid;
     }
 
     submit() {
         const form = this.form.value;
-        form.variables = this.dashboard.variables;
         if (this.dashboard.id) {
             this.editDashboard(form);
         } else {

@@ -31,9 +31,10 @@
             </mat-toolbar>
 
             <mat-card-content>
-                <a class="pull-right" title="Settings " mat-icon-button [routerLink]="['settings']" *ngIf="canEdit">
-                    <mat-icon>settings</mat-icon>
-                </a>
+
+                <button mat-icon-button class="pull-right edit-button" (click)="editDashboard()" *ngIf="canEdit" title="Edit">
+                    <mat-icon>edit</mat-icon>
+                </button>
 
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
 

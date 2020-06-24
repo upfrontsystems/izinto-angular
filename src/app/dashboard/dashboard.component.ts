@@ -18,6 +18,7 @@ import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
 import {CopyService} from '../_services/copy.service';
 import {CollectionService} from '../_services/collection.service';
+import {DashboardDialogComponent} from './dashboard.dialog.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -155,6 +156,19 @@ export class DashboardComponent implements OnInit {
         } else {
             return this.dateSelectOpened;
         }
+    }
+
+    editDashboard() {
+        const dialogRef = this.dialog.open(DashboardDialogComponent, {
+            width: '600px',
+            data: {dashboard: this.dashboard}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.getDashboard();
+            }
+        });
     }
 
     fabClick(label) {
