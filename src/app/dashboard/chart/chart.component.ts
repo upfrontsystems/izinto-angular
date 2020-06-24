@@ -584,11 +584,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         this.buildChart();
     }
 
-    xAxisInterval(width) {
+    calcTickCount(width) {
         const interval = width / 50;
-        const dayCount = (this.endDate.getTime() - this.startDate.getTime()) / GroupByValues[AutoGroupBy[this.view]] / 1000;
+        let dayCount = (this.endDate.getTime() - this.startDate.getTime()) / GroupByValues[AutoGroupBy[this.view]] / 1000;
         if (this.view === 'Hour') {
             return interval;
+        // show monthly intervals for year
+        } else if (this.view === 'Year') {
+            dayCount = (this.endDate.getTime() - this.startDate.getTime()) / 2592000 / 1000;
+            return interval > dayCount && dayCount || interval;
         } else {
             return interval > dayCount && dayCount || interval;
         }
@@ -677,7 +681,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
         svg.selectAll('g.x-axis').remove();
         svg.selectAll('g.grid > *').remove();
-        const interval = this.xAxisInterval(this.innerWidth),
+        const interval = this.calcTickCount(this.innerWidth),
             tickFormat = this.tickFormat();
         svg.append('g')
             .attr('class', 'x-axis')
@@ -815,7 +819,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
             }
         });
         this.legend(svg);
-        const interval = this.xAxisInterval(this.innerWidth);
+        const interval = this.calcTickCount(this.innerWidth);
         const tickFormat = this.tickFormat();
 
         svg.selectAll('g.x-axis').remove();

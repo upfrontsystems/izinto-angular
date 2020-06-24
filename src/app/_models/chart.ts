@@ -7,7 +7,8 @@ export const GroupBy = ['auto', '10s', '1m', '5m', '10m', '30m', '1h', '3h', '6h
 export const GroupByValues = {
     '10s': 10,
     '1m': 60,
-    '5m': 300,
+    '5m': 60 * 5,
+    '10m': 60 * 10,
     '30m': 60 * 30,
     '1h': 60 * 60,
     '6h': 60 * 60 * 6,
