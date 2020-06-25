@@ -167,73 +167,50 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     // download chart data as csv file
     downloadCSV() {
-        const query = this.formatQuery(this.chart.query, this.chart.group_by, this.chart.data_source);
-        this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
-            if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
-
-                const dataSets = [];
-                const seriesList = resp['results'][0]['series'];
-                if (seriesList.length === 1) {
-                    const csv = [];
-                    csv.push(seriesList[0]['columns'].join(','));
-                    // format to csv
-                    for (const record of seriesList[0]['values']) {
-                        const date = new Date(record[0]);
-                        if (date < this.startDate || date > this.endDate) {
-                            continue;
-                        }
-                        csv.push(record.join(','));
-                    }
-                    const csvArray = csv.join('\r\n');
-                    dataSets.push(csvArray);
-                } else {
-                    const headers = [];
-                    let xHeader = '';
-                    let xAxisList = [];
-                    // include multiple series id as headers
-                    for (const series of seriesList) {
-                        if (series['values'].length > xAxisList.length) {
-                            xAxisList = series['values'];
-                        }
-                        const values = Object.keys(series['tags']).map(function (key) {
-                            return series['tags'][key];
-                        });
-                        headers.push(values[0]);
-                        xHeader = series['columns'][0];
-                    }
-
-                    // use longest series of x axis values
-                    const placeholder = [];
-                    for (const series of seriesList) {
-                        placeholder.push('');
-                    }
-                    const csv = xAxisList.map(xaxis => {
-                        const row = [xaxis[0]];
-                        return row.concat(placeholder);
-                    });
-
-                    headers.unshift(xHeader);
-
-                    // format record to csv
-                    for (let sIx = 0; sIx < seriesList.length; sIx += 1) {
-                        const series = seriesList[sIx];
-                        for (let rIx = 0; rIx < series['values'].length; rIx += 1) {
-                            const date = new Date(series['values'][rIx][0]);
-                            if (date < this.startDate || date > this.endDate) {
-                                continue;
-                            }
-                            csv[rIx][sIx + 1] = series['values'][rIx][1];
-                        }
-                    }
-                    csv.unshift(headers);
-                    const csvArray = csv.join('\r\n');
-                    dataSets.push(csvArray);
-                }
-
-                const blob = new Blob(dataSets, {type: 'text/csv'});
-                saveAs(blob, this.chart.title + '.csv');
+        const csvData = [];
+        if (this.dataSets.length === 1) {
+            const columns = ['time', this.dataSets[0][0].fieldName];
+            const csv = [columns.join(',')];
+            // format to csv
+            for (const record of this.dataSets[0]) {
+                csv.push([record.date, record.value].join(','));
             }
-        });
+            const csvArray = csv.join('\r\n');
+            csvData.push(csvArray);
+        } else {
+            const headers = ['time'];
+            let longest = [];
+            const datasets = [];
+            // include multiple series id as headers
+            for (const series of this.dataSets) {
+                if (!series.length) {
+                    continue;
+                }
+                datasets.push(series);
+                longest = series.length > longest.length ? series : longest;
+                headers.push(series[0].header);
+            }
+
+            const placeholder = datasets.map(() => '');
+            const csv = longest.map(record => {
+                const row = [record.date];
+                return row.concat(placeholder);
+            });
+
+            // format record to csv
+            for (let sIx = 0; sIx < datasets.length; sIx += 1) {
+                const series = datasets[sIx];
+                for (let rIx = 0; rIx < series.length; rIx += 1) {
+                    csv[rIx][sIx + 1] = series[rIx].value;
+                }
+            }
+            csv.unshift(headers);
+            const csvArray = csv.join('\r\n');
+            csvData.push(csvArray);
+        }
+
+        const blob = new Blob(csvData, {type: 'text/csv'});
+        saveAs(blob, this.chart.title + '.csv');
     }
 
     loadDataSet() {
@@ -589,7 +566,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         let dayCount = (this.endDate.getTime() - this.startDate.getTime()) / GroupByValues[AutoGroupBy[this.view]] / 1000;
         if (this.view === 'Hour') {
             return interval;
-        // show monthly intervals for year
+            // show monthly intervals for year
         } else if (this.view === 'Year') {
             dayCount = (this.endDate.getTime() - this.startDate.getTime()) / 2592000 / 1000;
             return interval > dayCount && dayCount || interval;

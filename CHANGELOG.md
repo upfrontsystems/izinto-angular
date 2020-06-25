@@ -60,4 +60,6 @@ Issue Fixes
 * [#48](https://github.com/upfrontsystems/izinto-angular/issues/48) Add Year dashboard view
 * [#84](https://github.com/upfrontsystems/izinto-angular/issues/84) calculate x interval for month and week
 * [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) edit dashboard in context
-  
+* [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) Remove dashboard settings and variables components
+* [#142](https://github.com/upfrontsystems/izinto-angular/issues/142) Use chart data for csv download
+
