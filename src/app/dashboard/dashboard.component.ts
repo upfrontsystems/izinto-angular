@@ -4,8 +4,8 @@ import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import {ActivatedRoute} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
@@ -31,6 +31,8 @@ export class DashboardComponent implements OnInit {
     canEdit = false;
     dashboardId: number;
     dashboard: Dashboard;
+    siblings: Dashboard[] = [];
+    currentIndex = 0;
     parent: any;
     dataSources: DataSource[];
     addedChart: Chart;
@@ -38,16 +40,10 @@ export class DashboardComponent implements OnInit {
     addedScript: Script;
     dateViews: DashboardView[] = [];
     dateView = 'Week';
-    private range = {
-        'Hour': {'count': 1, 'unit': 'h'},
-        'Day': {'count': 1, 'unit': 'd'},
-        'Week': {'count': 7, 'unit': 'd'},
-        'Month': {'count': 30, 'unit': 'd'},
-        'Year': {'count': 365, 'unit': 'd'}
-    };
     dateFormat = {
         'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        'mobile': {'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
+        'mobile': {
+            'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
         }
     };
     groupBy = 'auto';
@@ -80,14 +76,20 @@ export class DashboardComponent implements OnInit {
     ];
     today = moment();
     dateSelectOpened = false;
-
     pickerRange = {startDate: moment(), endDate: moment()};
-
+    private range = {
+        'Hour': {'count': 1, 'unit': 'h'},
+        'Day': {'count': 1, 'unit': 'd'},
+        'Week': {'count': 7, 'unit': 'd'},
+        'Month': {'count': 30, 'unit': 'd'},
+        'Year': {'count': 365, 'unit': 'd'}
+    };
     private readonly _mobileQueryListener: () => void;
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
                 protected route: ActivatedRoute,
+                private router: Router,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -117,6 +119,22 @@ export class DashboardComponent implements OnInit {
         this.canEdit = this.authService.hasRole('Administrator');
     }
 
+    onSwipeLeft(event) {
+        if (this.currentIndex < this.siblings.length) {
+            const destination = this.siblings[this.currentIndex + 1].id;
+            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
+                'dashboards/' + destination));
+        }
+    }
+
+    onSwipeRight(event) {
+        if (this.currentIndex > 0) {
+            const destination = this.siblings[this.currentIndex - 1].id;
+            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
+                'dashboards/' + destination));
+        }
+    }
+
     getDashboardViews() {
         this.dashboardService.listDashboardViews().subscribe(resp => {
             this.dateViews = resp;
@@ -127,6 +145,7 @@ export class DashboardComponent implements OnInit {
         this.dashboardService.getById(this.dashboardId).subscribe(resp => {
             this.dashboard = resp;
             this.dashboardService.currentDashboard.emit(this.dashboard);
+            this.getSiblings();
             if (resp.collection_id) {
                 this.collectionService.getById(resp.collection_id).subscribe(collection => {
                     this.parent = {
@@ -140,6 +159,14 @@ export class DashboardComponent implements OnInit {
                     url: '/'
                 };
             }
+        });
+    }
+
+    getSiblings() {
+        const parentId = this.dashboard.collection_id ? this.dashboard.collection_id : '';
+        this.dashboardService.getDashboards({user_id: true, collection_id: parentId}).subscribe(resp => {
+            this.siblings = resp;
+            this.currentIndex = this.siblings.findIndex(dash => dash.id === this.dashboardId);
         });
     }
 

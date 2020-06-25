@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, HammerModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ColorCompactModule} from 'ngx-color/compact';
 import {FormsModule} from '@angular/forms';
@@ -99,6 +99,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         ColorCompactModule,
         FlexLayoutModule,
         FormsModule,
+        HammerModule,
         HttpClientModule,
         MaterialModule,
         NgxMatSelectSearchModule,

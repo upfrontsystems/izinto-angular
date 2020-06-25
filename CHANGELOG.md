@@ -62,4 +62,4 @@ Issue Fixes
 * [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) edit dashboard in context
 * [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) Remove dashboard settings and variables components
 * [#142](https://github.com/upfrontsystems/izinto-angular/issues/142) Use chart data for csv download
-
+* [#118](https://github.com/upfrontsystems/izinto-angular/issues/118) Add swiping to dashboards
