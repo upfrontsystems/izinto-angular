@@ -11,7 +11,6 @@ import {DashboardListComponent} from './dashboard/dashboard.list.component';
 import {HomeComponent} from './home/home.component';
 import {CollectionListComponent} from './collection/collection.list.component';
 import {CollectionComponent} from './collection/collection.component';
-import {DashboardSettingsComponent} from './dashboard/dashboard-settings/dashboard.settings.component';
 import {DataSourceComponent} from './data-source/data.source.component';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 
@@ -35,10 +34,6 @@ const appRoutes: Routes = [
                 component: DashboardComponent
             },
             {
-                path: 'dashboards/:dashboard_id/settings',
-                component: DashboardSettingsComponent
-            },
-            {
                 path: 'collections',
                 component: CollectionListComponent
             },
@@ -49,10 +44,6 @@ const appRoutes: Routes = [
             {
                 path: 'collections/:collection_id/dashboards/:dashboard_id',
                 component: DashboardComponent
-            },
-            {
-                path: 'collections/:collection_id/dashboards/:dashboard_id/settings',
-                component: DashboardSettingsComponent
             },
             {
                 path: 'admin',

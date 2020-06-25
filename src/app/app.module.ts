@@ -30,7 +30,6 @@ import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confi
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import { DashboardListComponent } from './dashboard/dashboard.list.component';
-import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard.settings.component';
 import { DataSourceComponent } from './data-source/data.source.component';
 import { DataSourceDialogComponent } from './data-source/data.source.dialog.component';
 import {ErrorInterceptor} from './_helpers/error.interceptor';
@@ -49,7 +48,6 @@ import {ScriptDialogComponent} from './dashboard/script/script.dialog.component'
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
-import { VariableComponent } from './dashboard/variable/variable.component';
 import { QueryBaseComponent } from './dashboard/query.base.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -76,7 +74,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         DashboardComponent,
         DashboardDialogComponent,
         DashboardListComponent,
-        DashboardSettingsComponent,
         DataSourceComponent,
         ChartComponent,
         ChartDialogComponent,
@@ -91,7 +88,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         SpinnerComponent,
         UserComponent,
         UserDialogComponent,
-        VariableComponent,
         DataSourceDialogComponent,
         QueryBaseComponent,
         LandingpageComponent
