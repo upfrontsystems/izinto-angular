@@ -12,6 +12,15 @@ import {Dashboard} from '../../_models/dashboard';
 import {DataSource} from '../../_models/data.source';
 import {DashboardView} from '../../_models/dashboard_view';
 
+export class Slider {
+    sensitivity: number;
+    activeSlide: number;
+    slideCount: number;
+    transform: number;
+    classList: string;
+    timer: number;
+}
+
 @Component({
     selector: 'app-dashboard-container',
     templateUrl: './dashboard-container.component.html',
@@ -26,7 +35,7 @@ export class DashboardContainerComponent implements OnInit {
     parent: any;
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
-    slider: any = {};
+    slider: Slider = new Slider();
     private readonly _mobileQueryListener: () => void;
 
     constructor(changeDetectorRef: ChangeDetectorRef,
@@ -46,8 +55,6 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.slider.sliderPanelSelector = '.slider-panel';
-        this.slider.sliderPaginationSelector = '.slider-pagination';
         this.slider.sensitivity = 25;
         this.slider.activeSlide = 0;
         // only show 3 dashboards at a time
@@ -118,6 +125,11 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     sliderManager(e) {
+        // dont animate when moving up/down
+        if (Math.abs(e.deltaX / 2) < Math.abs(e.deltaY)) {
+            e.preventDefault();
+            return;
+        }
         // move element
         const percentage = 100 / this.slider.slideCount * e.deltaX / window.innerWidth;
         let transformStyle = percentage - ((100 / this.slider.slideCount * this.slider.activeSlide) || 0);
@@ -149,7 +161,7 @@ export class DashboardContainerComponent implements OnInit {
             this.slider.activeSlide = 0;
         } else if (number > this.siblings.length - 1) {
             this.slider.activeSlide = this.siblings.length - 1;
-        } else if (this.slider.activeSlibe !== number) {
+        } else if (this.slider.activeSlide !== number) {
             this.slider.activeSlide = number;
             // load next dashboard
             this.setDashboard();
