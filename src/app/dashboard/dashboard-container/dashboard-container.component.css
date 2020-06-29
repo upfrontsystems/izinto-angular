@@ -1,0 +1,22 @@
+.slider {
+    display: flex;
+}
+
+.slider.is-animating {
+    transition: transform 400ms cubic-bezier(0.5, 0, 0.5, 1);
+}
+
+.slider-panel {
+    width: 100vw;
+}
+
+.has-slider {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.chart-container-preview {
+    height: 300px;
+    width: 100%;
+}

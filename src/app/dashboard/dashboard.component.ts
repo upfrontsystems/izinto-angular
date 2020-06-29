@@ -1,15 +1,14 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
-import {DataSourceService} from '../_services/data.source.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import * as moment from 'moment';
@@ -17,7 +16,6 @@ import {AuthenticationService} from '../_services/authentication.service';
 import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
 import {CopyService} from '../_services/copy.service';
-import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 
 @Component({
@@ -27,18 +25,16 @@ import {DashboardDialogComponent} from './dashboard.dialog.component';
 })
 export class DashboardComponent implements OnInit {
 
+    @Input() dashboardId: number;
+    @Input() dashboard: Dashboard;
+    @Input() dataSources: DataSource[];
+    @Input() dateViews: DashboardView[] = [];
+    @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
     mobileQuery: MediaQueryList;
     canEdit = false;
-    dashboardId: number;
-    dashboard: Dashboard;
-    siblings: Dashboard[] = [];
-    currentIndex = 0;
-    parent: any;
-    dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
     addedScript: Script;
-    dateViews: DashboardView[] = [];
     dateView = 'Week';
     dateFormat = {
         'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
@@ -89,13 +85,10 @@ export class DashboardComponent implements OnInit {
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
                 protected route: ActivatedRoute,
-                private router: Router,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
-                protected collectionService: CollectionService,
-                protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -103,77 +96,11 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-
-        this.getDashboardViews();
-        this.getDataSources();
-
-        this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('dashboard_id');
-            this.getDashboard();
-        });
-
         this.setDateRange();
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
 
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
-    }
-
-    onSwipeLeft(event) {
-        if (this.currentIndex < this.siblings.length) {
-            const destination = this.siblings[this.currentIndex + 1].id;
-            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
-                'dashboards/' + destination));
-        }
-    }
-
-    onSwipeRight(event) {
-        if (this.currentIndex > 0) {
-            const destination = this.siblings[this.currentIndex - 1].id;
-            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
-                'dashboards/' + destination));
-        }
-    }
-
-    getDashboardViews() {
-        this.dashboardService.listDashboardViews().subscribe(resp => {
-            this.dateViews = resp;
-        });
-    }
-
-    getDashboard() {
-        this.dashboardService.getById(this.dashboardId).subscribe(resp => {
-            this.dashboard = resp;
-            this.dashboardService.currentDashboard.emit(this.dashboard);
-            this.getSiblings();
-            if (resp.collection_id) {
-                this.collectionService.getById(resp.collection_id).subscribe(collection => {
-                    this.parent = {
-                        title: collection.title,
-                        url: '/collections/' + collection.id
-                    };
-                });
-            } else {
-                this.parent = {
-                    title: 'Home',
-                    url: '/'
-                };
-            }
-        });
-    }
-
-    getSiblings() {
-        const parentId = this.dashboard.collection_id ? this.dashboard.collection_id : '';
-        this.dashboardService.getDashboards({user_id: true, collection_id: parentId}).subscribe(resp => {
-            this.siblings = resp;
-            this.currentIndex = this.siblings.findIndex(dash => dash.id === this.dashboardId);
-        });
-    }
-
-    getDataSources() {
-        this.dataSourceService.getAll({}).subscribe(resp => {
-            this.dataSources = resp;
-        });
     }
 
     dateSelectVisible() {
@@ -193,7 +120,7 @@ export class DashboardComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.getDashboard();
+                this.edited.emit(result);
             }
         });
     }

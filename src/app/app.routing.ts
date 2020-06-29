@@ -6,13 +6,13 @@ import {Role} from './_models/role';
 import {FullComponent} from './layouts/full/full.component';
 import {AppBlankComponent} from './layouts/blank/blank.component';
 import {UserComponent} from './user/user.component';
-import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardListComponent} from './dashboard/dashboard.list.component';
 import {HomeComponent} from './home/home.component';
 import {CollectionListComponent} from './collection/collection.list.component';
 import {CollectionComponent} from './collection/collection.component';
 import {DataSourceComponent} from './data-source/data.source.component';
 import {LandingpageComponent} from './landingpage/landingpage.component';
+import {DashboardContainerComponent} from './dashboard/dashboard-container/dashboard-container.component';
 
 const appRoutes: Routes = [
     {
@@ -31,7 +31,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'dashboards/:dashboard_id',
-                component: DashboardComponent
+                component: DashboardContainerComponent
             },
             {
                 path: 'collections',
@@ -43,7 +43,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'collections/:collection_id/dashboards/:dashboard_id',
-                component: DashboardComponent
+                component: DashboardContainerComponent
             },
             {
                 path: 'admin',
