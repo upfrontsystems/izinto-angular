@@ -1,25 +1,27 @@
 import {Component, Input} from '@angular/core';
 import {Variable} from '../_models/variable';
 import {DataSource} from '../_models/data.source';
-import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
 import {AlertService} from '../_services/alert.service';
-import {AutoGroupBy, GroupByValues} from '../_models/chart';
+import {AutoGroupBy} from '../_models/chart';
+import {DashboardService} from '../_services/dashboard.service';
+import {DashboardView} from '../_models/dashboard_view';
+import {DateSelection} from '../_models/date_selection';
 
 @Component({
     selector: 'app-query-base',
     template: '<div></div>'
 })
 export class QueryBaseComponent {
-    @Input() view: string;
     @Input() variables: Variable[];
     @Input() dataSources: DataSource[];
-    @Input() dateRange: string;
     @Input() dateViews: DashboardView[];
     canEdit = false;
+    dateSelection: DateSelection = new DateSelection();
 
     constructor(protected alertService: AlertService,
-                protected authService: AuthenticationService) {
+                protected authService: AuthenticationService,
+                protected dashboardService: DashboardService) {
     }
 
     checkCanEdit() {
@@ -30,13 +32,13 @@ export class QueryBaseComponent {
     groupByForView(chartGroupBy) {
         let groupByValue = '1d';
         for (const group of chartGroupBy) {
-            if (group.dashboard_view.name === this.view) {
+            if (group.dashboard_view.name === this.dateSelection.view) {
                 groupByValue = group.value;
             }
         }
 
         if (groupByValue === 'auto') {
-            groupByValue = AutoGroupBy[this.view];
+            groupByValue = AutoGroupBy[this.dateSelection.view];
         }
 
         return groupByValue;
@@ -47,9 +49,7 @@ export class QueryBaseComponent {
             return '';
         }
 
-        const groupByValue = GroupByValues[this.groupByForView(chartGroupBy)];
-
-        query = query.replace(/:range:/g, this.dateRange);
+        query = query.replace(/:range:/g, this.dateSelection.dateRange);
         query = query.replace(/:group_by:/g, this.groupByForView(chartGroupBy));
 
         for (const variable of this.variables) {

@@ -8,27 +8,9 @@
 <div fxLayout="row wrap" id="dashboard">
     <div fxFlex="100" class="p-b-20">
         <mat-card *ngIf="dashboard">
-            <mat-toolbar class="no-shadow sticky-toolbar date-range-toolbar" fxLayout="row" fxLayout.xs="column"
-                         *ngIf="dateSelectVisible()">
-                <mat-toolbar-row fxFlex fxFlex.xs="100">
-                    <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
-                            [class.active]="dateView == view.name">{{view.name}}
-                    </button>
-                </mat-toolbar-row>
-                <mat-toolbar-row fxFlex="auto" fxFlex.xs="100" class="date-navigator font-18">
-                    <button mat-icon-button (click)="updateDateCounter(1)">
-                        <mat-icon>keyboard_arrow_left</mat-icon>
-                    </button>
-                    <input type="text" matInput ngxDaterangepickerMd
-                           [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
-                           timePicker="true" [timePicker24Hour]="!mobileQuery.matches" [maxDate]="today"
-                           [autoApply]="false" (ngModelChange)="updateRange($event)"
-                           class="form-control date-range-picker"/>
-                    <button mat-icon-button (click)="updateDateCounter(-1)">
-                        <mat-icon>keyboard_arrow_right</mat-icon>
-                    </button>
-                </mat-toolbar-row>
-            </mat-toolbar>
+
+            <app-dashboard-date-selector [mobileQueryMatches]="mobileQuery.matches" [dateViews]="dateViews">
+            </app-dashboard-date-selector>
 
             <mat-card-content>
 
@@ -40,17 +22,13 @@
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
 
                 <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat"
-                                      [view]="dateView"
-                                      [dateRange]="dateRange" [variables]="dashboard.variables"
-                                      [dataSources]="dataSources"></app-single-stat-list>
+                                      [variables]="dashboard.variables" [dataSources]="dataSources">
+                </app-single-stat-list>
 
                 <app-script-list [dashboardId]="dashboardId" [addedScript]="addedScript"></app-script-list>
 
-                <app-chart-list appMouseListener appTouchListener
-                                [dashboardId]="dashboardId" [addedChart]="addedChart" [view]="dateView"
-                                [dateRange]="dateRange" [dateViews]="dateViews" [startDate]="startDate"
-                                [endDate]="endDate"
-                                [variables]="dashboard.variables"
+                <app-chart-list appMouseListener appTouchListener [dateViews]="dateViews"
+                                [dashboardId]="dashboardId" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
             </mat-card-content>
 

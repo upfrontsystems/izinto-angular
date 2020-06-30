@@ -5,10 +5,8 @@
             <button mat-button class="drag-handle" cdkDragHandle title="Reposition chart" *ngIf="canEdit">
                 <mat-icon>swap_vert</mat-icon>
             </button>
-            <app-chart [chart]="chart" [view]="view" [dateRange]="dateRange" [startDate]="startDate" [endDate]="endDate"
-                       [variables]="variables" [dateViews]="dateViews"
-                       [dataSources]="dataSources" (edited)="chartEdited($event)"
-                       (deleted)="chartDeleted($event)"></app-chart>
+            <app-chart [chart]="chart" [variables]="variables" [dataSources]="dataSources" [dateViews]="dateViews"
+                       (edited)="chartEdited($event)" (deleted)="chartDeleted($event)"></app-chart>
         </div>
     </ng-container>
 </div>

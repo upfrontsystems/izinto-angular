@@ -1,0 +1,45 @@
+button.active {
+  background: #ddd;
+}
+
+.date-navigator {
+    white-space: initial !important;
+}
+
+.date-navigator .date-text {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.date-navigator input {
+    background-color: inherit;
+    cursor: pointer;
+    border: none;
+    padding-right: 0;
+    padding-top: 12px;
+}
+
+.date-range-picker {
+    width: min-content;
+}
+
+/* smaller date nagivate selector for mobile */
+/*@media only screen and (max-width: 768px) {
+    .date-navigator {
+        padding-left: 10px !important;
+    }
+
+    .date-navigator button {
+        width: 25px !important;
+    }
+
+    .date-navigator .date-text {
+        font-size: 15px !important;
+    }
+}*/
+
+.sticky-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}

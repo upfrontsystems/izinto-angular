@@ -11,7 +11,6 @@ import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
-import * as moment from 'moment';
 import {AuthenticationService} from '../_services/authentication.service';
 import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
@@ -36,19 +35,6 @@ export class DashboardComponent implements OnInit {
     addedChart: Chart;
     addedSingleStat: SingleStat;
     addedScript: Script;
-    dateView = 'Week';
-    dateFormat = {
-        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        'mobile': {
-            'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        }
-    };
-    groupBy = 'auto';
-    // query date range from start to end
-    dateRange = '';
-    dateRangeCounter = 1;
-    startDate: Date;
-    endDate: Date;
     fabButtons = [
         {
             icon: 'collections_bookmark',
@@ -71,16 +57,6 @@ export class DashboardComponent implements OnInit {
             label: 'Add Script',
         }
     ];
-    today = moment();
-    dateSelectOpened = false;
-    pickerRange = {startDate: moment(), endDate: moment()};
-    private range = {
-        'Hour': {'count': 1, 'unit': 'h'},
-        'Day': {'count': 1, 'unit': 'd'},
-        'Week': {'count': 7, 'unit': 'd'},
-        'Month': {'count': 30, 'unit': 'd'},
-        'Year': {'count': 365, 'unit': 'd'}
-    };
     private readonly _mobileQueryListener: () => void;
 
     constructor(changeDetectorRef: ChangeDetectorRef,
@@ -97,20 +73,8 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.setDateRange();
-        this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
-
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
-    }
-
-    dateSelectVisible() {
-        // Always show the date selector on bigger screens
-        if (this.mobileQuery.matches) {
-            return true;
-        } else {
-            return this.dateSelectOpened;
-        }
     }
 
     editDashboard() {
@@ -194,84 +158,5 @@ export class DashboardComponent implements OnInit {
                 this.addedScript = result;
             }
         });
-    }
-
-    getDateFormat() {
-        if (this.mobileQuery.matches) {
-            return this.dateFormat[this.dateView];
-        } else {
-            return this.dateFormat.mobile[this.dateView];
-        }
-    }
-
-    updateView(view) {
-        this.dateView = view;
-        this.dateRangeCounter = 1;
-        this.setDateRange();
-    }
-
-    updateDateCounter(count) {
-        if (this.dateRangeCounter + count < 1) {
-            return;
-        }
-
-        this.dateRangeCounter += count;
-        this.setDateRange();
-    }
-
-    // handler function that receives the updated date range object
-    updateRange(event) {
-
-        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
-            return;
-        }
-
-        this.startDate = this.pickerRange.startDate.toDate();
-        this.endDate = this.pickerRange.endDate.toDate();
-        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
-    }
-
-    setDateRange() {
-        const startCount = this.dateRangeCounter * this.range[this.dateView].count;
-        const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
-
-        const date = new Date();
-        const end = new Date();
-        if (this.dateView === 'Hour') {
-            // round minutes down
-            const startTime = new Date(date.setHours(date.getHours() - startCount));
-            let minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
-            startTime.setMinutes(minutes, 0, 0);
-            this.startDate = startTime;
-
-            // round end down
-            const endTime = new Date(end.setHours(end.getHours() - endCount));
-            minutes = (Math.floor(endTime.getMinutes() / 10) * 10);
-            endTime.setMinutes(minutes, 0, 0);
-            this.endDate = endTime;
-        } else {
-            // round start day to start of day
-            const startDay = new Date(date.setDate(date.getDate() - startCount));
-            if (this.dateView === 'Month' || this.dateView === 'Week') {
-                startDay.setHours(0, 0, 0);
-            }
-            this.startDate = startDay;
-
-            // round end day to end of previous day
-            const endDay = new Date(end.setDate(end.getDate() - endCount));
-            if (this.dateView === 'Month' || this.dateView === 'Week') {
-                endDay.setHours(23, 59, 0, 0);
-            } else if (this.dateView === 'Day') {
-                endDay.setMinutes(0, 0, 0);
-            }
-            this.endDate = endDay;
-
-            // set the ms to zero to prevent a slight offset problem when comparing dates returned by InfluxDb
-            this.startDate.setSeconds(this.startDate.getSeconds(), 0);
-            this.endDate.setSeconds(this.endDate.getSeconds(), 0);
-        }
-
-        this.pickerRange = {startDate: moment(this.startDate), endDate: moment(this.endDate)};
-        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 }
