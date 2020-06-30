@@ -26,7 +26,6 @@ import {CollectionListComponent} from './collection/collection.list.component';
 import {ConfirmationComponent, ConfirmationDialogComponent} from './shared/confirmation-dialog/confirmation.dialog.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardContainerComponent} from './dashboard/dashboard-container/dashboard-container.component';
-import {DashboardPreviewComponent} from './dashboard/dashboard-container/dashboard-preview.component';
 import {DashboardDialogComponent} from './dashboard/dashboard.dialog.component';
 import {DashboardListComponent} from './dashboard/dashboard.list.component';
 import {DataSourceComponent} from './data-source/data.source.component';
@@ -84,7 +83,6 @@ export class HammerConfig extends HammerGestureConfig {
         DashboardComponent,
         DashboardDialogComponent,
         DashboardContainerComponent,
-        DashboardPreviewComponent,
         DashboardListComponent,
         DataSourceComponent,
         ChartComponent,

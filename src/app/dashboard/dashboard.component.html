@@ -1,5 +1,12 @@
+<div class="m-l-20 m-r-20" *ngIf="mobileQuery.matches">
+    <h3 class="page-title">
+        <a *ngIf="parent" [routerLink]="[parent.url]">{{parent.title}}</a>
+        &gt; {{dashboard?.title}}
+    </h3>
+</div>
+
 <div fxLayout="row wrap" id="dashboard">
-    <div fxFlex="100">
+    <div fxFlex="100" class="p-b-20">
         <mat-card *ngIf="dashboard">
             <mat-toolbar class="no-shadow sticky-toolbar date-range-toolbar" fxLayout="row" fxLayout.xs="column"
                          *ngIf="dateSelectVisible()">

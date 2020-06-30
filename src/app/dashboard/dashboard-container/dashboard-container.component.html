@@ -1,25 +1,9 @@
 <div class='has-slider'>
     <div [ngClass]="slider.classList" [style.transform]="'translateX('+slider.transform +'%)'"
-         [style.width]="100 * slider.slideCount + '%'" class='slider' id='slider' (pan)="sliderManager($event)">
-        <div class='slider-panel' *ngIf="slider.activeSlide > 0">
-            <app-dashboard-preview [dashboard]="siblings[slider.activeSlide - 1]" [parent]="parent"
-                                   [canEdit]="canEdit"></app-dashboard-preview>
-        </div>
-
+         class='slider' id='slider' (pan)="sliderManager($event)">
         <div class='slider-panel'>
-            <div class="m-l-20 m-r-20" *ngIf="mobileQuery.matches">
-                <h3 class="page-title">
-                    <a *ngIf="parent" [routerLink]="[parent.url]">{{parent.title}}</a>
-                    &gt; {{dashboard?.title}}
-                </h3>
-            </div>
-            <app-dashboard [dashboardId]="dashboardId" [dashboard]="dashboard" [dataSources]="dataSources"
-                           [dateViews]="dateViews" (edited)="dashboardEdited(dashboard)"></app-dashboard>
-        </div>
-
-        <div class='slider-panel' *ngIf="slider.activeSlide < siblings?.length - 1">
-            <app-dashboard-preview [dashboard]="siblings[slider.activeSlide + 1]" [parent]="parent"
-                                   [canEdit]="canEdit"></app-dashboard-preview>
+            <app-dashboard (edited)="dashboardEdited($event)" [dashboardId]="dashboardId" [dashboard]="dashboard"
+                           [dataSources]="dataSources" [parent]="parent" [dateViews]="dateViews"></app-dashboard>
         </div>
     </div>
 </div>

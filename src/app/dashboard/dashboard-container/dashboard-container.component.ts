@@ -1,10 +1,7 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Location } from '@angular/common';
-import {MediaMatcher} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog} from '@angular/material/dialog';
-import {AuthenticationService} from '../../_services/authentication.service';
 import {CollectionService} from '../../_services/collection.service';
 import {DataSourceService} from '../../_services/data.source.service';
 import {DashboardService} from '../../_services/dashboard.service';
@@ -18,7 +15,7 @@ export class Slider {
     slideCount: number;
     transform: number;
     classList: string;
-    timer: number;
+    timer: any;
 }
 
 @Component({
@@ -27,7 +24,6 @@ export class Slider {
     styleUrls: ['./dashboard-container.component.css']
 })
 export class DashboardContainerComponent implements OnInit {
-    mobileQuery: MediaQueryList;
     canEdit = false;
     dashboardId: number;
     dashboard: Dashboard;
@@ -36,29 +32,20 @@ export class DashboardContainerComponent implements OnInit {
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
     slider: Slider = new Slider();
-    private readonly _mobileQueryListener: () => void;
 
-    constructor(changeDetectorRef: ChangeDetectorRef,
-                media: MediaMatcher,
-                protected route: ActivatedRoute,
+    constructor(protected route: ActivatedRoute,
                 private router: Router,
                 protected http: HttpClient,
-                protected dialog: MatDialog,
-                protected authService: AuthenticationService,
                 private location: Location,
                 protected collectionService: CollectionService,
                 protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
-        this.mobileQuery = media.matchMedia('(min-width: 820px)');
-        this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-        this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit(): void {
         this.slider.sensitivity = 25;
         this.slider.activeSlide = 0;
-        // only show 3 dashboards at a time
-        this.slider.slideCount = 3;
+        this.slider.slideCount = 1;
 
         this.route.paramMap.subscribe(params => {
             this.dashboardId = +params.get('dashboard_id');
@@ -107,11 +94,14 @@ export class DashboardContainerComponent implements OnInit {
             this.siblings = resp;
 
             this.slider.activeSlide = this.siblings.findIndex(dash => dash.id === this.dashboardId);
-            this.slider.slideCount = this.siblings.length < this.slider.slideCount ? this.siblings.length : this.slider.slideCount;
+            this.slider.slideCount = this.siblings.length;
         });
     }
 
     setDashboard() {
+        if (this.dashboardId === this.siblings[this.slider.activeSlide].id) {
+            return;
+        }
         this.dashboard = this.siblings[this.slider.activeSlide];
         this.location.replaceState(this.router.url.replace('dashboards/' + this.dashboardId,
             'dashboards/' + this.dashboard.id));
@@ -121,7 +111,8 @@ export class DashboardContainerComponent implements OnInit {
 
     dashboardEdited(dashboard) {
         this.siblings[this.slider.activeSlide] = dashboard;
-        this.setDashboard();
+        this.dashboard = dashboard;
+        this.dashboardService.currentDashboard.emit(this.dashboard);
     }
 
     sliderManager(e) {
@@ -132,11 +123,7 @@ export class DashboardContainerComponent implements OnInit {
         }
         // move element
         const percentage = 100 / this.slider.slideCount * e.deltaX / window.innerWidth;
-        let transformStyle = percentage - ((100 / this.slider.slideCount * this.slider.activeSlide) || 0);
-        if (this.slider.activeSlide === 0 && transformStyle > 1) {
-            transformStyle = 1;
-        }
-        this.slider.transform = transformStyle;
+        this.slider.transform = percentage;
 
         // move to next/previous dashboard when done
         if (e.isFinal) {
@@ -157,22 +144,30 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     goToDashboard(number) {
+        const direction = this.slider.activeSlide - number;
         if (number < 0) {
-            this.slider.activeSlide = 0;
-        } else if (number > this.siblings.length - 1) {
             this.slider.activeSlide = this.siblings.length - 1;
-        } else if (this.slider.activeSlide !== number) {
+        } else if (number > this.siblings.length - 1) {
+            this.slider.activeSlide = 0;
+        } else {
             this.slider.activeSlide = number;
-            // load next dashboard
-            this.setDashboard();
         }
+        // load next dashboard
+        this.setDashboard();
 
         // apply and finish transformation
+        // move current slide out of view
         this.slider.classList = 'is-animating';
-        this.slider.transform = -(100 / this.slider.slideCount) * this.slider.activeSlide;
+        if (direction < 0) {
+            this.slider.transform = -100;
+        } else {
+            this.slider.transform = 100;
+        }
         const context = this;
+        // show next slide
         clearTimeout(this.slider.timer);
         this.slider.timer = setTimeout(function () {
+            context.slider.transform = 0;
             context.slider.classList = '';
         }, 400);
     }

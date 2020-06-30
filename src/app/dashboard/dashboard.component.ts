@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
 
     @Input() dashboardId: number;
     @Input() dashboard: Dashboard;
+    @Input() parent: any;
     @Input() dataSources: DataSource[];
     @Input() dateViews: DashboardView[] = [];
     @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
