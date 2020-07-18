@@ -31,7 +31,6 @@ export class DataSourceService {
     }
 
     loadDataQuery(dataSoureId, query) {
-        return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'},
-            { headers: { 'Accept-Encoding': 'gzip' }});
+        return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'});
     }
 }
