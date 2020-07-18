@@ -1,0 +1,9 @@
+<div class='has-slider'>
+    <div [ngClass]="slider.classList" [style.transform]="'translateX('+slider.transform +'%)'"
+         class='slider' id='slider' (pan)="sliderManager($event)">
+        <div class='slider-panel'>
+            <app-dashboard (edited)="dashboardEdited($event)" [dashboardId]="dashboardId" [dashboard]="dashboard"
+                           [dataSources]="dataSources" [parent]="parent" [dateViews]="dateViews"></app-dashboard>
+        </div>
+    </div>
+</div>

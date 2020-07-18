@@ -1,0 +1,21 @@
+<mat-toolbar class="no-shadow sticky-toolbar date-range-toolbar" fxLayout="row" fxLayout.xs="column"
+    *ngIf="dateSelectVisible()">
+    <mat-toolbar-row fxFlex fxFlex.xs="100">
+        <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
+                [class.active]="dateSelection.view == view.name">{{view.name}}
+        </button>
+    </mat-toolbar-row>
+    <mat-toolbar-row fxFlex="auto" fxFlex.xs="100" class="date-navigator font-18">
+        <button mat-icon-button (click)="updateDateCounter(1)">
+            <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+        <input type="text" matInput ngxDaterangepickerMd
+               [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
+               timePicker="true" [timePicker24Hour]="!mobileQueryMatches" [maxDate]="today"
+               [autoApply]="false" (ngModelChange)="updateRange($event)"
+               class="form-control date-range-picker"/>
+        <button mat-icon-button (click)="updateDateCounter(-1)">
+            <mat-icon>keyboard_arrow_right</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>

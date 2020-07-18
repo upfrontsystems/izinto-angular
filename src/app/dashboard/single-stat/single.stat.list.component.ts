@@ -10,6 +10,7 @@ import {DataSourceService} from '../../_services/data.source.service';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
 import {CopyService} from '../../_services/copy.service';
+import {DashboardService} from '../../_services/dashboard.service';
 
 @Component({
     selector: 'app-single-stat-list',
@@ -28,9 +29,10 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
                 protected alertService: AlertService,
                 protected authService: AuthenticationService,
                 private copyService: CopyService,
+                protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService,
                 protected singleStatService: SingleStatService) {
-        super(alertService, authService);
+        super(alertService, authService, dashboardService);
     }
 
     ngOnChanges(changes) {
@@ -38,16 +40,20 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             const stat = changes.addedSingleStat.currentValue;
             this.singleStats.push(stat);
             this.loadDataSets();
-        } else if (changes.dateRange && changes.dateRange.currentValue) {
-            this.loadDataSets();
         } else if (changes.dashboardId) {
             this.getSingleStats();
         }
     }
 
     ngOnInit() {
+        this.dateSelection = this.dashboardService.getDateSelection();
         this.getSingleStats();
         this.checkCanEdit();
+
+        this.dashboardService.datesUpdated.subscribe((selection) => {
+            this.dateSelection = selection;
+            this.loadDataSets();
+        });
     }
 
     getSingleStats() {

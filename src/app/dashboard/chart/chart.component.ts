@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {AutoGroupBy, Chart, GroupByValues} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
@@ -20,6 +20,7 @@ import * as d3Shape from 'd3-shape';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
 import {saveAs} from 'file-saver';
+import {DashboardService} from '../../_services/dashboard.service';
 
 
 @Component({
@@ -27,11 +28,9 @@ import {saveAs} from 'file-saver';
     templateUrl: './chart.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class ChartComponent extends QueryBaseComponent implements OnInit, OnChanges {
+export class ChartComponent extends QueryBaseComponent implements OnInit {
 
     @Input() chart: Chart;
-    @Input() startDate: Date;
-    @Input() endDate: Date;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     public windowWidth: any;
@@ -48,12 +47,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected alertService: AlertService,
+                protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService,
                 private copyService: CopyService,
                 protected chartService: ChartService,
                 private mouseListener: MouseListenerDirective,
                 private touchListener: TouchListenerDirective) {
-        super(alertService, authService);
+        super(alertService, authService, dashboardService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
             const target = event.target as HTMLElement;
@@ -93,23 +93,19 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         }
     }
 
-    ngOnChanges(changes) {
-        const dateRange = changes.dateRange;
-        const groupBy = changes.groupBy;
-        if (dateRange && dateRange.currentValue && !dateRange.firstChange) {
-            this.loadDataSet();
-        } else if (groupBy && groupBy.currentValue && !groupBy.firstChange) {
-            this.loadDataSet();
-        }
-    }
-
     ngOnInit() {
         // Initialise transition
         d3Trans.transition().duration(750);
+        this.dateSelection = this.dashboardService.getDateSelection();
         this.loadDataSet();
 
         // only admin can edit chart
         this.checkCanEdit();
+
+        this.dashboardService.datesUpdated.subscribe((selection) => {
+            this.dateSelection = selection;
+            this.loadDataSet();
+        });
 
         if (this.chart.type === 'Wind Arrow') {
             this.chart.fillFunc = function (value) {
@@ -237,7 +233,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
                     for (const record of series['values']) {
                         const date = new Date(record[0]);
-                        if (date < this.startDate || date > this.endDate) {
+                        if (date < this.dateSelection.startDate || date > this.dateSelection.endDate) {
                             continue;
                         }
                         // Add timezone offset if group by is greater than 1 hour
@@ -302,7 +298,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     xAxisScale() {
         return d3Scale.scaleTime().range([0, this.innerWidth]).domain(
-            [this.startDate, this.endDate]
+            [this.dateSelection.startDate, this.dateSelection.endDate]
         );
     }
 
@@ -563,12 +559,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     calcTickCount(width) {
         const interval = width / 50;
-        let dayCount = (this.endDate.getTime() - this.startDate.getTime()) / GroupByValues[AutoGroupBy[this.view]] / 1000;
-        if (this.view === 'Hour') {
+        let dayCount = (this.dateSelection.endDate.getTime() - this.dateSelection.startDate.getTime()) /
+            GroupByValues[AutoGroupBy[this.dateSelection.view]] / 1000;
+        if (this.dateSelection.view === 'Hour') {
             return interval;
             // show monthly intervals for year
-        } else if (this.view === 'Year') {
-            dayCount = (this.endDate.getTime() - this.startDate.getTime()) / 2592000 / 1000;
+        } else if (this.dateSelection.view === 'Year') {
+            dayCount = (this.dateSelection.endDate.getTime() - this.dateSelection.startDate.getTime()) / 2592000 / 1000;
             return interval > dayCount && dayCount || interval;
         } else {
             return interval > dayCount && dayCount || interval;
@@ -577,9 +574,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
 
     tickFormat() {
         let fmt = '%d %b';
-        if (this.view === 'Hour' || this.view === 'Day') {
+        if (this.dateSelection.view === 'Hour' || this.dateSelection.view === 'Day') {
             fmt = '%H:%M';
-        } else if (this.view === 'Year') {
+        } else if (this.dateSelection.view === 'Year') {
             fmt = '%b %Y';
         }
         return d3TimeFormat.timeFormat(fmt);
@@ -601,8 +598,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnChan
         const groupBy = this.groupByForView(this.chart.group_by),
             groupByValue = GroupByValues[groupBy],
             xAxisScale = this.xAxisScale(),
-            tickTime = new Date(this.startDate);
-        tickTime.setTime(this.startDate.getTime() + groupByValue * 1000);
+            tickTime = new Date(this.dateSelection.startDate);
+        tickTime.setTime(this.dateSelection.startDate.getTime() + groupByValue * 1000);
         if (this.chart.type === 'Wind Arrow') {
             return xAxisScale(tickTime);
         } else {

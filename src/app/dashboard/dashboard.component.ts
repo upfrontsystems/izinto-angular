@@ -1,23 +1,20 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.component';
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
-import {DataSourceService} from '../_services/data.source.service';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
-import * as moment from 'moment';
 import {AuthenticationService} from '../_services/authentication.service';
 import {Script} from '../_models/script';
 import {ScriptDialogComponent} from './script/script.dialog.component';
 import {CopyService} from '../_services/copy.service';
-import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 
 @Component({
@@ -27,31 +24,17 @@ import {DashboardDialogComponent} from './dashboard.dialog.component';
 })
 export class DashboardComponent implements OnInit {
 
+    @Input() dashboardId: number;
+    @Input() dashboard: Dashboard;
+    @Input() parent: any;
+    @Input() dataSources: DataSource[];
+    @Input() dateViews: DashboardView[] = [];
+    @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
     mobileQuery: MediaQueryList;
     canEdit = false;
-    dashboardId: number;
-    dashboard: Dashboard;
-    siblings: Dashboard[] = [];
-    currentIndex = 0;
-    parent: any;
-    dataSources: DataSource[];
     addedChart: Chart;
     addedSingleStat: SingleStat;
     addedScript: Script;
-    dateViews: DashboardView[] = [];
-    dateView = 'Week';
-    dateFormat = {
-        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        'mobile': {
-            'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        }
-    };
-    groupBy = 'auto';
-    // query date range from start to end
-    dateRange = '';
-    dateRangeCounter = 1;
-    startDate: Date;
-    endDate: Date;
     fabButtons = [
         {
             icon: 'collections_bookmark',
@@ -74,28 +57,15 @@ export class DashboardComponent implements OnInit {
             label: 'Add Script',
         }
     ];
-    today = moment();
-    dateSelectOpened = false;
-    pickerRange = {startDate: moment(), endDate: moment()};
-    private range = {
-        'Hour': {'count': 1, 'unit': 'h'},
-        'Day': {'count': 1, 'unit': 'd'},
-        'Week': {'count': 7, 'unit': 'd'},
-        'Month': {'count': 30, 'unit': 'd'},
-        'Year': {'count': 365, 'unit': 'd'}
-    };
     private readonly _mobileQueryListener: () => void;
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
                 protected route: ActivatedRoute,
-                private router: Router,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
-                protected collectionService: CollectionService,
-                protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -103,86 +73,8 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-
-        this.getDashboardViews();
-        this.getDataSources();
-
-        this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('dashboard_id');
-            this.getDashboard();
-        });
-
-        this.setDateRange();
-        this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
-
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
-    }
-
-    onSwipeLeft(event) {
-        if (this.currentIndex < this.siblings.length) {
-            const destination = this.siblings[this.currentIndex + 1].id;
-            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
-                'dashboards/' + destination));
-        }
-    }
-
-    onSwipeRight(event) {
-        if (this.currentIndex > 0) {
-            const destination = this.siblings[this.currentIndex - 1].id;
-            this.router.navigateByUrl(this.router.url.replace('dashboards/' + this.dashboardId,
-                'dashboards/' + destination));
-        }
-    }
-
-    getDashboardViews() {
-        this.dashboardService.listDashboardViews().subscribe(resp => {
-            this.dateViews = resp;
-        });
-    }
-
-    getDashboard() {
-        this.dashboardService.getById(this.dashboardId).subscribe(resp => {
-            this.dashboard = resp;
-            this.dashboardService.currentDashboard.emit(this.dashboard);
-            this.getSiblings();
-            if (resp.collection_id) {
-                this.collectionService.getById(resp.collection_id).subscribe(collection => {
-                    this.parent = {
-                        title: collection.title,
-                        url: '/collections/' + collection.id
-                    };
-                });
-            } else {
-                this.parent = {
-                    title: 'Home',
-                    url: '/'
-                };
-            }
-        });
-    }
-
-    getSiblings() {
-        const parentId = this.dashboard.collection_id ? this.dashboard.collection_id : '';
-        this.dashboardService.getDashboards({user_id: true, collection_id: parentId}).subscribe(resp => {
-            this.siblings = resp;
-            this.currentIndex = this.siblings.findIndex(dash => dash.id === this.dashboardId);
-        });
-    }
-
-    getDataSources() {
-        this.dataSourceService.getAll({}).subscribe(resp => {
-            this.dataSources = resp;
-        });
-    }
-
-    dateSelectVisible() {
-        // Always show the date selector on bigger screens
-        if (this.mobileQuery.matches) {
-            return true;
-        } else {
-            return this.dateSelectOpened;
-        }
     }
 
     editDashboard() {
@@ -193,7 +85,7 @@ export class DashboardComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.getDashboard();
+                this.edited.emit(result);
             }
         });
     }
@@ -266,84 +158,5 @@ export class DashboardComponent implements OnInit {
                 this.addedScript = result;
             }
         });
-    }
-
-    getDateFormat() {
-        if (this.mobileQuery.matches) {
-            return this.dateFormat[this.dateView];
-        } else {
-            return this.dateFormat.mobile[this.dateView];
-        }
-    }
-
-    updateView(view) {
-        this.dateView = view;
-        this.dateRangeCounter = 1;
-        this.setDateRange();
-    }
-
-    updateDateCounter(count) {
-        if (this.dateRangeCounter + count < 1) {
-            return;
-        }
-
-        this.dateRangeCounter += count;
-        this.setDateRange();
-    }
-
-    // handler function that receives the updated date range object
-    updateRange(event) {
-
-        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
-            return;
-        }
-
-        this.startDate = this.pickerRange.startDate.toDate();
-        this.endDate = this.pickerRange.endDate.toDate();
-        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
-    }
-
-    setDateRange() {
-        const startCount = this.dateRangeCounter * this.range[this.dateView].count;
-        const endCount = (this.dateRangeCounter - 1) * this.range[this.dateView].count;
-
-        const date = new Date();
-        const end = new Date();
-        if (this.dateView === 'Hour') {
-            // round minutes down
-            const startTime = new Date(date.setHours(date.getHours() - startCount));
-            let minutes = (Math.floor(startTime.getMinutes() / 10) * 10);
-            startTime.setMinutes(minutes, 0, 0);
-            this.startDate = startTime;
-
-            // round end down
-            const endTime = new Date(end.setHours(end.getHours() - endCount));
-            minutes = (Math.floor(endTime.getMinutes() / 10) * 10);
-            endTime.setMinutes(minutes, 0, 0);
-            this.endDate = endTime;
-        } else {
-            // round start day to start of day
-            const startDay = new Date(date.setDate(date.getDate() - startCount));
-            if (this.dateView === 'Month' || this.dateView === 'Week') {
-                startDay.setHours(0, 0, 0);
-            }
-            this.startDate = startDay;
-
-            // round end day to end of previous day
-            const endDay = new Date(end.setDate(end.getDate() - endCount));
-            if (this.dateView === 'Month' || this.dateView === 'Week') {
-                endDay.setHours(23, 59, 0, 0);
-            } else if (this.dateView === 'Day') {
-                endDay.setMinutes(0, 0, 0);
-            }
-            this.endDate = endDay;
-
-            // set the ms to zero to prevent a slight offset problem when comparing dates returned by InfluxDb
-            this.startDate.setSeconds(this.startDate.getSeconds(), 0);
-            this.endDate.setSeconds(this.endDate.getSeconds(), 0);
-        }
-
-        this.pickerRange = {startDate: moment(this.startDate), endDate: moment(this.endDate)};
-        this.dateRange = `time > '${this.startDate.toISOString()}' AND time < '${this.endDate.toISOString()}'`;
     }
 }

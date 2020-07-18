@@ -2,6 +2,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardView} from '../_models/dashboard_view';
+import {DateSelection} from '../_models/date_selection';
 
 
 @Injectable({
@@ -11,6 +12,8 @@ export class DashboardService {
 
     toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>();
     currentDashboard: EventEmitter<Dashboard> = new EventEmitter<Dashboard>();
+    datesUpdated: EventEmitter<DateSelection> = new EventEmitter<DateSelection>();
+    dateSelection: DateSelection;
 
     constructor(private http: HttpClient) {
     }
@@ -41,5 +44,14 @@ export class DashboardService {
 
     listDashboardViews() {
         return this.http.get<DashboardView[]>('/api/dashboard_views');
+    }
+
+    setDateSelection(selection) {
+        this.dateSelection = selection;
+        this.datesUpdated.emit(this.dateSelection);
+    }
+
+    getDateSelection() {
+        return this.dateSelection;
     }
 }

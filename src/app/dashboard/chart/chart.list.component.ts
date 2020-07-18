@@ -4,6 +4,7 @@ import {ChartService} from '../../_services/chart.service';
 import {QueryBaseComponent} from '../query.base.component';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
+import {DashboardService} from '../../_services/dashboard.service';
 
 @Component({
     selector: 'app-chart-list',
@@ -16,14 +17,13 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @ViewChild('deleteConfirm', {static: true}) private deleteConfirm: any;
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
-    @Input() startDate: Date;
-    @Input() endDate: Date;
     charts: Chart[] = [];
 
     constructor(protected alertService: AlertService,
                 protected authService: AuthenticationService,
-                protected chartService: ChartService) {
-        super(alertService, authService);
+                protected chartService: ChartService,
+                protected dashboardService: DashboardService) {
+        super(alertService, authService, dashboardService);
     }
 
     ngOnChanges(changes) {
