@@ -51,10 +51,8 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
         this.checkCanEdit();
 
         this.dashboardService.datesUpdated.subscribe((selection) => {
-            if (this.dateSelection.dateRange !== selection.dateRange) {
-                this.dateSelection = selection;
-                this.loadDataSets();
-            }
+            this.dateSelection = selection;
+            this.loadDataSets();
         });
     }
 
