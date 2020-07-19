@@ -40,7 +40,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
             const stat = changes.addedSingleStat.currentValue;
             this.singleStats.push(stat);
             this.loadDataSets();
-        } else if (changes.dashboardId) {
+        } else if (changes.dashboardId && !changes.dashboardId.firstChange) {
             this.getSingleStats();
         }
     }

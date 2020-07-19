@@ -32,7 +32,7 @@ export class ScriptListComponent implements OnInit, OnChanges {
             this.scripts.push(script);
         } else if (changes.dateRange && changes.dateRange.currentValue) {
             return;
-        } else if (changes.dashboardId) {
+        } else if (changes.dashboardId && !changes.dashboardId.firstChange) {
             this.getScripts();
         }
     }
