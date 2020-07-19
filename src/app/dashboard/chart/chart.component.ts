@@ -103,8 +103,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
         this.checkCanEdit();
 
         this.dashboardService.datesUpdated.subscribe((selection) => {
-            this.dateSelection = selection;
-            this.loadDataSet();
+            if (this.dateSelection.dateRange !== selection.dateRange) {
+                this.dateSelection = selection;
+                this.loadDataSet();
+            }
         });
 
         if (this.chart.type === 'Wind Arrow') {
@@ -215,7 +217,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
         d3.selectAll('div.svg-container').remove();
         let query = this.chart.query;
         query = this.formatQuery(query, this.chart.group_by, this.chart.data_source);
-
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 // a result can have multiple series, each series is a separate dataset
