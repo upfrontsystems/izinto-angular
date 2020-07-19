@@ -1,5 +1,5 @@
 <div class="m-l-20 m-r-20" *ngIf="mobileQuery.matches">
-    <div class="pull-right" *ngIf="dashboard.collection_id==15"><img src="assets/images/water-hunters.png"/></div>
+    <div class="pull-right" *ngIf="dashboard && dashboard.collection_id==15"><img src="assets/images/water-hunters.png"/></div>
     <h3 class="page-title">
         <a *ngIf="parent" [routerLink]="[parent.url]">{{parent.title}}</a>
         &gt; {{dashboard?.title}}
