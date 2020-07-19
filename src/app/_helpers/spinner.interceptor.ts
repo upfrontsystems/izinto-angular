@@ -28,16 +28,11 @@ export class SpinnerInterceptor implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log(req.headers.get('x-show-spinner'));
-        if (req.headers.get('x-show-spinner') === 'no') {
-            return next.handle(req);
-        } else {
-            this.spinnerService.show();
-            return next.handle(req).pipe(
-                finalize(() => {
-                    this.spinnerService.hide();
-                })
-            );
-        }
+        this.spinnerService.show();
+        return next.handle(req).pipe(
+            finalize(() => {
+                this.spinnerService.hide();
+            })
+        );
     }
 }

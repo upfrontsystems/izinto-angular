@@ -31,7 +31,6 @@ export class DataSourceService {
     }
 
     loadDataQuery(dataSoureId, query) {
-        return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'},
-            {headers: {'x-show-spinner': 'no'}});
+        return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'});
     }
 }
