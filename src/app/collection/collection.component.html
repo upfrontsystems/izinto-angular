@@ -1,9 +1,10 @@
 <div class="m-l-20 m-r-20">
+    <div class="pull-right" *ngIf="collectionId==15"><img src="assets/images/water-hunters.png"/></div>
     <h1 class="page-title">{{collection?.title}}</h1>
     <p>{{collection?.description}}</p>
 </div>
 
-<div fxLayout="row wrap">
+<div fxLayout="row wrap" class="clear">
     <div fxFlex="100">
         <app-dashboard-list [dashboards]="sortedDashboards()" (edited)="dashboardEdited($event)"
                     (deleted)="dashboardDeleted($event)" (reordered)="dashboardReordered($event)"></app-dashboard-list>
