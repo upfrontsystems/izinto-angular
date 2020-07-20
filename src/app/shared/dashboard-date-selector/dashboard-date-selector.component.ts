@@ -62,6 +62,7 @@ export class DashboardDateSelectorComponent implements OnInit {
     }
 
     // handler function that receives the updated date range object
+    // called when user selects a start and end date manually
     updateRange(event) {
 
         if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
@@ -76,12 +77,14 @@ export class DashboardDateSelectorComponent implements OnInit {
         this.dashboardService.setDateSelection(this.dateSelection);
     }
 
+    // called when toggling between day, week, month and year
     updateView(view) {
         this.dateSelection.view = view;
         this.dateRangeCounter = 1;
         this.setDateRange();
     }
 
+    // called when navigating forward and backwards using the date range picker
     updateDateCounter(count) {
         if (this.dateRangeCounter + count < 1) {
             return;
