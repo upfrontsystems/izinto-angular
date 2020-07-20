@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, OnDestroy, Output} from '@angular/core';
 import {AutoGroupBy, Chart, GroupByValues} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
@@ -21,6 +21,7 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {CopyService} from '../../_services/copy.service';
 import {saveAs} from 'file-saver';
 import {DashboardService} from '../../_services/dashboard.service';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -28,7 +29,7 @@ import {DashboardService} from '../../_services/dashboard.service';
     templateUrl: './chart.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class ChartComponent extends QueryBaseComponent implements OnInit {
+export class ChartComponent extends QueryBaseComponent implements OnInit, OnDestroy {
 
     @Input() chart: Chart;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
@@ -43,6 +44,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
     private innerHeight = 0;
     private legendHeight = 30;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
+    datesUpdated: Subscription;
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -102,7 +104,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
         // only admin can edit chart
         this.checkCanEdit();
 
-        this.dashboardService.datesUpdated.subscribe((selection) => {
+        this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
             this.dateSelection = selection;
             this.loadDataSet();
         });
@@ -112,6 +114,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
                 return d3Scale.scaleSequential(d3ScaleChromatic.interpolateRdYlBu)
                     .domain([20, 0])(value);
             };
+        }
+    }
+
+    ngOnDestroy() {
+        // Prevent event subscriber being called multiple times.
+        // See https://stackoverflow.com/questions/53505872/angular-eventemitter-called-multiple-times
+        if (this.datesUpdated) {
+            this.datesUpdated.unsubscribe();
         }
     }
 
@@ -438,14 +448,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit {
                     .attr('x', xOffset + rectWidth + padding)
                     .attr('y', yOffset)
                     .attr('fill', textFill)
-                    .text(fieldName + ': '),
-                bBox = (label.node() as SVGSVGElement).getBBox();
-            seriesLegend.append('text')
-                .style('font-weight', '600')
-                .attr('class', 'legend-value dataset-' + dix)
-                .attr('x', bBox.x + bBox.width + padding)
-                .attr('y', yOffset)
-                .attr('fill', textFill);
+                    .text(fieldName + ': ');
+             if (label.node()) {
+                 const bBox = (label.node() as SVGSVGElement).getBBox();
+                 seriesLegend.append('text')
+                     .style('font-weight', '600')
+                     .attr('class', 'legend-value dataset-' + dix)
+                     .attr('x', bBox.x + bBox.width + padding)
+                     .attr('y', yOffset)
+                     .attr('fill', textFill);
+             }
             xOffset += legendWidth;
         }
     }

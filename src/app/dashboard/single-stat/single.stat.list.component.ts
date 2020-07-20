@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, OnDestroy} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import {SingleStat} from '../../_models/single.stat';
@@ -11,18 +11,20 @@ import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
 import {CopyService} from '../../_services/copy.service';
 import {DashboardService} from '../../_services/dashboard.service';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-single-stat-list',
     templateUrl: './single.stat.list.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class SingleStatListComponent extends QueryBaseComponent implements OnInit, OnChanges {
+export class SingleStatListComponent extends QueryBaseComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() dashboardId: number;
     @Input() addedSingleStat: SingleStat;
     public singleStats: SingleStat[] = [];
     private dataSets = {};
+    datesUpdated: Subscription;
 
     constructor(protected http: HttpClient,
                 protected dialog: MatDialog,
@@ -50,10 +52,18 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
         this.getSingleStats();
         this.checkCanEdit();
 
-        this.dashboardService.datesUpdated.subscribe((selection) => {
+        this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
             this.dateSelection = selection;
             this.loadDataSets();
         });
+    }
+
+    ngOnDestroy() {
+        // Prevent event subscriber being called multiple times.
+        // See https://stackoverflow.com/questions/53505872/angular-eventemitter-called-multiple-times
+        if (this.datesUpdated) {
+            this.datesUpdated.unsubscribe();
+        }
     }
 
     getSingleStats() {
