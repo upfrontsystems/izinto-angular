@@ -13,7 +13,7 @@ export class DashboardService {
     toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>();
     currentDashboard: EventEmitter<Dashboard> = new EventEmitter<Dashboard>();
     datesUpdated: EventEmitter<DateSelection> = new EventEmitter<DateSelection>();
-    dateSelection: DateSelection;
+    private dateSelection: DateSelection;
 
     constructor(private http: HttpClient) {
     }

@@ -61,22 +61,6 @@ export class DashboardDateSelectorComponent implements OnInit {
         }
     }
 
-    // handler function that receives the updated date range object
-    // called when user selects a start and end date manually
-    updateRange(event) {
-
-        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
-            return;
-        }
-
-        this.dateSelection.startDate = this.pickerRange.startDate.toDate();
-        this.dateSelection.endDate = this.pickerRange.endDate.toDate();
-        this.dateSelection.dateRange = `time > '${this.dateSelection.startDate.toISOString()
-            }' AND time < '${this.dateSelection.endDate.toISOString()}'`;
-        // update selection in service
-        this.dashboardService.setDateSelection(this.dateSelection);
-    }
-
     // called when toggling between day, week, month and year
     updateView(view) {
         this.dateSelection.view = view;
@@ -134,7 +118,19 @@ export class DashboardDateSelectorComponent implements OnInit {
             this.dateSelection.endDate.setSeconds(this.dateSelection.endDate.getSeconds(), 0);
         }
 
+        // updating picker object triggers change detection
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
+    }
+
+    // handler function that receives the updated date range object
+    // called when picker object changes
+    updateRange(event) {
+        if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
+            return;
+        }
+
+        this.dateSelection.startDate = this.pickerRange.startDate.toDate();
+        this.dateSelection.endDate = this.pickerRange.endDate.toDate();
         this.dateSelection.dateRange = `time > '${this.dateSelection.startDate.toISOString()
             }' AND time < '${this.dateSelection.endDate.toISOString()}'`;
         // update selection in service
