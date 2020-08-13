@@ -15,8 +15,10 @@ button.active {
     background-color: inherit;
     cursor: pointer;
     border: none;
-    padding-right: 0;
-    padding-top: 12px;
+    padding-bottom: 0.5em;
+    font-family: inherit;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .date-range-picker {
@@ -42,4 +44,10 @@ button.active {
     position: sticky;
     top: 0;
     z-index: 10;
+}
+
+/* style expansion panel as toolbar */
+.mat-toolbar {
+    border-radius: 0 !important;
+    box-shadow: none;
 }

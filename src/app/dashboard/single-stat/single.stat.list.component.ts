@@ -53,8 +53,10 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
         this.checkCanEdit();
 
         this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
-            this.dateSelection = selection;
-            this.loadDataSets();
+            if (selection) {
+                this.dateSelection = selection;
+                this.loadDataSets();
+            }
         });
     }
 
@@ -106,7 +108,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
     }
 
     deleteSingleStat(record) {
-        this.singleStatService.delete(record).subscribe(resp => {
+        this.singleStatService.delete(record).subscribe(() => {
             for (const ix in this.singleStats) {
                 if (this.singleStats[ix].id === record.id) {
                     this.singleStats.splice(+ix, 1);

@@ -59,7 +59,11 @@ export class FullComponent implements OnInit, OnDestroy {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             this.currentDashboard = dashboard;
-            this.parentURL = '/collections/' + dashboard.collection_id;
+            if (dashboard.collection_id) {
+                this.parentURL = '/collections/' + dashboard.collection_id;
+            } else {
+                this.parentURL = '/';
+            }
         });
         this.scrollDispatcher.scrolled()
             .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))

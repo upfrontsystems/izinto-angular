@@ -105,8 +105,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.checkCanEdit();
 
         this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
-            this.dateSelection = selection;
-            this.loadDataSet();
+            if (selection) {
+                this.dateSelection = selection;
+                this.loadDataSet();
+            }
         });
 
         if (this.chart.type === 'Wind Arrow') {

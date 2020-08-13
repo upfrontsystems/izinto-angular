@@ -34,3 +34,14 @@ a.link-title {
 .legend-label, .legend-value {
     cursor: pointer;
 }
+
+/* apply styling inside expansion panel for toolbar */
+mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
+    padding: initial;
+}
+
+@media only screen and (max-width: 786px) {
+    mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
+        flex-direction: column !important;
+    }
+}

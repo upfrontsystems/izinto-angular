@@ -46,11 +46,7 @@ export class DashboardDateSelectorComponent implements OnInit {
 
     dateSelectVisible() {
         // Always show the date selector on bigger screens
-        if (this.mobileQueryMatches) {
-            return true;
-        } else {
-            return this.dateSelectOpened;
-        }
+        return this.mobileQueryMatches || this.dateSelectOpened;
     }
 
     getDateFormat() {
