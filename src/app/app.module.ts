@@ -5,7 +5,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import * as Hammer from 'hammerjs';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {NgModule} from '@angular/core';
+import {Injectable, NgModule} from '@angular/core';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
@@ -58,12 +58,16 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     wheelPropagation: true
 };
 
+@Injectable()
 export class HammerConfig extends HammerGestureConfig {
     overrides = <any>{
         pan: {direction: Hammer.DIRECTION_HORIZONTAL}
     };
     buildHammer(element: HTMLElement) {
         return new Hammer(element, {
+            // use TouchInput class since PointerEvents cancels prematurely on chrome
+            // https://github.com/hammerjs/hammer.js/issues/1056
+            inputClass: Hammer.TouchInput,
             touchAction: 'pan-y',
         });
     }

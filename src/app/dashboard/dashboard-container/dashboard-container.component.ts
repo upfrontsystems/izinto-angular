@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { Location } from '@angular/common';
+import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {CollectionService} from '../../_services/collection.service';
@@ -43,7 +43,7 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.slider.sensitivity = 25;
+        this.slider.sensitivity = 40;
         this.slider.activeSlide = 0;
         this.slider.slideCount = 1;
 
@@ -117,8 +117,7 @@ export class DashboardContainerComponent implements OnInit {
 
     sliderManager(e) {
         // dont animate when moving up/down
-        if (Math.abs(e.deltaX / 2) < Math.abs(e.deltaY)) {
-            e.preventDefault();
+        if (Math.abs(e.deltaX / 5) < Math.abs(e.deltaY)) {
             return;
         }
         // move element
@@ -132,15 +131,29 @@ export class DashboardContainerComponent implements OnInit {
             } else if (e.velocityX < -1) {
                 this.goToDashboard(this.slider.activeSlide + 1);
             } else {
+                // test if movement was over sensitivity
                 if (percentage <= -(this.slider.sensitivity / this.slider.slideCount)) {
                     this.goToDashboard(this.slider.activeSlide + 1);
                 } else if (percentage >= (this.slider.sensitivity / this.slider.slideCount)) {
                     this.goToDashboard(this.slider.activeSlide - 1);
                 } else {
-                    this.goToDashboard(this.slider.activeSlide);
+                    // move back into position
+                    this.transformBack();
                 }
             }
         }
+    }
+
+    // do not go to next slide
+    // move back to original position
+    transformBack() {
+        this.slider.classList = 'is-animating';
+        this.slider.transform = 0;
+        const context = this;
+        clearTimeout(this.slider.timer);
+        this.slider.timer = setTimeout(function () {
+            context.slider.classList = '';
+        }, 300);
     }
 
     goToDashboard(number) {
@@ -163,12 +176,23 @@ export class DashboardContainerComponent implements OnInit {
         } else {
             this.slider.transform = 100;
         }
+
         const context = this;
-        // show next slide
+        // move slide out of view
         clearTimeout(this.slider.timer);
         this.slider.timer = setTimeout(function () {
-            context.slider.transform = 0;
             context.slider.classList = '';
-        }, 400);
+            if (direction < 0) {
+                context.slider.transform = 100;
+            } else {
+                context.slider.transform = -100;
+            }
+
+            // move in next slide
+            context.slider.timer = setTimeout(function () {
+                context.slider.classList = 'is-animating';
+                context.slider.transform = 0;
+            }, 300);
+        }, 300);
     }
 }
