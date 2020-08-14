@@ -22,18 +22,22 @@
 
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
 
-                <app-single-stat-list [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat"
+                <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat"
                                       [variables]="dashboard.variables" [dataSources]="dataSources">
                 </app-single-stat-list>
 
-                <app-script-list [dashboardId]="dashboardId" [addedScript]="addedScript"></app-script-list>
-
-                <app-chart-list appMouseListener [dateViews]="dateViews"
+                <app-chart-list *ngIf="dashboard.type == 'old'" appMouseListener [dateViews]="dateViews"
                                 [dashboardId]="dashboardId" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
+
+                <iframe *ngIf="dashboard.type == 'new'" class="b-0" style="width: 100%; height: 500px" scrolling="yes"
+                        allowfullscreen id="dashboard-{{dashboard.id}}"
+                        sandbox="allow-same-origin allow-scripts allow-downloads allow-popups allow-forms allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+                        [srcdoc]="content"></iframe>
+
             </mat-card-content>
 
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial *ngIf="canEdit" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="canEdit && (dashboard && dashboard.type == 'old')" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
@@ -12,10 +13,9 @@ import {DataSource} from '../_models/data.source';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
-import {Script} from '../_models/script';
-import {ScriptDialogComponent} from './script/script.dialog.component';
 import {CopyService} from '../_services/copy.service';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
+import {environment} from '../../environments/environment';
 
 @Component({
     selector: 'app-dashboard',
@@ -34,7 +34,8 @@ export class DashboardComponent implements OnInit {
     canEdit = false;
     addedChart: Chart;
     addedSingleStat: SingleStat;
-    addedScript: Script;
+    content: any;
+    contentURL: SafeResourceUrl;
     fabButtons = [
         {
             icon: 'collections_bookmark',
@@ -51,16 +52,13 @@ export class DashboardComponent implements OnInit {
         {
             icon: 'add',
             label: 'Add Single Stat',
-        },
-        {
-            icon: 'add',
-            label: 'Add Script',
         }
     ];
     private readonly _mobileQueryListener: () => void;
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
+                private sanitizer: DomSanitizer,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
@@ -75,6 +73,9 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
+        const url = environment.scriptBaseURL + '/api/dashboard/' + this.dashboardId + '/content';
+        this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.content = this.sanitizer.bypassSecurityTrustHtml(this.dashboard.content);
     }
 
     editDashboard() {
@@ -86,6 +87,8 @@ export class DashboardComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.edited.emit(result);
+                this.content = this.sanitizer.bypassSecurityTrustHtml(result.content);
+                console.log(this.content);
             }
         });
     }
@@ -99,8 +102,6 @@ export class DashboardComponent implements OnInit {
             this.addSingleStat();
         } else if (label === 'Paste Single Stat') {
             this.pasteSingleStat();
-        } else if (label === 'Add Script') {
-            this.addScript();
         }
     }
 
@@ -146,17 +147,4 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    addScript() {
-        const dialogRef = this.dialog.open(ScriptDialogComponent, {
-            width: '600px',
-            data: {script: {dashboard_id: this.dashboardId}},
-            disableClose: true
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.addedScript = result;
-            }
-        });
-    }
 }

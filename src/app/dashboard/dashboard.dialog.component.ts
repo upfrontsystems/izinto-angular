@@ -47,6 +47,8 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
             title: new FormControl(this.dashboard.title, [Validators.required]),
             description: this.dashboard.description,
             collection_id: this.dashboard.collection_id,
+            type:  this.dashboard.type,
+            content: this.dashboard.content,
             users: [this.dashboard.users],
             variables: this.variablesRows
         };

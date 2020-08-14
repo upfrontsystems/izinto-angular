@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## 1.0.0
-
+## 0.6
 Issue Fixes
 =======
+* [#160](https://github.com/upfrontsystems/izinto-angular/issues/160) Refactor Dashboard to render HTML content
 
 ## 0.5
 Issue Fixes

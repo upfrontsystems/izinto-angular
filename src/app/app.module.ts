@@ -41,8 +41,6 @@ import {SpinnerService} from './_services/spinner.service';
 import {SharedModule} from './shared/shared.module';
 import {SingleStatListComponent} from './dashboard/single-stat/single.stat.list.component';
 import {SingleStatDialogComponent} from './dashboard/single-stat/single.stat.dialog.component';
-import {ScriptListComponent} from './dashboard/script/script.list.component';
-import {ScriptDialogComponent} from './dashboard/script/script.dialog.component';
 import {SpinnerComponent} from './shared/spinner/spinner.component';
 import {UserComponent} from './user/user.component';
 import {UserDialogComponent} from './user/user.dialog.component';
@@ -99,8 +97,6 @@ export class HammerConfig extends HammerGestureConfig {
         HomeComponent,
         SingleStatListComponent,
         SingleStatDialogComponent,
-        ScriptListComponent,
-        ScriptDialogComponent,
         SpinnerComponent,
         UserComponent,
         UserDialogComponent,
@@ -132,7 +128,6 @@ export class HammerConfig extends HammerGestureConfig {
         DashboardDialogComponent,
         DataSourceDialogComponent,
         SingleStatDialogComponent,
-        ScriptDialogComponent,
         UserDialogComponent
     ],
     providers: [
