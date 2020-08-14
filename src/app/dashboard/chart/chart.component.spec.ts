@@ -9,7 +9,6 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import {AlertService} from '../../_services/alert.service';
 import {MouseListenerDirective} from '../../shared/mouse-listener/mouse.listener.directive';
-import {TouchListenerDirective} from '../../shared/touch-listener/touch.listener.directive';
 import {Chart} from '../../_models/chart';
 
 describe('ChartComponent', () => {
@@ -25,7 +24,7 @@ describe('ChartComponent', () => {
             imports: [FormsModule, ReactiveFormsModule, RouterTestingModule, MaterialModule, BrowserAnimationsModule,
                 HttpClientTestingModule],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
-            providers: [AlertService, MouseListenerDirective, TouchListenerDirective]
+            providers: [AlertService, MouseListenerDirective]
         })
             .compileComponents();
     }));

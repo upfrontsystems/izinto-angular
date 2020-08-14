@@ -7,7 +7,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {QueryBaseComponent} from '../query.base.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {MouseListenerDirective} from 'app/shared/mouse-listener/mouse.listener.directive';
-import {TouchListenerDirective} from 'app/shared/touch-listener/touch.listener.directive';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {AlertService} from '../../_services/alert.service';
 import * as d3 from 'd3-selection';
@@ -53,8 +52,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 protected dataSourceService: DataSourceService,
                 private copyService: CopyService,
                 protected chartService: ChartService,
-                private mouseListener: MouseListenerDirective,
-                private touchListener: TouchListenerDirective) {
+                private mouseListener: MouseListenerDirective) {
         super(alertService, authService, dashboardService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
@@ -62,7 +60,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             if (target.matches('rect')) {
                 // calculate x coordinate within chart
                 const bounds = target.getBoundingClientRect();
-                this.mousemove(event.clientX - bounds.left, bounds);
+                this.mousemove(event.clientX - bounds.left);
             }
         });
         mouseListener.over.subscribe(event => {
@@ -75,14 +73,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             const target = event.target as HTMLElement;
             if (target.matches('rect')) {
                 this.mouseout();
-            }
-        });
-        touchListener.touch.subscribe(event => {
-            const target = event.target as HTMLElement;
-            if (target.matches('rect')) {
-                // calculate x coordinate within chart
-                const bounds = target.getBoundingClientRect();
-                this.mousemove(event.changedTouches[0].clientX - bounds.left, event.changedTouches[0].clientY - bounds.bottom);
             }
         });
     }
@@ -127,6 +117,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         }
     }
 
+    sliderManager(event) {
+        const target = event.target as HTMLElement;
+        if (target.matches('rect')) {
+            // prevent hammerjs swiping while on chart
+            event.srcEvent.stopPropagation();
+            // calculate x coordinate within chart
+            const bounds = target.getBoundingClientRect();
+            this.mousemove(event.center.x - bounds.left);
+        }
+    }
+
     setChartDimensions() {
         // default height of 250
         this.chartHeight = this.chart.height || 200;
@@ -163,7 +164,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     deleteChart() {
-        this.chartService.delete(this.chart).subscribe(resp => {
+        this.chartService.delete(this.chart).subscribe(() => {
             this.deleted.emit(this.chart);
         });
     }
@@ -283,7 +284,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 this.alertService.error(resp['error']);
             }
             this.buildChart();
-        }, err => {
+        }, () => {
             this.buildChart();
         });
     }
@@ -367,7 +368,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     toolTip(svg) {
         this.dropShadow(svg);
-        const lineHeight = 22;
+        // const lineHeight = 22;
         const focus = svg.append('g')
             .attr('transform', 'translate(' + -this.chartWidth + ',0)')
             .attr('class', 'focus g-' + this.chart.id)
@@ -488,7 +489,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         d3.select('g.focus.g-' + this.chart.id).style('display', 'none');
     }
 
-    mousemove(xcoord, bounds) {
+    mousemove(xcoord) {
         if (this.dataSets.length === 0) {
             return;
         }
