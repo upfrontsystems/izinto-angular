@@ -2,6 +2,14 @@
   margin-top: -0.5em;
 }
 
+.full-height {
+  height: calc(100vh - 190px);
+}
+
+mat-card.full-height mat-card-content {
+  height: 100%;
+}
+
 g.grid g.tick line {
   stroke: #ddd;
 }

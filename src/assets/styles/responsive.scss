@@ -46,6 +46,9 @@ File: scss
 }
 
 @media (max-width: 1023px) {
+  #dashboard .full-height {
+    height: calc(100vh - 120px);
+  }
   .card-group {
     margin: 15px 0;
     .mat-card {
@@ -130,6 +133,10 @@ File: scss
     .navbar-brand {
       padding-top: 0px;
     }
+  }
+
+  #dashboard .full-height {
+    height: calc(100vh - 80px);
   }
 
   #dashboard .mat-card {
