@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit {
     @Input() dataSources: DataSource[];
     @Input() dateViews: DashboardView[] = [];
     @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
+    @ViewChild('iframe') iframe;
     mobileQuery: MediaQueryList;
     canEdit = false;
     addedChart: Chart;
@@ -73,6 +74,19 @@ export class DashboardComponent implements OnInit {
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
         this.trustURL();
+        this.dashboardService.datesUpdated.subscribe((selection) => {
+            if (selection) {
+                if (this.iframe && this.iframe.nativeElement.contentWindow) {
+                    this.iframe.nativeElement.contentWindow.postMessage(selection, environment.scriptBaseURL);
+                }
+            }
+        });
+    }
+
+    @HostListener('window:message', ['$event']) onPostMessage(event) {
+        if (event.origin === environment.scriptBaseURL) {
+            console.log(event);
+        }
     }
 
     trustURL() {

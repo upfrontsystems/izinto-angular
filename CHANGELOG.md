@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 Issue Fixes
 =======
 * [#160](https://github.com/upfrontsystems/izinto-angular/issues/160) Refactor Dashboard to render HTML content
+* [#161](https://github.com/upfrontsystems/izinto-angular/issues/160) Secure communication between Dashboard and iframe
 
 ## 0.5
 Issue Fixes

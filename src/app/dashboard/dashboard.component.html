@@ -8,7 +8,7 @@
 
 <div fxLayout="row wrap" class="clear" id="dashboard">
     <div fxFlex="100" class="p-b-20">
-        <mat-card *ngIf="dashboard" [class]="dashboard.type == 'new' && 'full-height'">
+        <mat-card *ngIf="dashboard" [class]="dashboard.type == 'new' && 'full-height' || ''">
 
             <app-dashboard-date-selector [mobileQueryMatches]="mobileQuery.matches" [dateViews]="dateViews">
             </app-dashboard-date-selector>
@@ -30,7 +30,7 @@
                                 [dashboardId]="dashboardId" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
 
-                <iframe *ngIf="dashboard.type == 'new'" class="b-0" style="width: 100%; height: 100%" scrolling="yes"
+                <iframe #iframe *ngIf="dashboard.type == 'new'" class="b-0" style="width: 100%; height: 100%" scrolling="yes"
                         allowfullscreen id="dashboard-{{dashboard.id}}"
                         sandbox="allow-same-origin allow-scripts allow-downloads allow-popups allow-forms allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
                         [src]="contentURL"></iframe>
