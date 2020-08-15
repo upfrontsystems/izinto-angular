@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
-        this.trustURL()
+        this.trustURL();
     }
 
     trustURL() {
