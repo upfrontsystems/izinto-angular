@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit {
     canEdit = false;
     addedChart: Chart;
     addedSingleStat: SingleStat;
-    content: any;
     contentURL: SafeResourceUrl;
     fabButtons = [
         {
@@ -73,9 +72,12 @@ export class DashboardComponent implements OnInit {
     ngOnInit() {
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
+        this.trustURL()
+    }
+
+    trustURL() {
         const url = environment.scriptBaseURL + '/api/dashboard/' + this.dashboardId + '/content';
         this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-        this.content = this.sanitizer.bypassSecurityTrustHtml(this.dashboard.content);
     }
 
     editDashboard() {
@@ -87,8 +89,7 @@ export class DashboardComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.edited.emit(result);
-                this.content = this.sanitizer.bypassSecurityTrustHtml(result.content);
-                console.log(this.content);
+                this.trustURL();
             }
         });
     }
