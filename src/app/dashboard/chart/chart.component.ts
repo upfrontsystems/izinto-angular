@@ -296,15 +296,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         } else if (this.chart.type === 'Bar') {
             this.barChart(this.dataSets);
         } else if (this.chart.type === 'Wind Arrow') {
-            this.windArrows(this.dataSets);
+            this.windArrowChart(this.dataSets);
         } else {
             this.barChart(this.dataSets);
         }
     }
 
-    visibleSeries() {
+    visibleSeries(dataSets) {
         const hidden = this.hiddenSeries;
-        return this.dataSets.filter(function (e, i) {
+        return dataSets.filter(function (e, i) {
             return hidden.indexOf(i) === -1;
         });
     }
@@ -323,6 +323,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         }
         if (ymax === null) {
             ymax = d3Array.max<number>(dataset.map(d => d.value));
+        }
+
+        // add space below for arrows
+        if (this.chart.type === 'Wind Arrow') {
+            ymin -= 1;
         }
         if (ascending) {
             return d3Scale.scaleLinear().domain([ymin, ymax]).range([0, this.innerHeight]);
@@ -411,6 +416,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             labels = this.buildLegendLabels();
         let yOffset = this.chartHeight - 30 - this.legendHeight,
             xOffset = 0;
+        // prepend arrow colour to colours
+        if (this.chart.type === 'Wind Arrow') {
+            colors.unshift('black');
+        }
         for (let dix = 0; dix < this.dataSets.length; dix += 1) {
             const dataset = this.dataSets[dix];
             if (dataset.length === 0) {
@@ -623,7 +632,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     barChart(dataSet) {
-        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries())).sort((a, b) => a.date - b.date),
+        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
             yScale = this.yScale(merged),
             gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
@@ -739,11 +748,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     lineChart(dataSet) {
-
-        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries())).sort((a, b) => a.date - b.date),
-            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth),
-            xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged, false);
+        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
+            yScale = this.yScale(merged, false),
+            gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth),
+            xAxisScale = this.xAxisScale();
 
         const line = d3Shape.line<Record>()
             .x(function (d: any): number {
@@ -839,13 +847,37 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         }
 
     }
+    windArrowChart(dataset) {
+        // if there are two data sets in the result, we assume the second dataset is the wind speed
+        if (dataset.length === 2) {
+            this.lineChart([dataset[1]]);
+        } else {
+            this.lineChart(dataset);
+        }
+        dataset = dataset[0];
+
+        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
+        svg.remove();
+        svg = d3.select('svg.chart-' + this.chart.id)
+            .append('g')
+            .attr('class', 'wind-arrows')
+            .attr('transform', 'translate(' + this.margin.left + ',0)');
+
+        const arrowScale = this.xAxisScale();
+
+        for (let i = 0; i < dataset.length; i++) {
+            const arrowX = arrowScale(dataset[i].date),
+                arrowWidth = this.barWidth();
+            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
+        }
+    }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
         const xint = arrowX,
             x = xint.toString(),
             x_min_3 = (xint - 3).toString(),
-            x_min_2 = (xint - 2).toString(),
-            x_plus_3 = (xint + 3).toString();
+            x_plus_3 = (xint + 3).toString(),
+            position = this.chartHeight - this.margin.bottom - 18;
         let d = '',
             arrowStart = 0;
 
@@ -863,33 +895,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             .attr('fill', 'black')
             .attr('stroke', 'black')
             .attr('stroke-width', '2px')
-            .attr('transform', 'translate(' + arrowStart + ',130) rotate(' + direction + ', ' + x + ', 7.5)');
-    }
-
-    windArrows(dataset) {
-        // if there are two data sets in the result, we assume the second dataset is the wind speed
-        if (dataset.length === 2) {
-            this.barChart([dataset[1]]);
-        } else {
-            this.barChart(dataset);
-        }
-        if (dataset.length) {
-            dataset = dataset[0];
-        }
-
-        let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
-        svg.remove();
-        svg = d3.select('svg.chart-' + this.chart.id)
-            .append('g')
-            .attr('class', 'wind-arrows')
-            .attr('transform', 'translate(' + this.margin.left + ',0)');
-
-        const arrowScale = this.xAxisScale();
-
-        for (let i = 0; i < dataset.length; i++) {
-            const arrowX = arrowScale(dataset[i].date),
-                arrowWidth = this.barWidth();
-            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
-        }
+            .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ', ' + x + ', 7.5)');
     }
 }
