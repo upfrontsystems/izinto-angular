@@ -19,10 +19,7 @@ button.active {
     font-family: inherit;
     padding-left: 0 !important;
     padding-right: 0 !important;
-}
-
-.date-range-picker {
-    width: min-content;
+    text-align: center;
 }
 
 /* smaller date nagivate selector for mobile */

@@ -7,15 +7,15 @@
     </mat-toolbar-row>
     <mat-toolbar-row fxFlex="auto" fxFlex.xs="100" fxLayoutAlign="center center" class="date-navigator font-18">
         <button mat-icon-button (click)="updateDateCounter(1)">
-            <mat-icon>keyboard_arrow_left</mat-icon>
+            <mat-icon class="pull-right">keyboard_arrow_left</mat-icon>
         </button>
-        <input type="text" matInput ngxDaterangepickerMd [readonly]="!mobileQueryMatches"
+        <input type="text" matInput ngxDaterangepickerMd [readonly]="!mobileQueryMatches" #datePicker
                [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
                timePicker="true" [timePicker24Hour]="!mobileQueryMatches" [maxDate]="today"
-               [autoApply]="false" (ngModelChange)="updateRange($event)"
-               class="form-control date-range-picker"/>
+               [autoApply]="false" (ngModelChange)="updateRange($event)" [size]="datePicker.value?.length || 1"
+               class="form-control"/>
         <button mat-icon-button (click)="updateDateCounter(-1)">
-            <mat-icon>keyboard_arrow_right</mat-icon>
+            <mat-icon class="pull-left">keyboard_arrow_right</mat-icon>
         </button>
     </mat-toolbar-row>
 </mat-expansion-panel>
