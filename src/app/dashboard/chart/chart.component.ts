@@ -325,9 +325,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             ymax = d3Array.max<number>(dataset.map(d => d.value));
         }
 
-        // add space below for arrows
+        // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
-            ymin -= 1;
+            const pixelHeight = this.margin.bottom;
+            const scale = ymax - ymin;
+            ymin = ymin - scale * pixelHeight / this.chartHeight;
         }
         if (ascending) {
             return d3Scale.scaleLinear().domain([ymin, ymax]).range([0, this.innerHeight]);
@@ -634,8 +636,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     barChart(dataSet) {
         const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged),
-            gridLines = d3Axis.axisLeft(this.yScale(merged, false)).ticks(4).tickSize(-this.innerWidth);
+            yScale = this.yScale(merged, false),
+            gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth);
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -877,7 +879,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             x = xint.toString(),
             x_min_3 = (xint - 3).toString(),
             x_plus_3 = (xint + 3).toString(),
-            position = this.chartHeight - this.margin.bottom - 18;
+            position = this.chartHeight - (this.margin.bottom * 1.35);
         let d = '',
             arrowStart = 0;
 

@@ -15,7 +15,6 @@ button.active {
     background-color: inherit;
     cursor: pointer;
     border: none;
-    padding-bottom: 0.5em;
     font-family: inherit;
     padding-left: 0 !important;
     padding-right: 0 !important;
