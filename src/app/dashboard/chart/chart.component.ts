@@ -868,6 +868,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         const arrowScale = this.xAxisScale();
 
         for (let i = 0; i < dataset.length; i++) {
+            // skip every third arrow on smaller screens
+            if (this.windowWidth < 500 && (i % 3)) {
+                continue;
+            }
             const arrowX = arrowScale(dataset[i].date),
                 arrowWidth = this.barWidth();
             this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
