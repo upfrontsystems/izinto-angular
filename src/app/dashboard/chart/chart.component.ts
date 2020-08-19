@@ -1,5 +1,5 @@
-import {Component, EventEmitter, HostListener, Input, OnInit, OnDestroy, Output} from '@angular/core';
-import {AutoGroupBy, Chart, GroupByValues} from '../../_models/chart';
+import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {AutoGroupBy, Chart, GroupBy} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
 import {Record} from '../../_models/record';
@@ -35,6 +35,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     public windowWidth: any;
     hiddenSeries = [];
+    datesUpdated: Subscription;
+    groupByValues = {};
     private dataSets = [];
     private scales = [];
     private chartHeight = 250;
@@ -43,7 +45,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     private innerHeight = 0;
     private legendHeight = 30;
     private margin = {top: 50, right: 10, bottom: 20, left: 40};
-    datesUpdated: Subscription;
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -86,6 +87,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     ngOnInit() {
+        this.buildGroupByValues();
         // Initialise transition
         d3Trans.transition().duration(750);
         this.dateSelection = this.dashboardService.getDateSelection();
@@ -115,6 +117,20 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (this.datesUpdated) {
             this.datesUpdated.unsubscribe();
         }
+    }
+
+    // calculate seconds value of query group by values
+    buildGroupByValues() {
+        const secondsPerUnit = {'s': 1, 'm': 60, 'h': 60 * 60, 'd': 60 * 60 * 24};
+        for (const group of GroupBy) {
+            if (group === 'auto') {
+                continue;
+            }
+            const number = +(group.match(/\d+/g)[0]);
+            const unit = group.match(/[a-zA-Z]+/g)[0];
+            this.groupByValues[group] = number * secondsPerUnit[unit];
+        }
+        this.groupByValues['30d'] = 30 * secondsPerUnit['d'];
     }
 
     sliderManager(event) {
@@ -232,7 +248,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
             if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
                 // a result can have multiple series, each series is a separate dataset
-                const groupByValue = GroupByValues[this.groupByForView(this.chart.group_by)],
+                const groupByValue = this.groupByValues[this.groupByForView(this.chart.group_by)],
                     seriesList = resp['results'][0]['series'];
                 for (const series of seriesList) {
                     const datasets = [];
@@ -327,7 +343,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
-            const pixelHeight = this.margin.bottom;
+            const pixelHeight = this.margin.bottom * 0.9;
             const scale = ymax - ymin;
             ymin = ymin - scale * pixelHeight / this.chartHeight;
         }
@@ -409,7 +425,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             .attr('pointer-events', 'all');
     }
 
-    legend(svg) {
+    addLegend(svg) {
         svg.selectAll('g.legend').remove();
         const legendGroup = svg.append('g')
                 .attr('class', 'legend g-' + this.chart.id),
@@ -457,21 +473,21 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('height', '2')
                 .attr('fill', rectFill);
             const label = seriesLegend.append('text')
-                    .style('font-weight', '400')
-                    .attr('class', 'legend-label dataset-' + dix)
-                    .attr('x', xOffset + rectWidth + padding)
+                .style('font-weight', '400')
+                .attr('class', 'legend-label dataset-' + dix)
+                .attr('x', xOffset + rectWidth + padding)
+                .attr('y', yOffset)
+                .attr('fill', textFill)
+                .text(fieldName + ': ');
+            if (label.node()) {
+                const bBox = (label.node() as SVGSVGElement).getBBox();
+                seriesLegend.append('text')
+                    .style('font-weight', '600')
+                    .attr('class', 'legend-value dataset-' + dix)
+                    .attr('x', bBox.x + bBox.width + padding)
                     .attr('y', yOffset)
-                    .attr('fill', textFill)
-                    .text(fieldName + ': ');
-             if (label.node()) {
-                 const bBox = (label.node() as SVGSVGElement).getBBox();
-                 seriesLegend.append('text')
-                     .style('font-weight', '600')
-                     .attr('class', 'legend-value dataset-' + dix)
-                     .attr('x', bBox.x + bBox.width + padding)
-                     .attr('y', yOffset)
-                     .attr('fill', textFill);
-             }
+                    .attr('fill', textFill);
+            }
             xOffset += legendWidth;
         }
     }
@@ -490,6 +506,39 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             return mapping;
         }
         return labels.split(',');
+    }
+
+    // add grid to chart
+    addGrid(svg, yScale) {
+        const gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth);
+
+        svg.selectAll('g.grid > *').remove();
+        svg.select('g.grid')
+            .call(gridLines)
+            .call(g => g.selectAll('.tick line')
+                .attr('stroke-opacity', 0.5)
+                .attr('stroke-dasharray', '2,2'))
+            .call(g => g.selectAll('.tick text')
+                .attr('x', -20))
+            .call(g => g.select('.domain')
+                .remove());
+    }
+
+    // add x axis labels
+    addXAxis(svg, xAxisScale) {
+        const interval = this.calcTickCount(this.innerWidth),
+            tickFormat = this.tickFormat();
+
+        svg.selectAll('g.x-axis').remove();
+        svg.append('g')
+            .attr('class', 'x-axis')
+            .attr('transform', 'translate(0,' + this.innerHeight + ')')
+            .call(d3Axis.axisBottom(xAxisScale)
+                .ticks(interval)
+                .tickFormat(function (d: any) {
+                    return tickFormat(d);
+                })
+            );
     }
 
     mouseover() {
@@ -586,7 +635,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     calcTickCount(width) {
         const interval = width / 50;
         let dayCount = (this.dateSelection.endDate.getTime() - this.dateSelection.startDate.getTime()) /
-            GroupByValues[AutoGroupBy[this.dateSelection.view]] / 1000;
+            this.groupByValues[AutoGroupBy[this.dateSelection.view]] / 1000;
         if (this.dateSelection.view === 'Hour') {
             return interval;
             // show monthly intervals for year
@@ -622,7 +671,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     barWidth() {
         const groupBy = this.groupByForView(this.chart.group_by),
-            groupByValue = GroupByValues[groupBy],
+            groupByValue = this.groupByValues[groupBy],
             xAxisScale = this.xAxisScale(),
             tickTime = new Date(this.dateSelection.startDate);
         tickTime.setTime(this.dateSelection.startDate.getTime() + groupByValue * 1000);
@@ -636,8 +685,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     barChart(dataSet) {
         const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged, false),
-            gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth);
+            yScale = this.yScale(merged, false);
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -669,7 +717,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('height', this.chartHeight - this.margin.bottom);
         }
 
-        this.legend(svg);
+        this.addLegend(svg);
         svg.selectAll('text.section-label').remove();
         svg.append('text')
             .attr('class', 'section-label')
@@ -679,30 +727,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             .attr('fill', 'black')
             .text(this.chart.title);
 
-        svg.selectAll('g.x-axis').remove();
-        svg.selectAll('g.grid > *').remove();
-        const interval = this.calcTickCount(this.innerWidth),
-            tickFormat = this.tickFormat();
-        svg.append('g')
-            .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + this.innerHeight + ')')
-            .call(d3Axis.axisBottom(xAxisScale)
-                .ticks(interval)
-                .tickFormat(function (d: any) {
-                    return tickFormat(d);
-                })
-            );
-        svg.select('g.grid')
-            .call(gridLines)
-            .call(g => g.selectAll('.tick line')
-                .attr('x1', 10)
-                .attr('stroke-opacity', 0.5)
-                .attr('stroke-dasharray', '2,2'))
-            .call(g => g.selectAll('.tick text')
-                .attr('x', -10)
-                .attr('dy', -4))
-            .call(g => g.select('.domain')
-                .remove());
+        // add x axis
+        this.addXAxis(svg, xAxisScale);
+        // add grid
+        this.addGrid(svg, yScale);
 
         const fillFunc = this.chart.fillFunc,
             color = this.chart.color,
@@ -752,7 +780,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     lineChart(dataSet) {
         const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
             yScale = this.yScale(merged, false),
-            gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth),
             xAxisScale = this.xAxisScale();
 
         const line = d3Shape.line<Record>()
@@ -817,38 +844,20 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 }
             }
         });
-        this.legend(svg);
-        const interval = this.calcTickCount(this.innerWidth);
-        const tickFormat = this.tickFormat();
 
-        svg.selectAll('g.x-axis').remove();
-        svg.selectAll('g.grid > *').remove();
-        svg.append('g')
-            .attr('class', 'x-axis')
-            .attr('transform', 'translate(0,' + this.innerHeight + ')')
-            .call(d3Axis.axisBottom(xAxisScale)
-                .ticks(interval)
-                .tickFormat(function (d: any) {
-                    return tickFormat(d);
-                })
-            );
-        svg.select('g.grid')
-            .call(gridLines)
-            .call(g => g.selectAll('.tick line')
-                .attr('x1', 10)
-                .attr('stroke-opacity', 0.5)
-                .attr('stroke-dasharray', '2,2'))
-            .call(g => g.selectAll('.tick text')
-                .attr('x', -10)
-                .attr('dy', -4))
-            .call(g => g.select('.domain')
-                .remove());
+        // add legend
+        this.addLegend(svg);
+        // add x axis
+        this.addXAxis(svg, xAxisScale);
+        // add grid
+        this.addGrid(svg, yScale);
 
         if (create && dataSet.length > 0) {
             this.toolTip(d3.select('svg.chart-' + this.chart.id));
         }
 
     }
+
     windArrowChart(dataset) {
         // if there are two data sets in the result, we assume the second dataset is the wind speed
         if (dataset.length === 2) {
@@ -866,15 +875,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             .attr('transform', 'translate(' + this.margin.left + ',0)');
 
         const arrowScale = this.xAxisScale();
-
+        const arrowWidth = this.barWidth();
+        const minArrowWidth = 20;
+        let previousArrow = 0;
         for (let i = 0; i < dataset.length; i++) {
-            // skip every third arrow on smaller screens
-            if (this.windowWidth < 500 && (i % 3)) {
+            const arrowX = arrowScale(dataset[i].date);
+            if (previousArrow > arrowX) {
                 continue;
             }
-            const arrowX = arrowScale(dataset[i].date),
-                arrowWidth = this.barWidth();
             this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
+            previousArrow = arrowX + minArrowWidth;
         }
     }
 
@@ -889,10 +899,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         if (arrowWidth <= 20) {
             d = 'M' + x + ',10L' + x + ',5L' + x_min_3 + ',5L' + x + ',1L' + x_plus_3 + ',5L' + x + ',5';
-            arrowStart = 6 + (arrowWidth / 2.0 - 10);
+            arrowStart = 16 + (arrowWidth / 2.0 - 10);
         } else {
             d = 'M' + x + ',15L' + x + ',5L' + x_min_3 + ',5L' + x + ',1L' + x_plus_3 + ',5L' + x + ',5';
-            arrowStart = 6 + (arrowWidth / 2.0 - 5);
+            arrowStart = 16 + (arrowWidth / 2.0 - 5);
         }
 
         svg.append('path')
