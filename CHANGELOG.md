@@ -71,3 +71,4 @@ Issue Fixes
 * [#154](https://github.com/upfrontsystems/izinto-angular/issues/154) use hammerjs TouchInput to fix swipe action breaking
 * [#159](https://github.com/upfrontsystems/izinto-angular/issues/159) Fix date text cut off
 * [#32](https://github.com/upfrontsystems/izinto-angular/issues/32) Update wind arrow chart display
+* [#33](https://github.com/upfrontsystems/izinto-angular/issues/33) Handle multiple queries in one chart

@@ -246,54 +246,60 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         query = this.formatQuery(query, this.chart.group_by, this.chart.data_source);
 
         this.dataSourceService.loadDataQuery(this.chart.data_source_id, query).subscribe(resp => {
-            if (resp['results'] && resp['results'][0].hasOwnProperty('series')) {
-                // a result can have multiple series, each series is a separate dataset
-                const groupByValue = this.groupByValues[this.groupByForView(this.chart.group_by)],
-                    seriesList = resp['results'][0]['series'];
-                for (const series of seriesList) {
-                    const datasets = [];
-                    let tag;
-                    if (seriesList.length > 1) {
-                        const tags = Object.keys(series['tags']).map(function (key) {
-                            return series['tags'][key];
-                        });
-                        tag = tags[0];
+            if (resp['results']) {
+                const groupByValue = this.groupByValues[this.groupByForView(this.chart.group_by)];
+                // iterate through results of multiple queries
+                for (const queryResult of resp['results']) {
+                    // a result can have multiple series, each series is a separate dataset
+                    if (!queryResult.hasOwnProperty('series')) {
+                        continue;
                     }
+                    const seriesList = queryResult['series'];
+                    for (const series of seriesList) {
+                        const datasets = [];
+                        let tag;
+                        if (seriesList.length > 1) {
+                            const tags = Object.keys(series['tags']).map(function (key) {
+                                return series['tags'][key];
+                            });
+                            tag = tags[0];
+                        }
 
-                    for (const record of series['values']) {
-                        const date = new Date(record[0]);
-                        if (date < this.dateSelection.startDate || date > this.dateSelection.endDate) {
-                            continue;
+                        for (const record of series['values']) {
+                            const date = new Date(record[0]);
+                            if (date < this.dateSelection.startDate || date > this.dateSelection.endDate) {
+                                continue;
+                            }
+                            // Add timezone offset if group by is greater than 1 hour
+                            if (groupByValue > 3600) {
+                                const timeOffsetInMS = date.getTimezoneOffset() * 60000;
+                                date.setTime(date.getTime() + timeOffsetInMS);
+                            }
+                            const values = record.splice(1);
+                            // a record can have multiple values which must be unpacked into different data sets
+                            values.forEach((val, index) => {
+                                if (datasets[index] === undefined) {
+                                    datasets[index] = [];
+                                }
+                                const rec = new Record();
+                                rec.date = date;
+                                rec.unit = this.chart.unit || '';
+                                if (tag) {
+                                    rec.fieldName = series['columns'][index + 1] + ': ' + tag;
+                                } else {
+                                    rec.fieldName = series['columns'][index + 1];
+                                }
+                                rec.value = val;
+                                rec.header = tag || rec.fieldName;
+                                if (val !== null) {
+                                    datasets[index].push(rec);
+                                }
+                            });
                         }
-                        // Add timezone offset if group by is greater than 1 hour
-                        if (groupByValue > 3600) {
-                            const timeOffsetInMS = date.getTimezoneOffset() * 60000;
-                            date.setTime(date.getTime() + timeOffsetInMS);
+                        for (const dataset of datasets) {
+                            dataset.sort();
+                            this.dataSets.push(dataset);
                         }
-                        const values = record.splice(1);
-                        // a record can have multiple values which must be unpacked into different data sets
-                        values.forEach((val, index) => {
-                            if (datasets[index] === undefined) {
-                                datasets[index] = [];
-                            }
-                            const rec = new Record();
-                            rec.date = date;
-                            rec.unit = this.chart.unit || '';
-                            if (tag) {
-                                rec.fieldName = series['columns'][index + 1] + ': ' + tag;
-                            } else {
-                                rec.fieldName = series['columns'][index + 1];
-                            }
-                            rec.value = val;
-                            rec.header = tag || rec.fieldName;
-                            if (val !== null) {
-                                datasets[index].push(rec);
-                            }
-                        });
-                    }
-                    for (const dataset of datasets) {
-                        dataset.sort();
-                        this.dataSets.push(dataset);
                     }
                 }
             } else if (resp['error']) {
@@ -430,7 +436,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         const legendGroup = svg.append('g')
                 .attr('class', 'legend g-' + this.chart.id),
             chart = this,
-            colors = this.chart.color.split(','),
+            colors = (this.chart.color || '').split(','),
             labels = this.buildLegendLabels();
         let yOffset = this.chartHeight - 30 - this.legendHeight,
             xOffset = 0;
@@ -462,7 +468,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                     chart.toggleSeries(this);
                 });
             let textFill = 'black',
-                rectFill = colors[dix];
+                rectFill = colors[dix] || 'black';
             if (this.hiddenSeries.indexOf(dix) > -1) {
                 textFill = rectFill = 'lightgray';
             }
@@ -733,7 +739,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.addGrid(svg, yScale);
 
         const fillFunc = this.chart.fillFunc,
-            color = this.chart.color,
+            colors = (this.chart.color || '').split(','),
             height = this.innerHeight;
         dataSet.forEach((dataset, index) => {
             const bar_selector = 'dataset-' + index,
@@ -758,7 +764,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                         if (fillFunc) {
                             return fillFunc(d.value);
                         } else {
-                            return color.split(',')[index];
+                            return colors[index] || 'black';
                         }
                     });
                 update.transition()
@@ -793,7 +799,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g');
         const create = svg.empty(),
-            trans: any = 1000;
+            trans: any = 1000,
+            colors = (this.chart.color || '').split(',');
         if (create) {
             d3.select('div.d3-chart.chart-container-' + this.chart.id)
                 .append('div').attr('class', 'svg-container chart-' + this.chart.id);
@@ -828,7 +835,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                     linechart.append('path')
                         .datum(dataset)
                         .attr('fill', 'none')
-                        .style('stroke', this.chart.color.split(',')[index])
+                        .style('stroke', colors[index] || 'black')
                         .style('stroke-width', '2px')
                         .attr('class', 'line')
                         .attr('d', line);
