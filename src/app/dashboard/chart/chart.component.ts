@@ -296,6 +296,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                                 }
                             });
                         }
+
+                        // if there is only one record in this dataset exclude it
+                        if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
+                            continue;
+                        }
                         for (const dataset of datasets) {
                             dataset.sort();
                             this.dataSets.push(dataset);
