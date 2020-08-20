@@ -153,15 +153,35 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         } else {
             this.chartWidth = this.windowWidth - 30;
         }
+        this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
 
-        // we assume a maximum legend width of 250px;
-        const legendsPerRow = this.chartWidth / 250,
-            legendRows = Math.ceil(this.dataSets.length / legendsPerRow);
+        // calculate number of legend rows
+        const labels = this.buildLegendLabels();
+        let legendRows = 1,
+            xOffset = 0;
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            const dataset = this.dataSets[dix];
+            if (dataset.length === 0) {
+                continue;
+            }
+            const header = dataset[0].header,
+                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
+                rectWidth = 10,
+                recordValueWidth = 7 * 10 + (this.chart.unit || '').length * 10 + this.chart.decimals * 10,
+                labelWidth = fieldName.length * 10,
+                legendWidth = rectWidth + labelWidth + recordValueWidth;
+
+            xOffset += legendWidth;
+            // count next row
+            if ((dix < this.dataSets.length - 1) && (xOffset + legendWidth) > this.innerWidth) {
+                xOffset = 0;
+                legendRows += 1;
+            }
+        }
+
         this.legendHeight = legendRows * 30;
         this.chartHeight += this.legendHeight;
         this.margin.bottom = 20 + this.legendHeight;
-
-        this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
     }
 
@@ -458,14 +478,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header);
             const padding = 5,
                 rectWidth = 10,
-                recordValueWidth = 15 * 10,
+                recordValueWidth = 7 * 10 + (this.chart.unit || '').length * 10 + this.chart.decimals * 10,
                 labelWidth = fieldName.length * 10,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
-            // wrap to next line if legend does not fit
-            if (xOffset + legendWidth > this.innerWidth) {
-                xOffset = 0;
-                yOffset += 22;
-            }
             const seriesLegend = legendGroup.append('g')
                 .attr('class', 'series-legend')
                 .attr('series-index', dix)
@@ -500,6 +515,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                     .attr('fill', textFill);
             }
             xOffset += legendWidth;
+            // wrap to next line if legend does not fit
+            if ((xOffset + legendWidth) > this.innerWidth) {
+                xOffset = 0;
+                yOffset += 22;
+            }
         }
     }
 
