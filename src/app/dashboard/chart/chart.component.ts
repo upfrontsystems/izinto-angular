@@ -639,7 +639,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     calcTickCount(width) {
-        const interval = width / 50;
+        const interval = width / 100;
         let dayCount = (this.dateSelection.endDate.getTime() - this.dateSelection.startDate.getTime()) /
             this.groupByValues[AutoGroupBy[this.dateSelection.view]] / 1000;
         if (this.dateSelection.view === 'Hour') {
