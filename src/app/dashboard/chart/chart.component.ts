@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
 import {AutoGroupBy, Chart, GroupBy} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
@@ -28,9 +28,10 @@ import {Subscription} from 'rxjs';
     templateUrl: './chart.component.html',
     styleUrls: ['./../dashboard.component.scss']
 })
-export class ChartComponent extends QueryBaseComponent implements OnInit, OnDestroy {
+export class ChartComponent extends QueryBaseComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() chart: Chart;
+    @Input() sliderCoordinates: number;
     @Output() edited: EventEmitter<Chart> = new EventEmitter();
     @Output() deleted: EventEmitter<Chart> = new EventEmitter();
     public windowWidth: any;
@@ -119,6 +120,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         }
     }
 
+    ngOnChanges(changes) {
+        // listen for changes in the slider and update the tooltip
+        if (changes.sliderCoordinates && changes.sliderCoordinates.currentValue !== undefined) {
+            this.mousemove(changes.sliderCoordinates.currentValue);
+        }
+    }
+
     // calculate seconds value of query group by values
     buildGroupByValues() {
         const secondsPerUnit = {'s': 1, 'm': 60, 'h': 60 * 60, 'd': 60 * 60 * 24};
@@ -131,17 +139,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             this.groupByValues[group] = number * secondsPerUnit[unit];
         }
         this.groupByValues['30d'] = 30 * secondsPerUnit['d'];
-    }
-
-    sliderManager(event) {
-        const target = event.target as HTMLElement;
-        if (target.matches('rect')) {
-            // prevent hammerjs swiping while on chart
-            event.srcEvent.stopPropagation();
-            // calculate x coordinate within chart
-            const bounds = target.getBoundingClientRect();
-            this.mousemove(event.center.x - bounds.left);
-        }
     }
 
     setChartDimensions() {

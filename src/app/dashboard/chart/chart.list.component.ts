@@ -18,6 +18,7 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     @Input() dashboardId: number;
     @Input() addedChart: Chart;
     charts: Chart[] = [];
+    sliderCoordinates: number;
 
     constructor(protected alertService: AlertService,
                 protected authService: AuthenticationService,
@@ -83,5 +84,18 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
             this.charts = [];
             this.getCharts();
         });
+    }
+
+    sliderManager(event) {
+        console.log(event);
+        const target = event.target as HTMLElement;
+        if (target.matches('rect')) {
+            // prevent hammerjs swiping while on chart
+            event.srcEvent.stopPropagation();
+            // calculate x coordinate within chart
+            const bounds = target.getBoundingClientRect();
+            // update coordinates watched by chart
+            this.sliderCoordinates = event.center.x - bounds.left;
+        }
     }
 }
