@@ -87,7 +87,6 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     }
 
     sliderManager(event) {
-        console.log(event);
         const target = event.target as HTMLElement;
         if (target.matches('rect')) {
             // prevent hammerjs swiping while on chart
