@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
@@ -16,6 +16,7 @@ import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {environment} from '../../environments/environment';
+import {DataSourceService} from '../_services/data.source.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -64,7 +65,8 @@ export class DashboardComponent implements OnInit {
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
-                protected dashboardService: DashboardService) {
+                protected dashboardService: DashboardService,
+                protected dataSourceService: DataSourceService) {
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
@@ -85,8 +87,19 @@ export class DashboardComponent implements OnInit {
 
     @HostListener('window:message', ['$event']) onPostMessage(event) {
         if (event.origin === environment.scriptBaseURL) {
-            console.log(event);
+            const data = event.data;
+            if (data.query) {
+                this.loadDataSet(data.query.query_id, data.query.datasource_id, data.query.query_string);
+            }
         }
+    }
+
+    // load query and return result to iframe
+    loadDataSet(queryId, dataSource, query) {
+        this.dataSourceService.loadDataQuery(dataSource, query).subscribe(resp => {
+            const result = {result:  {query_id: queryId, results: resp['results'] }};
+            this.iframe.nativeElement.contentWindow.postMessage(result, environment.scriptBaseURL);
+        });
     }
 
     trustURL() {

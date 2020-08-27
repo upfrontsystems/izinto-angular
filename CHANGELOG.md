@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.7
+Issue Fixes
+=======
+* [#164](https://github.com/upfrontsystems/izinto-angular/issues/164) allow queries from iframe
+
+
 ## 0.6
 Issue Fixes
 =======
+* [#154](https://github.com/upfrontsystems/izinto-angular/issues/154) use hammerjs TouchInput to fix swipe action breaking
+* [#159](https://github.com/upfrontsystems/izinto-angular/issues/159) Fix date text cut off
+* [#32](https://github.com/upfrontsystems/izinto-angular/issues/32) Update wind arrow chart display
+* [#33](https://github.com/upfrontsystems/izinto-angular/issues/33) Handle multiple queries in one chart
 * [#160](https://github.com/upfrontsystems/izinto-angular/issues/160) Refactor Dashboard to render HTML content
 * [#161](https://github.com/upfrontsystems/izinto-angular/issues/160) Secure communication between Dashboard and iframe
 
@@ -64,11 +74,3 @@ Issue Fixes
 * [#130](https://github.com/upfrontsystems/izinto-angular/issues/130) Remove dashboard settings and variables components
 * [#142](https://github.com/upfrontsystems/izinto-angular/issues/142) Use chart data for csv download
 * [#118](https://github.com/upfrontsystems/izinto-angular/issues/118) Add swiping to dashboards
-
-## 0.6
-Issue Fixes
-=======
-* [#154](https://github.com/upfrontsystems/izinto-angular/issues/154) use hammerjs TouchInput to fix swipe action breaking
-* [#159](https://github.com/upfrontsystems/izinto-angular/issues/159) Fix date text cut off
-* [#32](https://github.com/upfrontsystems/izinto-angular/issues/32) Update wind arrow chart display
-* [#33](https://github.com/upfrontsystems/izinto-angular/issues/33) Handle multiple queries in one chart
