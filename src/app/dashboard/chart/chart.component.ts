@@ -55,7 +55,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 private copyService: CopyService,
                 protected chartService: ChartService,
                 private mouseListener: MouseListenerDirective) {
-        super(alertService, authService, dashboardService);
+        super(authService, dashboardService);
         // update marker line on all charts
         mouseListener.move.subscribe(event => {
             const target = event.target as HTMLElement;

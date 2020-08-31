@@ -3,7 +3,6 @@ import {Chart} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {QueryBaseComponent} from '../query.base.component';
 import {AuthenticationService} from '../../_services/authentication.service';
-import {AlertService} from '../../_services/alert.service';
 import {DashboardService} from '../../_services/dashboard.service';
 
 @Component({
@@ -20,11 +19,10 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
     charts: Chart[] = [];
     sliderCoordinates: number;
 
-    constructor(protected alertService: AlertService,
-                protected authService: AuthenticationService,
+    constructor(protected authService: AuthenticationService,
                 protected chartService: ChartService,
                 protected dashboardService: DashboardService) {
-        super(alertService, authService, dashboardService);
+        super(authService, dashboardService);
     }
 
     ngOnChanges(changes) {

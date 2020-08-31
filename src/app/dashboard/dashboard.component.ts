@@ -17,13 +17,15 @@ import {CopyService} from '../_services/copy.service';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {environment} from '../../environments/environment';
 import {DataSourceService} from '../_services/data.source.service';
+import {QueryBaseComponent} from './query.base.component';
+import {AlertService} from '../_services/alert.service';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
     @Input() dashboardId: number;
     @Input() dashboard: Dashboard;
@@ -59,6 +61,7 @@ export class DashboardComponent implements OnInit {
 
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
+                protected alertService: AlertService,
                 private sanitizer: DomSanitizer,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
@@ -67,17 +70,21 @@ export class DashboardComponent implements OnInit {
                 protected copyService: CopyService,
                 protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService) {
+        super(authService, dashboardService);
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit() {
+        this.variables = this.dashboard.variables;
+        this.dateSelection = this.dashboardService.getDateSelection();
         // only admin can add and edit charts
         this.canEdit = this.authService.hasRole('Administrator');
         this.trustURL();
         this.dashboardService.datesUpdated.subscribe((selection) => {
             if (selection) {
+                this.dateSelection = selection;
                 if (this.iframe && this.iframe.nativeElement.contentWindow) {
                     const data = {type: 'date_range_updated', message: selection};
                     this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
@@ -97,6 +104,7 @@ export class DashboardComponent implements OnInit {
 
     // load query and return result to iframe
     loadDataSet(queryId, dataSource, query) {
+        query = this.formatQuery(query, [], null);
         this.dataSourceService.loadDataQuery(dataSource, query).subscribe(resp => {
             const result = {result:  {query_id: queryId, results: resp['results'] }};
             const data = {type: 'result', message: result};

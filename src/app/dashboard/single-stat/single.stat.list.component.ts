@@ -34,7 +34,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
                 protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService,
                 protected singleStatService: SingleStatService) {
-        super(alertService, authService, dashboardService);
+        super(authService, dashboardService);
     }
 
     ngOnChanges(changes) {

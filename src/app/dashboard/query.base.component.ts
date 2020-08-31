@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import {Variable} from '../_models/variable';
 import {DataSource} from '../_models/data.source';
 import {AuthenticationService} from '../_services/authentication.service';
-import {AlertService} from '../_services/alert.service';
 import {AutoGroupBy} from '../_models/chart';
 import {DashboardService} from '../_services/dashboard.service';
 import {DashboardView} from '../_models/dashboard_view';
@@ -19,8 +18,7 @@ export class QueryBaseComponent {
     canEdit = false;
     dateSelection: DateSelection = new DateSelection();
 
-    constructor(protected alertService: AlertService,
-                protected authService: AuthenticationService,
+    constructor(protected authService: AuthenticationService,
                 protected dashboardService: DashboardService) {
     }
 
