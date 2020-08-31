@@ -79,7 +79,8 @@ export class DashboardComponent implements OnInit {
         this.dashboardService.datesUpdated.subscribe((selection) => {
             if (selection) {
                 if (this.iframe && this.iframe.nativeElement.contentWindow) {
-                    this.iframe.nativeElement.contentWindow.postMessage(selection, environment.scriptBaseURL);
+                    const data = {type: 'date_range_updated', message: selection};
+                    this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
                 }
             }
         });
@@ -98,7 +99,8 @@ export class DashboardComponent implements OnInit {
     loadDataSet(queryId, dataSource, query) {
         this.dataSourceService.loadDataQuery(dataSource, query).subscribe(resp => {
             const result = {result:  {query_id: queryId, results: resp['results'] }};
-            this.iframe.nativeElement.contentWindow.postMessage(result, environment.scriptBaseURL);
+            const data = {type: 'result', message: result};
+            this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
         });
     }
 
@@ -109,7 +111,7 @@ export class DashboardComponent implements OnInit {
 
     editDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '600px',
+            width: '800px',
             data: {dashboard: this.dashboard}
         });
 

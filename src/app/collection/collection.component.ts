@@ -64,7 +64,7 @@ export class CollectionComponent implements OnInit {
 
     addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '600px',
+            width: '800px',
             data: {dashboard: {collection_id: this.collection.id, users: [], variables: []}}
         });
 
