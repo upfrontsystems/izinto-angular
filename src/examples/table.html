@@ -1,0 +1,121 @@
+<!-- example of d3 table displaying query results -->
+
+<!--suppress SqlDialectInspection, SqlNoDataSourceInspection -->
+<html>
+
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+<!-- CSS Reset -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+<!-- Milligram CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+<style>
+    th {
+        text-transform: capitalize;
+    }
+
+    table {
+        width: 90%;
+    }
+
+    .arrow {
+        float: right;
+        color: black;
+    }
+
+</style>
+
+<body>
+<script type="module">
+    import 'https://d3js.org/d3-fetch.v1.min.js';
+    import 'https://d3js.org/d3-selection.v1.min.js';
+
+    var query = {
+        'query':
+            {
+                'query_id': 5,
+                'datasource_id': 1,
+                'query_string': `SELECT mean("temperature") AS "Temperature", mean("wind") AS "Wind speed", mean("windDirection") AS "Wind Direction", mean("humidity") AS "Humidity" FROM "izintorain"."autogen"."measurement" WHERE
+         ("dev_id" ='1406300003') AND :range: GROUP BY time(:group_by:), "dev_id" fill(none)`
+            }
+    };
+    var dateSelection = {view: 'Week'};
+    var units = ['', ' °C', ' km/h', ' °', ' %'];
+    var colours = ['', 'FireBrick', 'SeaGreen', 'black', 'SteelBlue'];
+
+    // load query result
+    function loadQuery() {
+        window.top.postMessage(query, '*');
+    }
+    loadQuery();
+
+    // build d3 table with results
+    function buildTable(results) {
+        var headers = results[0].series[0].columns;
+        d3.selectAll('table').remove();
+        var table = d3.select("body").append("table"),
+            thead = table.append("thead"),
+            tbody = table.append("tbody");
+
+        // append the header row
+        thead.append("tr")
+            .selectAll("th")
+            .data(headers)
+            .enter()
+            .append("th")
+            .html(function (d, i) {
+                if (i > 0) {
+                    return '<span class="float-right">' + d + '</span>';
+                }
+                return d;
+            });
+
+        var data = results[0].series[0].values;
+        var rows = tbody.selectAll('tr')
+            .data(data)
+            .enter()
+            .append('tr');
+
+        // create a row for each object in the data
+        rows.selectAll('td')
+            .data(function (row) {
+                return row;
+            })
+            .enter()
+            .append('td')
+            .html(function (d, i) {
+                if (i > 0) {
+                    var record = parseFloat(d.toFixed(i === 2 ? 2 : 0)) + units[i];
+                    var arrow = '';
+                    if (i === 3) {
+                        arrow = '<b class="arrow" style="transform: rotate(' + (d + 90) + 'deg)">&#8592</b>';
+                    }
+                    return arrow + '<span class="float-right" style="color: ' + colours[i] + '; margin-right: 15px">' + record + '</span>';
+                } else {
+                    var date = new Date(d);
+                    var options = {month: 'short', day: 'numeric'};
+                    if (dateSelection.view === 'Hour' || dateSelection.view === 'Day') {
+                        return date.toLocaleString('en-US', {hour: 'numeric', minute: '2-digit'});
+                    } else if (dateSelection.view === 'Year') {
+                        options = {year: 'numeric', month: 'short'};
+                    }
+                    return date.toLocaleDateString('en-US', options);
+                }
+            });
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(event) {
+        // date selection updated load query
+        if (event.data.type === 'date_range_updated') {
+            dateSelection = event.data.message;
+            loadQuery();
+            // handle query result
+        } else if (event.data.type === 'result') {
+            buildTable(event.data.message.result.results);
+        }
+    }
+</script>
+</body>
+</html>

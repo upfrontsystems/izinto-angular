@@ -26,11 +26,11 @@
                 </mat-form-field>
             </div>
 
-           <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.get('type').value === 'new'">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.get('type').value === 'new'">
                 <mat-form-field style="width: 100%">
                     <mat-label>HTML Content</mat-label>
                     <textarea class="html-content" formControlName="content" [formControl]="form.get('content')"
-                              matInput cdkAutosizeMinRows="10" cdkTextareaAutosize spellcheck="false"></textarea>
+                              matInput rows="20" spellcheck="false"></textarea>
                 </mat-form-field>
             </div>
 
