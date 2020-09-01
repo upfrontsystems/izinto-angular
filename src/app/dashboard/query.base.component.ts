@@ -28,7 +28,7 @@ export class QueryBaseComponent {
     }
 
     groupByForView(chartGroupBy) {
-        let groupByValue = '1d';
+        let groupByValue = 'auto';
         for (const group of chartGroupBy) {
             if (group.dashboard_view.name === this.dateSelection.view) {
                 groupByValue = group.value;

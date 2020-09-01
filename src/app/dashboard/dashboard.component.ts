@@ -106,6 +106,26 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     loadDataSet(queryId, dataSource, query) {
         query = this.formatQuery(query, [], null);
         this.dataSourceService.loadDataQuery(dataSource, query).subscribe(resp => {
+            // iterate through results of multiple queries
+            for (const queryResult of resp['results']) {
+                // a result can have multiple series, each series is a separate dataset
+                if (!queryResult.hasOwnProperty('series')) {
+                    continue;
+                }
+                const seriesList = queryResult['series'];
+                for (const series of seriesList) {
+                    const records = [];
+                    for (const record of series['values']) {
+                        // exclude results out of range
+                        const date = new Date(record[0]);
+                        if (date < this.dateSelection.startDate || date > this.dateSelection.endDate) {
+                            continue;
+                        }
+                        records.push(record);
+                    }
+                    series['values'] = records;
+                }
+            }
             const result = {result:  {query_id: queryId, results: resp['results'] }};
             const data = {type: 'result', message: result};
             this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
