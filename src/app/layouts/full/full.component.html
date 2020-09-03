@@ -78,6 +78,10 @@
                             <mat-icon>table_chart</mat-icon>
                             Data Sources
                         </button>
+                        <button mat-menu-item [routerLink]="['/queries']">
+                            <mat-icon>sync_alt</mat-icon>
+                            Queries
+                        </button>
                     </mat-menu>
                 </ng-container>
                 <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/dashboards/')">

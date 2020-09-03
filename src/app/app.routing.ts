@@ -13,6 +13,7 @@ import {CollectionComponent} from './collection/collection.component';
 import {DataSourceComponent} from './data-source/data.source.component';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardContainerComponent} from './dashboard/dashboard-container/dashboard-container.component';
+import {QueryComponent} from './query/query.component';
 
 const appRoutes: Routes = [
     {
@@ -58,6 +59,10 @@ const appRoutes: Routes = [
             {
                 path: 'datasources',
                 component: DataSourceComponent
+            },
+            {
+                path: 'queries',
+                component: QueryComponent
             }]
     },
     {

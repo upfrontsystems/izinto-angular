@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 Issue Fixes
 =======
 * [#164](https://github.com/upfrontsystems/izinto-angular/issues/164) allow queries from iframe
+* [#173](https://github.com/upfrontsystems/izinto-angular/issues/173) add Query model and page
 
 
 ## 0.6

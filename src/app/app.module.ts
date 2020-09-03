@@ -49,6 +49,8 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardDateSelectorComponent} from './shared/dashboard-date-selector/dashboard-date-selector.component';
+import { QueryComponent } from './query/query.component';
+import { QueryDialogComponent } from './query/query.dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -102,7 +104,9 @@ export class HammerConfig extends HammerGestureConfig {
         UserDialogComponent,
         DataSourceDialogComponent,
         QueryBaseComponent,
-        LandingpageComponent
+        LandingpageComponent,
+        QueryComponent,
+        QueryDialogComponent
     ],
     imports: [
         AppRoutes,
