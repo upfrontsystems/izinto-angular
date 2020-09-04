@@ -43,10 +43,8 @@
         var query = {
             'query':
                 {
-                    'query_id': 5,
-                    'datasource_id': 1,
-                    'query_string': `SELECT mean("temperature") AS "Temperature", mean("wind") AS "Wind speed", mean("windDirection") AS "Wind Direction", mean("humidity") AS "Humidity" FROM "izintorain"."autogen"."measurement" WHERE
-             ("dev_id" = ':dev_id:') AND :range: GROUP BY time(${query_group_by}), "dev_id" fill(none)`
+                    'name': 'test_query_name',
+                    'values': {}
                 }
         };
 

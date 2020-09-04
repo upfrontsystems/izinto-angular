@@ -19,6 +19,7 @@ import {environment} from '../../environments/environment';
 import {DataSourceService} from '../_services/data.source.service';
 import {QueryBaseComponent} from './query.base.component';
 import {AlertService} from '../_services/alert.service';
+import {QueryService} from '../_services/query.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -69,7 +70,8 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
                 protected dashboardService: DashboardService,
-                protected dataSourceService: DataSourceService) {
+                protected dataSourceService: DataSourceService,
+                private queryService: QueryService) {
         super(authService, dashboardService);
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -97,36 +99,15 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         if (event.origin === environment.scriptBaseURL) {
             const data = event.data;
             if (data.query) {
-                this.loadDataSet(data.query.query_id, data.query.datasource_id, data.query.query_string);
+                this.runQuery(data.query.name, data.query.values);
             }
         }
     }
 
     // load query and return result to iframe
-    loadDataSet(queryId, dataSource, query) {
-        query = this.formatQuery(query, [], null);
-        this.dataSourceService.loadDataQuery(dataSource, query).subscribe(resp => {
-            // iterate through results of multiple queries
-            for (const queryResult of resp['results']) {
-                // a result can have multiple series, each series is a separate dataset
-                if (!queryResult.hasOwnProperty('series')) {
-                    continue;
-                }
-                const seriesList = queryResult['series'];
-                for (const series of seriesList) {
-                    const records = [];
-                    for (const record of series['values']) {
-                        // exclude results out of range
-                        const date = new Date(record[0]);
-                        if (date < this.dateSelection.startDate || date > this.dateSelection.endDate) {
-                            continue;
-                        }
-                        records.push(record);
-                    }
-                    series['values'] = records;
-                }
-            }
-            const result = {result:  {query_id: queryId, results: resp['results'] }};
+    runQuery(queryName, params) {
+        this.queryService.runQuery(queryName, params).subscribe(resp => {
+            const result = {result:  {query_name: queryName, results: resp}};
             const data = {type: 'result', message: result};
             this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
         });

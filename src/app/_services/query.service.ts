@@ -30,7 +30,7 @@ export class QueryService {
         return this.http.delete(`/api/query/` + query.id);
     }
 
-    runQuery(queryId, params) {
-        return this.http.post(`/api/query/${queryId}/run`, params);
+    runQuery(queryName, params) {
+        return this.http.post(`/api/query/${queryName}/run`, params);
     }
 }
