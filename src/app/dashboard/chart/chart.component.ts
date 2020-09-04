@@ -923,6 +923,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             x_min_3 = (xint - 3).toString(),
             x_plus_3 = (xint + 3).toString(),
             position = this.chartHeight - (this.margin.bottom * 1.35);
+            // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
+            // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
+            // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
+            // a wind direction of 0° (360°); a wind blowing from the east has a wind direction of 90°; a wind blowing from the
+            // south has a wind direction of 180°; and a wind blowing from the west has a wind direction of 270°.
+            direction += 180;
         let d = '',
             arrowStart = 0;
 

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ## 0.7
 Issue Fixes
 =======
+* [#105](https://github.com/upfrontsystems/izinto-angular/issues/105) fix wind arrow direction
 * [#164](https://github.com/upfrontsystems/izinto-angular/issues/164) allow queries from iframe
 * [#173](https://github.com/upfrontsystems/izinto-angular/issues/173) add Query model and page
 

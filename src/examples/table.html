@@ -31,21 +31,25 @@
     import 'https://d3js.org/d3-fetch.v1.min.js';
     import 'https://d3js.org/d3-selection.v1.min.js';
 
-    var query = {
-        'query':
-            {
-                'query_id': 5,
-                'datasource_id': 1,
-                'query_string': `SELECT mean("temperature") AS "Temperature", mean("wind") AS "Wind speed", mean("windDirection") AS "Wind Direction", mean("humidity") AS "Humidity" FROM "izintorain"."autogen"."measurement" WHERE
-         ("dev_id" ='1406300003') AND :range: GROUP BY time(:group_by:), "dev_id" fill(none)`
-            }
-    };
+    var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
     var dateSelection = {view: 'Week'};
     var units = ['', ' °C', ' km/h', ' °', ' %'];
     var colours = ['', 'FireBrick', 'SeaGreen', 'black', 'SteelBlue'];
+    var decimals = [0, 1, 2, 1, 1];
 
     // load query result
     function loadQuery() {
+        var query_group_by = GroupBy[dateSelection['view']];
+        var query = {
+            'query':
+                {
+                    'query_id': 5,
+                    'datasource_id': 1,
+                    'query_string': `SELECT mean("temperature") AS "Temperature", mean("wind") AS "Wind speed", mean("windDirection") AS "Wind Direction", mean("humidity") AS "Humidity" FROM "izintorain"."autogen"."measurement" WHERE
+             ("dev_id" = ':dev_id:') AND :range: GROUP BY time(${query_group_by}), "dev_id" fill(none)`
+                }
+        };
+
         window.top.postMessage(query, '*');
     }
     loadQuery();
@@ -86,17 +90,17 @@
             .append('td')
             .html(function (d, i) {
                 if (i > 0) {
-                    var record = parseFloat(d.toFixed(i === 2 ? 2 : 0)) + units[i];
+                    var record = parseFloat(d).toFixed(decimals[i]) + units[i];
                     var arrow = '';
                     if (i === 3) {
-                        arrow = '<b class="arrow" style="transform: rotate(' + (d + 90) + 'deg)">&#8592</b>';
+                        arrow = '<b class="arrow" style="transform: rotate(' + (d - 90) + 'deg)">&#8592</b>';
                     }
                     return arrow + '<span class="float-right" style="color: ' + colours[i] + '; margin-right: 15px">' + record + '</span>';
                 } else {
                     var date = new Date(d);
                     var options = {month: 'short', day: 'numeric'};
                     if (dateSelection.view === 'Hour' || dateSelection.view === 'Day') {
-                        return date.toLocaleString('en-US', {hour: 'numeric', minute: '2-digit'});
+                        return date.toLocaleString('en-US', {hour: 'numeric', minute: '2-digit', hour12: false});
                     } else if (dateSelection.view === 'Year') {
                         options = {year: 'numeric', month: 'short'};
                     }
