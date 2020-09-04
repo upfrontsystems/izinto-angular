@@ -16,7 +16,6 @@ export class DashboardDateSelectorComponent implements OnInit {
     dateSelectOpened = false;
     dateSelection: DateSelection = new DateSelection();
     // query date range from start to end
-    today = moment();
     dateRangeCounter = 1;
     pickerRange = {startDate: moment(), endDate: moment()};
     dateFormat = {
@@ -66,10 +65,6 @@ export class DashboardDateSelectorComponent implements OnInit {
 
     // called when navigating forward and backwards using the date range picker
     updateDateCounter(count) {
-        if (this.dateRangeCounter + count < 1) {
-            return;
-        }
-
         this.dateRangeCounter += count;
         this.setDateRange();
     }

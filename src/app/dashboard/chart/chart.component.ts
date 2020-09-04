@@ -894,7 +894,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         } else {
             this.lineChart(dataset);
         }
-        dataset = dataset[0];
+        dataset = dataset[0] || [];
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g.wind-arrows');
         svg.remove();

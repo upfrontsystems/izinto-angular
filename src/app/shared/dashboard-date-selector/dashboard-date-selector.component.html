@@ -9,9 +9,8 @@
         <button mat-icon-button (click)="updateDateCounter(1)">
             <mat-icon class="pull-right">keyboard_arrow_left</mat-icon>
         </button>
-        <input type="text" matInput ngxDaterangepickerMd [readonly]="!mobileQueryMatches" #datePicker
-               [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}"
-               timePicker="true" [timePicker24Hour]="!mobileQueryMatches" [maxDate]="today"
+        <input type="text" matInput ngxDaterangepickerMd [readonly]="!mobileQueryMatches" #datePicker timePicker="true"
+               [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}" [timePicker24Hour]="!mobileQueryMatches"
                [autoApply]="false" (ngModelChange)="updateRange($event)" [size]="datePicker.value?.length || 1"
                class="form-control"/>
         <button mat-icon-button (click)="updateDateCounter(-1)">
