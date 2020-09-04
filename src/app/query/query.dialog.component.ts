@@ -13,6 +13,7 @@ import {DataSource} from '../_models/data.source';
 export class QueryDialogComponent implements OnInit {
     public form: FormGroup;
     state: string;
+    query: Query;
     dataSources: DataSource[] = [];
 
     constructor(
@@ -20,10 +21,12 @@ export class QueryDialogComponent implements OnInit {
         private renderer: Renderer2,
         private fb: FormBuilder,
         private queryService: QueryService,
-        @Inject(MAT_DIALOG_DATA) public query: Query) {
+        @Inject(MAT_DIALOG_DATA) public data) {
     }
 
     ngOnInit() {
+        this.query = this.data.query;
+        this.dataSources = this.data.dataSources;
         this.state = this.query.id ? 'Edit' : 'Add';
 
         this.form = this.fb.group({

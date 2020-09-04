@@ -7,6 +7,8 @@ import {ActivatedRoute} from '@angular/router';
 import {QueryService} from '../_services/query.service';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryDialogComponent} from './query.dialog.component';
+import {DataSource} from '../_models/data.source';
+import {DataSourceService} from '../_services/data.source.service';
 
 @Component({
     selector: 'app-query',
@@ -16,6 +18,7 @@ import {QueryDialogComponent} from './query.dialog.component';
 export class QueryComponent implements OnInit, AfterViewInit {
 
     queries: Query[];
+    dataSources: DataSource[];
     dataSource = new MatTableDataSource<Query>(this.queries);
     displayedColumns: string[] = ['name', 'data_source', 'action'];
     fabButtons = [
@@ -29,6 +32,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
     constructor(private route: ActivatedRoute,
+                private dataSourceService: DataSourceService,
                 private queryService: QueryService,
                 public dialog: MatDialog) {
     }
@@ -36,6 +40,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.dataSource.sort = this.sort;
         this.getQueries();
+        this.getDataSources();
     }
 
     ngAfterViewInit(): void {
@@ -51,10 +56,19 @@ export class QueryComponent implements OnInit, AfterViewInit {
         );
     }
 
+    getDataSources() {
+        this.dataSourceService.getAll({}).subscribe(
+            resp => {
+                this.dataSources = resp;
+                this.refresh();
+            }
+        );
+    }
+
     add() {
         const dialogRef = this.dialog.open(QueryDialogComponent, {
             width: '550px',
-            data: {}
+            data: {dataSources: this.dataSources, query: {}}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -68,7 +82,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     edit(item: Query) {
         const dialogRef = this.dialog.open(QueryDialogComponent, {
             width: '550px',
-            data: item
+            data: {dataSources: this.dataSources, query: item}
         });
 
         dialogRef.afterClosed().subscribe(result => {
