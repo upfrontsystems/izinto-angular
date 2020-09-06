@@ -713,7 +713,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     barChart(dataSet) {
         const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
             xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged, false);
+            yScale = this.yScale(merged);
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -758,7 +758,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         // add x axis
         this.addXAxis(svg, xAxisScale);
         // add grid
-        this.addGrid(svg, yScale);
+        this.addGrid(svg, this.yScale(merged, false));
 
         const fillFunc = this.chart.fillFunc,
             colors = (this.chart.color || '').split(','),
