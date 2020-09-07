@@ -1,6 +1,4 @@
 <!-- example of d3 table displaying query results -->
-
-<!--suppress SqlDialectInspection, SqlNoDataSourceInspection -->
 <html>
 
 <!-- Google Fonts -->
@@ -32,28 +30,34 @@
     import 'https://d3js.org/d3-selection.v1.min.js';
 
     var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
-    var dateSelection = {view: 'Week'};
+    var dateSelection = {};
     var units = ['', ' °C', ' km/h', ' °', ' %'];
     var colours = ['', 'FireBrick', 'SeaGreen', 'black', 'SteelBlue'];
     var decimals = [0, 1, 2, 1, 1];
 
     // load query result
     function loadQuery() {
+        if (!dateSelection) {
+            return;
+        }
         var query_group_by = GroupBy[dateSelection['view']];
         var query = {
             'query':
                 {
-                    'name': 'test_query_name',
-                    'values': {}
+                    'name': 'table_query',
+                    'values': {dev_id: '1406300003', range: dateSelection.dateRange, query_group_by: query_group_by}
                 }
         };
 
         window.top.postMessage(query, '*');
     }
-    loadQuery();
 
     // build d3 table with results
-    function buildTable(results) {
+    function buildTable(response) {
+        var results = response['results'];
+        if (!results) {
+            return;
+        }
         var headers = results[0].series[0].columns;
         d3.selectAll('table').remove();
         var table = d3.select("body").append("table"),
@@ -118,6 +122,9 @@
             buildTable(event.data.message.result.results);
         }
     }
+
+    // send ready message
+    window.top.postMessage({'status': 'ready'}, '*');
 </script>
 </body>
 </html>

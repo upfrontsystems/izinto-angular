@@ -60,7 +60,6 @@ export class QueryComponent implements OnInit, AfterViewInit {
         this.dataSourceService.getAll({}).subscribe(
             resp => {
                 this.dataSources = resp;
-                this.refresh();
             }
         );
     }
