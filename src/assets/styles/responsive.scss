@@ -46,6 +46,12 @@ File: scss
 }
 
 @media (max-width: 1023px) {
+  h3.stat-header {
+    font-size: 16px;
+  }
+  h1.stat-value {
+    font-size: 25px;
+  }
   #dashboard .full-height {
     height: calc(100vh - 120px);
   }
