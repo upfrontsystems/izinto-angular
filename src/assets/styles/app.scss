@@ -1045,3 +1045,23 @@ list inline
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.stat-header {
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-value {
+    width: 100%;
+    text-align: center;
+}
+
+h3.stat-header {
+    font-size: 16px;
+    white-space: nowrap;
+}
+h1.stat-value {
+    font-size: 25px;
+    white-space: nowrap;
+}
