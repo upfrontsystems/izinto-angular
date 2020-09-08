@@ -1,4 +1,4 @@
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 
 import {AdminComponent} from './admin/admin.component';
 import {AuthGuard} from './_guards/auth.guard';
@@ -32,7 +32,11 @@ const appRoutes: Routes = [
             },
             {
                 path: 'dashboards/:dashboard_id',
-                component: DashboardContainerComponent
+                component: DashboardContainerComponent,
+                children: [{
+                    path: 'queries',
+                    component: QueryComponent
+                }]
             },
             {
                 path: 'collections',
@@ -44,7 +48,11 @@ const appRoutes: Routes = [
             },
             {
                 path: 'collections/:collection_id/dashboards/:dashboard_id',
-                component: DashboardContainerComponent
+                component: DashboardContainerComponent,
+                children: [{
+                    path: 'queries',
+                    component: QueryComponent
+                }]
             },
             {
                 path: 'admin',
@@ -59,10 +67,6 @@ const appRoutes: Routes = [
             {
                 path: 'datasources',
                 component: DataSourceComponent
-            },
-            {
-                path: 'queries',
-                component: QueryComponent
             }]
     },
     {

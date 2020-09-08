@@ -33,7 +33,7 @@ export class QueryDialogComponent implements OnInit {
             id: this.query.id,
             name: this.query.name,
             query: this.query.query,
-            user_id: this.query.user_id,
+            dashboard_id: this.query.dashboard_id,
             data_source_id: this.query.data_source_id
         });
 
@@ -57,13 +57,13 @@ export class QueryDialogComponent implements OnInit {
     }
 
     add(form) {
-        this.queryService.add(form).subscribe(resp => {
+        this.queryService.add(this.query.dashboard_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }
 
     edit(form) {
-        this.queryService.edit(form).subscribe(resp => {
+        this.queryService.edit(this.query.dashboard_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }

@@ -10,27 +10,27 @@ export class QueryService {
     constructor(private http: HttpClient) {
     }
 
-    getAll(filters) {
-        return this.http.get<Query[]>(`/api/queries`, {params: filters});
+    getAll(dashboardId, filters) {
+        return this.http.get<Query[]>(`/api/dashboard/${dashboardId}/queries`, {params: filters});
     }
 
-    getById(id) {
-        return this.http.get<Query>(`/api/query/` + id);
+    getById(dashboardId, id) {
+        return this.http.get<Query>(`/api/dashboard/${dashboardId}/query/` + id);
     }
 
-    add(query) {
-        return this.http.post<Query>('/api/queries', query);
+    add(dashboardId, query) {
+        return this.http.post<Query>('/api/dashboard/${dashboardId}/queries', query);
     }
 
-    edit(query) {
-        return this.http.put<Query>(`/api/query/` + query.id, query);
+    edit(dashboardId, query) {
+        return this.http.put<Query>(`/api/dashboard/${dashboardId}/query/` + query.id, query);
     }
 
-    delete(query) {
-        return this.http.delete(`/api/query/` + query.id);
+    delete(dashboardId, query) {
+        return this.http.delete(`/api/dashboard/${dashboardId}/query/` + query.id);
     }
 
-    runQuery(queryName, params) {
-        return this.http.post(`/api/query/${queryName}/run`, params);
+    runQuery(dashboardId, queryName, params) {
+        return this.http.post(`/api/dashboard/${dashboardId}/query/${queryName}/run`, params);
     }
 }

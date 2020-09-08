@@ -18,6 +18,7 @@ import {DataSourceService} from '../_services/data.source.service';
 export class QueryComponent implements OnInit, AfterViewInit {
 
     queries: Query[];
+    dashboardId: number;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Query>(this.queries);
     displayedColumns: string[] = ['name', 'data_source', 'action'];
@@ -38,6 +39,9 @@ export class QueryComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.route.paramMap.subscribe(params => {
+            this.dashboardId = +params.get('dashboard_id');
+        });
         this.dataSource.sort = this.sort;
         this.getQueries();
         this.getDataSources();
@@ -48,7 +52,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     }
 
     getQueries() {
-        this.queryService.getAll({user_id: true}).subscribe(
+        this.queryService.getAll(this.dashboardId, {}).subscribe(
             resp => {
                 this.queries = resp;
                 this.refresh();
@@ -67,7 +71,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     add() {
         const dialogRef = this.dialog.open(QueryDialogComponent, {
             width: '550px',
-            data: {dataSources: this.dataSources, query: {}}
+            data: {dataSources: this.dataSources, query: {dashboard_id: this.dashboardId}}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -98,7 +102,7 @@ export class QueryComponent implements OnInit, AfterViewInit {
     }
 
     delete(item: Query) {
-        this.queryService.delete(item).subscribe(resp => {
+        this.queryService.delete(this.dashboardId, item).subscribe(resp => {
             for (const ix in this.queries) {
                 if (this.queries[ix].id === item.id) {
                     this.queries.splice(+ix, 1);
