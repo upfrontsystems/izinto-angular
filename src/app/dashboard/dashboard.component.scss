@@ -56,17 +56,6 @@ g.grid g.tick line {
     padding-bottom: 2em;
 }
 
-.stat-header {
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.stat-value {
-    width: 100%;
-    text-align: center;
-}
-
 .drag-handle {
     position: absolute;
     margin-top: 2em;
@@ -90,15 +79,6 @@ div.d3-chart {
 
 .picker-button {
     cursor: pointer;
-}
-
-h3.stat-header {
-  font-size: 15px;
-  white-space: nowrap;
-}
-h1.stat-value {
-  font-size: 30px;
-  white-space: nowrap;
 }
 
 mat-card.single-stat {
