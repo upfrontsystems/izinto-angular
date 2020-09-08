@@ -1,52 +1,45 @@
-import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSelect } from '@angular/material/select';
-import {Dashboard} from '../_models/dashboard';
-import {User} from '../_models/user';
+import {Dashboard} from '../../_models/dashboard';
 import {ReplaySubject, Subject} from 'rxjs';
+import {User} from '../../_models/user';
+import {MatSelect} from '@angular/material/select';
+import {AuthenticationService} from '../../_services/authentication.service';
+import {UserService} from '../../_services/user.service';
+import {DashboardService} from '../../_services/dashboard.service';
 import {take, takeUntil} from 'rxjs/operators';
-import {UserService} from '../_services/user.service';
-import {DashboardService} from '../_services/dashboard.service';
-import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
-    selector: 'app-dashboard-dialog',
-    templateUrl: './dashboard.dialog.component.html',
-    styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard-editor',
+    templateUrl: './dashboard-editor.component.html',
+    styleUrls: ['./dashboard-editor.component.css']
 })
-export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    @Input() dashboard: Dashboard;
+    @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
     public form: FormGroup;
-    dashboard: Dashboard;
-    state: string;
     public userNameFilter: FormControl = new FormControl();
     public searching = false;
     public filteredUsers: ReplaySubject<User[]> = new ReplaySubject<User[]>(1);
+    @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
     protected _onDestroy = new Subject<void>();
 
-    @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
-
     constructor(
-        public dialogRef: MatDialogRef<DashboardDialogComponent>,
         private renderer: Renderer2,
         private fb: FormBuilder,
         public authService: AuthenticationService,
         private userService: UserService,
-        private dashboardService: DashboardService,
-        @Inject(MAT_DIALOG_DATA) public data: any) {
+        private dashboardService: DashboardService) {
     }
 
     ngOnInit() {
-        this.dashboard = this.data.dashboard;
-        this.state = this.dashboard.id ? 'Edit' : 'Add';
-
         const formData = {
             id: this.dashboard.id,
             title: new FormControl(this.dashboard.title, [Validators.required]),
             description: this.dashboard.description,
             collection_id: this.dashboard.collection_id,
-            type:  this.dashboard.type,
+            type: this.dashboard.type,
             content: this.dashboard.content,
             users: [this.dashboard.users]
         };
@@ -69,6 +62,20 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
         this.userNameFilter.valueChanges.subscribe(value => this.filterUsers(value));
     }
 
+    formValid() {
+        return this.form.valid;
+    }
+
+    submit() {
+        this.dashboardService.edit(this.form.value).subscribe(resp => {
+            this.edited.emit(resp);
+        });
+    }
+
+    cancel(): void {
+        this.edited.emit(this.dashboard);
+    }
+
     protected setInitialValue() {
         if (this.userSelect) {
             this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
@@ -88,34 +95,5 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
             this.filteredUsers.next(resp);
             this.searching = false;
         });
-    }
-
-    formValid() {
-        return this.form.valid;
-    }
-
-    submit() {
-        const form = this.form.value;
-        if (this.dashboard.id) {
-            this.editDashboard(form);
-        } else {
-            this.addDashboard(form);
-        }
-    }
-
-    addDashboard(form) {
-        this.dashboardService.add(form).subscribe(resp => {
-            this.dialogRef.close(resp);
-        });
-    }
-
-    editDashboard(form) {
-        this.dashboardService.edit(form).subscribe(resp => {
-            this.dialogRef.close(resp);
-        });
-    }
-
-    onNoClick(): void {
-        this.dialogRef.close();
     }
 }

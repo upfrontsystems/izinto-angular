@@ -1,14 +1,14 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {Query} from '../_models/query';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {MatPaginator} from '@angular/material/paginator';
 import {ActivatedRoute} from '@angular/router';
-import {QueryService} from '../_services/query.service';
+import {QueryService} from '../../_services/query.service';
 import {MatDialog} from '@angular/material/dialog';
 import {QueryDialogComponent} from './query.dialog.component';
-import {DataSource} from '../_models/data.source';
-import {DataSourceService} from '../_services/data.source.service';
+import {DataSourceService} from '../../_services/data.source.service';
+import {Query} from '../../_models/query';
+import {DataSource} from '../../_models/data.source';
 
 @Component({
     selector: 'app-query',
@@ -18,7 +18,7 @@ import {DataSourceService} from '../_services/data.source.service';
 export class QueryComponent implements OnInit, AfterViewInit {
 
     queries: Query[];
-    dashboardId: number;
+    @Input() dashboardId: number;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Query>(this.queries);
     displayedColumns: string[] = ['name', 'data_source', 'action'];

@@ -1,11 +1,3 @@
-<div class="m-l-20 m-r-20" *ngIf="mobileQuery.matches">
-    <div class="pull-right" *ngIf="dashboard && dashboard.collection_id==15"><img src="assets/images/water-hunters.png"/></div>
-    <h3 class="page-title">
-        <a *ngIf="parent" [routerLink]="[parent.url]">{{parent.title}}</a>
-        &gt; {{dashboard?.title}}
-    </h3>
-</div>
-
 <div fxLayout="row wrap" class="clear" id="dashboard">
     <div fxFlex="100" class="p-b-20">
         <mat-card *ngIf="dashboard" [class]="dashboard.type == 'new' && 'full-height' || ''">
@@ -15,14 +7,10 @@
 
             <mat-card-content>
 
-                <button mat-icon-button class="pull-right edit-button" (click)="editDashboard()" *ngIf="canEdit"
-                        title="Edit">
-                    <mat-icon>edit</mat-icon>
-                </button>
-
                 <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
 
-                <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId" [addedSingleStat]="addedSingleStat"
+                <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId"
+                                      [addedSingleStat]="addedSingleStat"
                                       [variables]="dashboard.variables" [dataSources]="dataSources">
                 </app-single-stat-list>
 
@@ -40,4 +28,5 @@
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial *ngIf="canEdit && (dashboard && dashboard.type == 'old')" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="canEdit && (dashboard && dashboard.type == 'old')" (buttonClick)="fabClick($event)"
+                    [fabButtons]="fabButtons"></app-fab-speed-dial>

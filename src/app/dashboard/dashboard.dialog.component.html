@@ -26,14 +26,6 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.get('type').value === 'new'">
-                <mat-form-field style="width: 100%">
-                    <mat-label>HTML Content</mat-label>
-                    <textarea class="html-content" formControlName="content" [formControl]="form.get('content')"
-                              matInput rows="20" spellcheck="false"></textarea>
-                </mat-form-field>
-            </div>
-
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
                  *ngIf="authService.hasRole('Administrator') && !dashboard.collection_id">
                 <mat-form-field>
@@ -48,38 +40,6 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-            </div>
-
-            <mat-label style="width: 100%">Variables</mat-label>
-            <button mat-icon-button color="primary" (click)="addVariable()">
-                <mat-icon>add</mat-icon>
-                Add Variable
-            </button>
-            <div *ngFor="let variable of variablesRows.controls; let i = index" formArrayName="variables" fxFlex="100">
-                <div fxLayout="column">
-                    <div [formGroupName]="i" class="m-l-40" fxFlex="100" fxLayout="row">
-                        <div fxFlex="30" class="p-r-20">
-                            <mat-form-field style="width: 100%" floatLabel="never">
-                                <input matInput placeholder="Name" formControlName="name"
-                                       autocomplete="off">
-                            </mat-form-field>
-                        </div>
-
-                        <div fxFlex="40">
-                            <mat-form-field style="width: 100%" floatLabel="never">
-                                <input matInput placeholder="Value" formControlName="value"
-                                       autocomplete="off" class="text-right">
-                            </mat-form-field>
-                        </div>
-
-                        <div fxFlex="30">
-                            <button mat-icon-button class="pull-right hover-action m-t-10" color="warn"
-                                    (click)="deleteVariable(i)" title="Delete">
-                                <mat-icon>clear</mat-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>

@@ -2,8 +2,37 @@
     <div [ngClass]="slider.classList" [style.transform]="'translateX('+slider.transform +'%)'"
          class='slider' id='slider' (pan)="sliderManager($event)">
         <div class='slider-panel'>
-            <app-dashboard *ngIf="dashboard" (edited)="dashboardEdited($event)" [dashboardId]="dashboardId" [dashboard]="dashboard"
-                           [dataSources]="dataSources" [parent]="parent" [dateViews]="dateViews"></app-dashboard>
+
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutAlign.lt-sm="center center">
+                <div class="m-l-20 m-r-20">
+                    <div class="pull-right" *ngIf="dashboard && dashboard.collection_id==15"><img
+                        src="assets/images/water-hunters.png"/></div>
+                    <h3 class="page-title">
+                        <a *ngIf="parent" [routerLink]="[parent.url]">{{parent.title}}</a>
+                        &gt; {{dashboard?.title}}
+                    </h3>
+                </div>
+
+                <nav mat-tab-nav-bar class="m-r-15">
+                    <a mat-tab-link *ngFor="let tab of tabs"
+                       (click)="activeTab = tab"
+                       [active]="activeTab == tab"> {{tab}} </a>
+                </nav>
+            </div>
+
+            <!-- Dashboard view page -->
+            <app-dashboard *ngIf="dashboard && activeTab == 'View'" (edited)="dashboardEdited($event)"
+                           [dashboardId]="dashboardId" [dashboard]="dashboard"
+                           [dataSources]="dataSources" [parent]="parent"
+                           [dateViews]="dateViews"></app-dashboard>
+            <!-- Dashboard editor page -->
+            <app-dashboard-editor *ngIf="activeTab == 'Edit'" [dashboard]="dashboard"
+                                  (edited)="dashboardEdited($event)"></app-dashboard-editor>
+            <!-- Dashboard queries page -->
+            <app-query *ngIf="activeTab == 'Queries'" [dashboardId]="dashboardId"></app-query>
+            <!-- Dashboard variables page -->
+            <app-variable *ngIf="activeTab == 'Variables'" [dashboardId]="dashboardId"></app-variable>
+
         </div>
     </div>
 </div>

@@ -35,6 +35,8 @@ import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.comp
 import {FullComponent} from './layouts/full/full.component';
 import {HomeComponent} from './home/home.component';
 import {MaterialModule} from './material.module';
+import { QueryComponent } from './dashboard/query/query.component';
+import { QueryDialogComponent } from './dashboard/query/query.dialog.component';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
 import {SpinnerService} from './_services/spinner.service';
@@ -49,8 +51,9 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardDateSelectorComponent} from './shared/dashboard-date-selector/dashboard-date-selector.component';
-import { QueryComponent } from './query/query.component';
-import { QueryDialogComponent } from './query/query.dialog.component';
+import { DashboardEditorComponent } from './dashboard/dashboard-editor/dashboard-editor.component';
+import { VariableComponent } from './dashboard/variable/variable.component';
+import { VariableDialogComponent } from './dashboard/variable/variable-dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -106,7 +109,10 @@ export class HammerConfig extends HammerGestureConfig {
         QueryBaseComponent,
         LandingpageComponent,
         QueryComponent,
-        QueryDialogComponent
+        QueryDialogComponent,
+        DashboardEditorComponent,
+        VariableComponent,
+        VariableDialogComponent
     ],
     imports: [
         AppRoutes,

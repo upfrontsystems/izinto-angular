@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {QueryService} from '../_services/query.service';
-import {Query} from '../_models/query';
-import {DataSource} from '../_models/data.source';
+import {QueryService} from '../../_services/query.service';
+import {Query} from '../../_models/query';
+import {DataSource} from '../../_models/data.source';
 
 @Component({
   selector: 'app-query-dialog',

@@ -20,3 +20,13 @@
     height: 300px;
     width: 100%;
 }
+
+.mat-tab-link {
+    height: 2.5em;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.mat-tab-label-active {
+    color: #1e88e5;
+}

@@ -32,6 +32,8 @@ export class DashboardContainerComponent implements OnInit {
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
     slider: Slider = new Slider();
+    tabs = ['View', 'Edit', 'Queries', 'Variables'];
+    activeTab = 'View';
 
     constructor(protected route: ActivatedRoute,
                 private router: Router,
@@ -117,7 +119,7 @@ export class DashboardContainerComponent implements OnInit {
 
     sliderManager(e) {
         // dont animate when moving up/down
-        if (Math.abs(e.deltaX / 5) < Math.abs(e.deltaY)) {
+        if (this.activeTab === 'View' && Math.abs(e.deltaX / 5) < Math.abs(e.deltaY)) {
             return;
         }
         // move element

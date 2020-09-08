@@ -1,0 +1,77 @@
+<div fxLayout="row wrap" class="clear" id="dashboard">
+    <div fxFlex="100">
+        <mat-card *ngIf="dashboard" [class]="dashboard.type == 'new' && 'full-height' || ''">
+            <mat-card-content>
+
+                <h3>Edit {{dashboard.title}}</h3>
+                <div class="p-30">
+                    <div [formGroup]="form" autocomplete="off">
+                        <div fxLayout="row wrap">
+
+                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                                <mat-form-field style="width: 100%">
+                                    <input matInput placeholder="Title" [formControl]="form.get('title')"
+                                           autocomplete="off">
+                                </mat-form-field>
+                            </div>
+
+                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                                <mat-form-field style="width: 100%">
+                                    <input matInput placeholder="Description" [formControl]="form.get('description')"
+                                           autocomplete="off">
+                                </mat-form-field>
+                            </div>
+
+                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                                <mat-form-field style="width: 100%">
+                                    <mat-select [formControl]="form.get('type')" placeholder="Dashboard Type">
+                                        <mat-option value="old">Charts & Single Stats</mat-option>
+                                        <mat-option value="new">HTML Content</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
+                                 *ngIf="form.get('type').value === 'new'">
+                                <mat-form-field style="width: 100%">
+                                    <mat-label>HTML Content</mat-label>
+                                    <textarea class="html-content" formControlName="content"
+                                              [formControl]="form.get('content')"
+                                              matInput rows="20" spellcheck="false"></textarea>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
+                                 *ngIf="authService.hasRole('Administrator') && !dashboard.collection_id">
+                                <mat-form-field>
+                                    <mat-select formControlName="users" [formControl]="form.get('users')"
+                                                placeholder="Users" [multiple]="true" #userSelect>
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="userNameFilter"
+                                                                   [searching]="searching"
+                                                                   placeholderLabel="Search users"
+                                                                   noEntriesFoundLabel="No users found">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                            {{user.fullname}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span fxFlex></span>
+                    <button class="pull-right" mat-button (click)="cancel()">Cancel</button>
+                    <button class="pull-right" mat-button [disabled]="!formValid()"
+                            (click)="submit()" color="primary" cdkFocusInitial>Submit
+                    </button>
+                </div>
+
+            </mat-card-content>
+
+        </mat-card>
+    </div>
+</div>
