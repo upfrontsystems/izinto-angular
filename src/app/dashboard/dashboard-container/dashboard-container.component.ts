@@ -115,6 +115,7 @@ export class DashboardContainerComponent implements OnInit {
         this.siblings[this.slider.activeSlide] = dashboard;
         this.dashboard = dashboard;
         this.dashboardService.currentDashboard.emit(this.dashboard);
+        this.activeTab = 'View';
     }
 
     sliderManager(e) {

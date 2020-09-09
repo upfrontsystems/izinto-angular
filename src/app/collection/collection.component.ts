@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import {Collection} from '../_models/collection';
@@ -28,6 +28,7 @@ export class CollectionComponent implements OnInit {
     ];
 
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private http: HttpClient,
                 public dialog: MatDialog,
                 private copyService: CopyService,
@@ -71,6 +72,7 @@ export class CollectionComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.collection.dashboards.push(result);
+                this.router.navigate(['dashboards', result.id]);
             }
         });
     }

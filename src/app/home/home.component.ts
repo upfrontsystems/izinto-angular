@@ -8,6 +8,7 @@ import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component'
 import {CollectionDialogComponent} from '../collection/collection.dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {CopyService} from '../_services/copy.service';
+import {Router} from '@angular/router';
 
 @Component({templateUrl: 'home.component.html'})
 export class HomeComponent implements OnInit {
@@ -34,6 +35,7 @@ export class HomeComponent implements OnInit {
     ];
 
     constructor(
+        private router: Router,
         private authenticationService: AuthenticationService,
         private collectionService: CollectionService,
         private copyService: CopyService,
@@ -119,6 +121,7 @@ export class HomeComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.dashboards.push(result);
+                this.router.navigate(['dashboards', result.id]);
             }
         });
     }
