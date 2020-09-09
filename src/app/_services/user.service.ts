@@ -11,7 +11,7 @@ export class UserService {
     }
 
     getById(id: string) {
-        return this.http.get<User>(`/api/user/${id}`);
+        return this.http.get<User>(`/api/users/${id}`);
     }
 
     add(user) {
@@ -19,10 +19,10 @@ export class UserService {
     }
 
     edit(user) {
-        return this.http.put<User>(`/api/user/${user.id}`, user);
+        return this.http.put<User>(`/api/users/${user.id}`, user);
     }
 
     delete(user) {
-        return this.http.delete(`/api/user/${user.id}`);
+        return this.http.delete(`/api/users/${user.id}`);
     }
 }

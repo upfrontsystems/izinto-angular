@@ -51,13 +51,13 @@ export class VariableDialogComponent implements OnInit {
     }
 
     add(form) {
-        this.variableService.add(form).subscribe(resp => {
+        this.variableService.add(this.variable.dashboard_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }
 
     edit(form) {
-        this.variableService.edit(form).subscribe(resp => {
+        this.variableService.edit(this.variable.dashboard_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }

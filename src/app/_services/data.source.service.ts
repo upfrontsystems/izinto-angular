@@ -15,7 +15,7 @@ export class DataSourceService {
     }
 
     getById(id) {
-        return this.http.get<DataSource>(`/api/data_source/` + id);
+        return this.http.get<DataSource>(`/api/data_sources/` + id);
     }
 
     add(dataSource) {
@@ -23,14 +23,14 @@ export class DataSourceService {
     }
 
     edit(dataSource) {
-        return this.http.put<DataSource>(`/api/data_source/` + dataSource.id, dataSource);
+        return this.http.put<DataSource>(`/api/data_sources/` + dataSource.id, dataSource);
     }
 
     delete(dataSource) {
-        return this.http.delete(`/api/data_source/` + dataSource.id);
+        return this.http.delete(`/api/data_sources/` + dataSource.id);
     }
 
     loadDataQuery(dataSoureId, query) {
-        return this.http.post(`/api/data_source/${dataSoureId}/query`, {query: query, epoch: 'ms'});
+        return this.http.post(`/api/data_sources/${dataSoureId}/query`, {query: query, epoch: 'ms'});
     }
 }

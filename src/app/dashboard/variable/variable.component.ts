@@ -48,7 +48,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     }
 
     getVariables() {
-        this.variableService.getVariables({dashboard_id: this.dashboardId}).subscribe(
+        this.variableService.getVariables(this.dashboardId, {dashboard_id: this.dashboardId}).subscribe(
             resp => {
                 this.variables = resp;
                 this.refresh();
@@ -90,7 +90,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     }
 
     delete(item: Variable) {
-        this.variableService.delete(item).subscribe(resp => {
+        this.variableService.delete(this.dashboardId, item).subscribe(resp => {
             for (const ix in this.variables) {
                 if (this.variables[ix].id === item.id) {
                     this.variables.splice(+ix, 1);

@@ -32,27 +32,27 @@ export class CopyService {
 
     pasteCollection() {
         const collection = JSON.parse(localStorage.getItem('collection'));
-        return this.http.post<Collection>(`/api/collection/${collection.id}/paste`, collection);
+        return this.http.post<Collection>(`/api/collections/${collection.id}/paste`, collection);
     }
 
     pasteDashboard(collection_id) {
         // set collection id dashboard is pasted into
         const dashboard = JSON.parse(localStorage.getItem('dashboard'));
         dashboard.collection_id = collection_id;
-        return this.http.post<Dashboard>(`api/dashboard/${dashboard.id}/paste`, dashboard);
+        return this.http.post<Dashboard>(`api/dashboards/${dashboard.id}/paste`, dashboard);
     }
 
     pasteChart(dashboard_id) {
         // set dashboard id chart is pasted into
         const chart = JSON.parse(localStorage.getItem('chart'));
         chart.dashboard_id = dashboard_id;
-        return this.http.post<Chart>(`/api/chart/${chart.id}/paste`, chart);
+        return this.http.post<Chart>(`/api/charts/${chart.id}/paste`, chart);
     }
 
     pasteSingleStat(dashboard_id) {
         // set dashboard id single stat is pasted into
         const stat = JSON.parse(localStorage.getItem('single_stat'));
         stat.dashboard_id = dashboard_id;
-        return this.http.post<SingleStat>(`/api/single_stat/${stat.id}/paste`, stat);
+        return this.http.post<SingleStat>(`/api/single_stats/${stat.id}/paste`, stat);
     }
 }

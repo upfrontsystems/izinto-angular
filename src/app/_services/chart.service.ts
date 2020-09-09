@@ -17,7 +17,7 @@ export class ChartService {
     }
 
     getById(id) {
-        return this.http.get<Chart>(`/api/chart/` + id);
+        return this.http.get<Chart>(`/api/charts/` + id);
     }
 
     add(chart) {
@@ -25,14 +25,14 @@ export class ChartService {
     }
 
     edit(chart) {
-        return this.http.put<Chart>(`/api/chart/` + chart.id, chart);
+        return this.http.put<Chart>(`/api/charts/` + chart.id, chart);
     }
 
     delete(chart) {
-        return this.http.delete(`/api/chart/` + chart.id);
+        return this.http.delete(`/api/charts/` + chart.id);
     }
 
     reorder(chart) {
-        return this.http.put('/api/chart/' + chart.id + '/reorder', chart);
+        return this.http.put('/api/charts/' + chart.id + '/reorder', chart);
     }
 }

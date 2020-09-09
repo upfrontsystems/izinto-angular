@@ -15,7 +15,7 @@ export class SingleStatService {
     }
 
     getById(id) {
-        return this.http.get<SingleStat>(`/api/single_stat/` + id);
+        return this.http.get<SingleStat>(`/api/single_stats/` + id);
     }
 
     add(singleStat) {
@@ -23,11 +23,11 @@ export class SingleStatService {
     }
 
     edit(singleStat) {
-        return this.http.put<SingleStat>(`/api/single_stat/` + singleStat.id, singleStat);
+        return this.http.put<SingleStat>(`/api/single_stats/` + singleStat.id, singleStat);
     }
 
     delete(singleStat) {
-        return this.http.delete(`/api/single_stat/` + singleStat.id);
+        return this.http.delete(`/api/single_stats/` + singleStat.id);
     }
 
     // store copy of single stat in local storage

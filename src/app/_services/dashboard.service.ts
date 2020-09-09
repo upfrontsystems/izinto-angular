@@ -23,7 +23,7 @@ export class DashboardService {
     }
 
     getById(id) {
-        return this.http.get<Dashboard>(`/api/dashboard/` + id);
+        return this.http.get<Dashboard>(`/api/dashboards/` + id);
     }
 
     add(dashboard) {
@@ -31,15 +31,15 @@ export class DashboardService {
     }
 
     edit(dashboard) {
-        return this.http.put<Dashboard>(`/api/dashboard/` + dashboard.id, dashboard);
+        return this.http.put<Dashboard>(`/api/dashboards/` + dashboard.id, dashboard);
     }
 
     delete(dashboard) {
-        return this.http.delete(`/api/dashboard/` + dashboard.id);
+        return this.http.delete(`/api/dashboards/` + dashboard.id);
     }
 
     reorderDashboard(dashboard) {
-        return this.http.put('/api/dashboard/' + dashboard.id + '/reorder', dashboard);
+        return this.http.put('/api/dashboards/' + dashboard.id + '/reorder', dashboard);
     }
 
     listDashboardViews() {

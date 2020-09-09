@@ -15,7 +15,7 @@ export class CollectionService {
     }
 
     getById(id) {
-        return this.http.get<Collection>(`/api/collection/` + id);
+        return this.http.get<Collection>(`/api/collections/` + id);
     }
 
     add(collection) {
@@ -23,10 +23,10 @@ export class CollectionService {
     }
 
     edit(collection) {
-        return this.http.put<Collection>(`/api/collection/` + collection.id, collection);
+        return this.http.put<Collection>(`/api/collections/` + collection.id, collection);
     }
 
     delete(collection) {
-        return this.http.delete(`/api/collection/` + collection.id);
+        return this.http.delete(`/api/collections/` + collection.id);
     }
 }
