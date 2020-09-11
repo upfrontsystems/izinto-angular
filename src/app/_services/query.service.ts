@@ -33,4 +33,8 @@ export class QueryService {
     runQuery(dashboardId, queryName, params) {
         return this.http.post(`/api/dashboards/${dashboardId}/queries/${queryName}/run`, params);
     }
+
+    testQuery(dashboardId, query, data) {
+        return this.http.post(`/api/dashboards/${dashboardId}/queries/test`, {data, query});
+    }
 }

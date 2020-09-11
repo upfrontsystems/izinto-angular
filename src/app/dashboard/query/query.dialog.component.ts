@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {QueryService} from '../../_services/query.service';
 import {Query} from '../../_models/query';
@@ -15,6 +15,7 @@ export class QueryDialogComponent implements OnInit {
     state: string;
     query: Query;
     dataSources: DataSource[] = [];
+    testResults: any;
 
     constructor(
         public dialogRef: MatDialogRef<QueryDialogComponent>,
@@ -31,10 +32,11 @@ export class QueryDialogComponent implements OnInit {
 
         this.form = this.fb.group({
             id: this.query.id,
-            name: this.query.name,
+            name: [this.query.name, [Validators.required, Validators.pattern(/^[\w]+$/)] ],
             query: this.query.query,
             dashboard_id: this.query.dashboard_id,
-            data_source_id: this.query.data_source_id
+            data_source_id: this.query.data_source_id,
+            test_data: ''
         });
 
         this.onFormChanges();
@@ -65,6 +67,17 @@ export class QueryDialogComponent implements OnInit {
     edit(form) {
         this.queryService.edit(this.query.dashboard_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
+        });
+    }
+
+    testQuery() {
+        const form = this.form.value;
+        this.queryService.testQuery(this.query.dashboard_id, form, form.test_data).subscribe(resp => {
+            if (typeof resp === 'string') {
+                this.testResults = JSON.stringify(JSON.parse(resp.toString()), null, 2);
+            } else {
+                this.testResults = JSON.stringify(resp, null, 2);
+            }
         });
     }
 

@@ -14,7 +14,6 @@ import {MediaMatcher} from '@angular/cdk/layout';
 import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
-import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {environment} from '../../environments/environment';
 import {QueryBaseComponent} from './query.base.component';
 import {AlertService} from '../_services/alert.service';
@@ -117,23 +116,8 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     }
 
     trustURL() {
-        const url = environment.scriptBaseURL + '/api/dashboard/' + this.dashboardId + '/content';
+        const url = environment.scriptBaseURL + '/api/dashboards/' + this.dashboardId + '/content';
         this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    }
-
-    editDashboard() {
-        const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '800px',
-            data: {dashboard: this.dashboard}
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.edited.emit(result);
-                this.trustURL();
-                this.postDateSelection();
-            }
-        });
     }
 
     fabClick(label) {

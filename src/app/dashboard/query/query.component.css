@@ -1,0 +1,21 @@
+.suffix-button {
+    width: 3.5em;
+    background-color: rgba(30, 136, 229, 0.2);
+    border-radius: 2px !important;
+    vertical-align: sub !important;
+}
+
+.test-results {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+
+.test-code {
+    font-family: monospace;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: pre;
+    width: 100%;
+    display: block;
+    padding: 1em;
+    overflow: auto;
+    max-height: 14em;
+}

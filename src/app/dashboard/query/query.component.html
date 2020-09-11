@@ -1,6 +1,9 @@
 <mat-card>
     <mat-card-content>
 
+        <p>Write queries to access data in your dashboard scripts.</p>
+        <p *ngIf="queries && !queries.length">Add your first query.</p>
+
         <div class="responsive-table">
             <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 

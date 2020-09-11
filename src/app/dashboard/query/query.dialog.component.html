@@ -4,15 +4,22 @@
         <div fxLayout="row wrap">
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <small *ngIf="form.get('name').hasError('required') && form.get('name').touched"
+                       class="text-danger support-text">Query name required.
+                </small>
+                <small
+                    *ngIf="form.get('name').invalid && !form.get('name').hasError('required') && form.get('name').touched"
+                    class="text-danger support-text">No spaces or special characters allowed in the query name.
+                </small>
                 <mat-form-field style="width: 100%">
-                    <input matInput placeholder="Name" [formControl]="form.get('name')" autocomplete="off">
+                    <input matInput placeholder="Query Name" [formControl]="form.get('name')" autocomplete="off">
                 </mat-form-field>
             </div>
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <textarea matInput placeholder="Query String" [formControl]="form.get('query')"
-                        rows="10"></textarea>
+                              rows="10"></textarea>
                 </mat-form-field>
             </div>
 
@@ -25,6 +32,21 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <mat-form-field style="width: 100%">
+                    <input matInput placeholder="Test data" [formControl]="form.get('test_data')">
+                    <button class="suffix-button" (click)="testQuery()" color="primary" mat-button mat-icon-button matSuffix>Test
+                    </button>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <div style="width: 100%" class="test-results">
+                    <mat-label>Test results</mat-label>
+                    <span class="test-code" [innerHTML]="testResults" disabled></span>
+                </div>
             </div>
         </div>
     </form>
