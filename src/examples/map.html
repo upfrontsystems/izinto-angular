@@ -33,8 +33,18 @@
     //     tags: String[];
     // }
 
+    var siteId = "1";
+    var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
+    var dateSelection = {};
+    var locations = [];
+    var locationIndex = 0;
+    var locationCounter = 0;
+    var locationResponse = [];
+    var selector = "Temperature";
+    var units = ['', '°C', 'm/s', '°', '%'];
+
     // load query result
-    function loadQuery() {
+    function loadMapQuery() {
         if (!dateSelection) {
             return;
         }
@@ -42,20 +52,64 @@
             'query':
                 {
                     'name': 'map_query',
-                    'values': {}
+                    'values': {site_id: siteId}
                 }
         };
 
         window.top.postMessage(query, '*');
     }
 
-    function buildMap(response) {
-        var locations = [];
-        for (var result of response) {
-            locations.push({gpsCoordinate: {lat: result.latitude, lng: result.longitude}, label: result.name});
+    function loadDeviceQuery(installationId) {
+        var query_group_by = GroupBy[dateSelection['view']];
+        var query = {
+            'query':
+                {
+                    'name': 'measurement_query',
+                    'values': {
+                        installation_id: installationId,
+                        range: dateSelection.dateRange,
+                        query_group_by: query_group_by
+                    }
+                }
+        };
+
+        window.top.postMessage(query, '*');
+    }
+
+    function buildLocations(response) {
+        locationResponse = response;
+        for (locationIndex = 0; locationIndex < response.length; locationIndex += 1) {
+            var result = response[locationIndex];
+            if (result.latitude && result.longitude) {
+                locations.push({
+                    gpsCoordinate: {lat: result.latitude, lng: result.longitude},
+                    label: result.name, id: result.id.toString()
+                });
+                this.loadDeviceQuery(result.id.toString());
+                locationCounter += 1;
+            }
+        }
+    }
+
+    function buildMeasurements(response) {
+        locationCounter -= 1;
+        if (!response.results[0].series) {
+            return;
         }
 
-        var mymap = L.map('mapid').setView([-34, 19], 150);
+        var series = response.results[0].series[0];
+        for (var loc of locations) {
+            if (series.tags.installation_id === loc.id) {
+                loc.series = series;
+            }
+        }
+        if (locationCounter === 0 && locationIndex === locationResponse.length) {
+            this.buildMap();
+        }
+    }
+
+    function buildMap() {
+        var mymap = L.map('mapid').setView([-34, 19], 10);
 
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
@@ -67,20 +121,43 @@
             zoomOffset: -1
         }).addTo(mymap);
 
+        var markers = [];
         for (var loc of locations) {
-            L.marker(loc.gpsCoordinate).addTo(mymap).bindPopup(loc.label);
+            var value = 0;
+            var unit = '';
+
+            var markup = `<h4>${loc.label}</h4>`;
+            if (loc.series) {
+                for (var ix = 1; ix < loc.series.columns.length; ix += 1) {
+                    markup = markup.concat(`<span>${loc.series.columns[ix]}: ${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
+                    if (loc.series.columns[ix] === selector) {
+                        value = loc.series.values[0][ix];
+                        unit = units[ix];
+                    }
+                }
+                markup = markup.concat(`<small>${new Date(loc.series.values[0][0])}</small>`);
+            }
+            markers.push(L.marker(loc.gpsCoordinate).addTo(mymap).bindPopup(markup).bindTooltip(loc.label));
         }
+
+        var group = L.featureGroup(markers);
+        mymap.fitBounds(group.getBounds());
     }
 
     window.addEventListener("message", receiveMessage, false);
+
     function receiveMessage(event) {
         // date selection updated load query
         if (event.data.type === 'date_range_updated') {
             dateSelection = event.data.message;
-            loadQuery();
+            loadMapQuery();
             // handle query result
         } else if (event.data.type === 'result') {
-            buildMap(JSON.parse(event.data.message.result.results));
+            if (event.data.message.result.query_name === 'map_query') {
+                buildLocations(JSON.parse(event.data.message.result.results));
+            } else if (event.data.message.result.query_name === 'measurement_query') {
+                buildMeasurements(event.data.message.result.results);
+            }
         }
     }
 
