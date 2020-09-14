@@ -33,63 +33,59 @@
     //     tags: String[];
     // }
 
-    var mymap = L.map('mapid').setView([-34, 19], 10);
+    // load query result
+    function loadQuery() {
+        if (!dateSelection) {
+            return;
+        }
+        var query = {
+            'query':
+                {
+                    'name': 'map_query',
+                    'values': {}
+                }
+        };
 
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-            '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1
-    }).addTo(mymap);
-
-    var locations = [{gpsCoordinate: {lat: -33.943373, lng: 18.836554}, label: 'Stellenbosh'},
-        {gpsCoordinate: {lat: -33.9249, lng: 18.4241}, label: 'Cape Town'},
-        {gpsCoordinate: {lat: -34.0757, lng: 18.8433}, label: 'Somerset West'},
-        {gpsCoordinate: {lat: -33.8943, lng: 18.6294}, label: 'Bellville'},
-        {gpsCoordinate: {lat: -33.7342, lng: 18.9621}, label: 'Paarl'}
-    ];
-
-    for (var loc of locations) {
-        L.marker(loc.gpsCoordinate).addTo(mymap)
-                    .bindPopup(loc.label)
-                    .openPopup();
+        window.top.postMessage(query, '*');
     }
 
-    // $.ajax({
-    //     type: "POST",
-    //     url: "https://ttnmapper.org/webapi/gwradarlist.php",
-    //     // The key needs to match your method's input parameter (case-sensitive).
-    //     data: JSON.stringify({"gateways": ["stellenbosch-technopark"]}),
-    //     contentType: "application/json; charset=utf-8",
-    //     dataType: "json",
-    //     success: function (data) {
-    //         for (gwid in data) {
-    //             // let polygon = L.polygon(latlngs,
-    //             console.log(L.geoJSON(data[gwid]));
-    //             let polygon = L.geoJSON(data[gwid],
-    //                 {
-    //                     stroke: false,
-    //                     // weight: 2,
-    //                     // color: "#000000",
-    //                     fillOpacity: 0.8,
-    //                     fillColor: "#0000FF",
-    //                     // zIndex: 25,
-    //                     // renderer: canvasRenderer
-    //                 }
-    //             ).addTo(mymap);
-    //
-    //             L.marker(locn.gpsCoordinate).addTo(mymap)
-    //                 .bindPopup(locn.label)
-    //                 .openPopup();
-    //         }
-    //     },
-    //     failure: function (errMsg) {
-    //         console.log(errMsg);
-    //     }
-    // });
+    function buildMap(response) {
+        var locations = [];
+        for (var result of response) {
+            locations.push({gpsCoordinate: {lat: result.latitude, lng: result.longitude}, label: result.name});
+        }
+
+        var mymap = L.map('mapid').setView([-34, 19], 150);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1
+        }).addTo(mymap);
+
+        for (var loc of locations) {
+            L.marker(loc.gpsCoordinate).addTo(mymap).bindPopup(loc.label);
+        }
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(event) {
+        // date selection updated load query
+        if (event.data.type === 'date_range_updated') {
+            dateSelection = event.data.message;
+            loadQuery();
+            // handle query result
+        } else if (event.data.type === 'result') {
+            buildMap(JSON.parse(event.data.message.result.results));
+        }
+    }
+
+    // send ready message
+    window.top.postMessage({'status': 'ready'}, '*');
 
 </script>
 </body>
