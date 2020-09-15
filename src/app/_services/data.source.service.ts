@@ -30,7 +30,7 @@ export class DataSourceService {
         return this.http.delete(`/api/data_sources/` + dataSource.id);
     }
 
-    loadDataQuery(dataSoureId, query) {
-        return this.http.post(`/api/data_sources/${dataSoureId}/query`, {query: query, epoch: 'ms'});
+    loadDataQuery(dataSourceId, query) {
+        return this.http.post(`/api/data_sources/${dataSourceId}/query`, {query: query, epoch: 'ms'});
     }
 }

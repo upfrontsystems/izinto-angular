@@ -31,10 +31,10 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     @Input() parent: any;
     @Input() dataSources: DataSource[];
     @Input() dateViews: DashboardView[] = [];
+    @Input() isAdmin: boolean;
     @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
     @ViewChild('iframe') iframe;
     mobileQuery: MediaQueryList;
-    canEdit = false;
     addedChart: Chart;
     addedSingleStat: SingleStat;
     contentURL: SafeResourceUrl;
@@ -78,8 +78,6 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     ngOnInit() {
         this.variables = this.dashboard.variables;
         this.dateSelection = this.dashboardService.getDateSelection();
-        // only admin can add and edit charts
-        this.canEdit = this.authService.hasRole('Administrator');
         this.trustURL();
 
         this.dashboardService.datesUpdated.subscribe((selection) => {

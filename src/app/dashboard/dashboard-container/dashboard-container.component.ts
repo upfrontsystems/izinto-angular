@@ -8,6 +8,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 import {Dashboard} from '../../_models/dashboard';
 import {DataSource} from '../../_models/data.source';
 import {DashboardView} from '../../_models/dashboard_view';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 export class Slider {
     sensitivity: number;
@@ -34,17 +35,22 @@ export class DashboardContainerComponent implements OnInit {
     slider: Slider = new Slider();
     tabs = ['View', 'Edit', 'Queries', 'Variables'];
     activeTab = 'View';
+    isAdmin = false;
 
     constructor(protected route: ActivatedRoute,
                 private router: Router,
                 protected http: HttpClient,
                 private location: Location,
+                protected authService: AuthenticationService,
                 protected collectionService: CollectionService,
                 protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
     }
 
     ngOnInit(): void {
+        // only admin can add and edit
+        this.isAdmin = this.authService.hasRole('Administrator');
+
         this.slider.sensitivity = 40;
         this.slider.activeSlide = 0;
         this.slider.slideCount = 1;

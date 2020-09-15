@@ -13,7 +13,7 @@
                     </h3>
                 </div>
 
-                <nav mat-tab-nav-bar class="m-r-15">
+                <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin">
                     <a mat-tab-link *ngFor="let tab of tabs"
                        (click)="activeTab = tab"
                        [active]="activeTab == tab"> {{tab}} </a>
@@ -22,16 +22,16 @@
 
             <!-- Dashboard view page -->
             <app-dashboard *ngIf="dashboard && activeTab == 'View'" (edited)="dashboardEdited($event)"
-                           [dashboardId]="dashboardId" [dashboard]="dashboard"
+                           [dashboardId]="dashboardId" [dashboard]="dashboard" [isAdmin]="isAdmin"
                            [dataSources]="dataSources" [parent]="parent"
                            [dateViews]="dateViews"></app-dashboard>
             <!-- Dashboard editor page -->
-            <app-dashboard-editor *ngIf="activeTab == 'Edit'" [dashboard]="dashboard"
+            <app-dashboard-editor *ngIf="isAdmin && activeTab == 'Edit'" [dashboard]="dashboard"
                                   (edited)="dashboardEdited($event)"></app-dashboard-editor>
             <!-- Dashboard queries page -->
-            <app-query *ngIf="activeTab == 'Queries'" [dashboardId]="dashboardId"></app-query>
+            <app-query *ngIf="isAdmin && activeTab == 'Queries'" [dashboardId]="dashboardId"></app-query>
             <!-- Dashboard variables page -->
-            <app-variable *ngIf="activeTab == 'Variables'" [dashboardId]="dashboardId"></app-variable>
+            <app-variable *ngIf="isAdmin && activeTab == 'Variables'" [dashboardId]="dashboardId"></app-variable>
 
         </div>
     </div>

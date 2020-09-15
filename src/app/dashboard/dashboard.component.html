@@ -28,5 +28,5 @@
         </mat-card>
     </div>
 </div>
-<app-fab-speed-dial *ngIf="canEdit && (dashboard && dashboard.type == 'old')" (buttonClick)="fabClick($event)"
+<app-fab-speed-dial *ngIf="isAdmin && (dashboard && dashboard.type == 'old')" (buttonClick)="fabClick($event)"
                     [fabButtons]="fabButtons"></app-fab-speed-dial>

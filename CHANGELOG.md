@@ -10,6 +10,7 @@ Issue Fixes
 * [#173](https://github.com/upfrontsystems/izinto-angular/issues/173) add Query model and page
 * [#179](https://github.com/upfrontsystems/izinto-angular/issues/179) Link queries per dashboard
 * [#181](https://github.com/upfrontsystems/izinto-angular/issues/181) Update dashboard UI
+* [#107](https://github.com/upfrontsystems/izinto-angular/issues/107) Add map visualisation example
 
 
 ## 0.6
