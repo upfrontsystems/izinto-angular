@@ -7,11 +7,53 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
           crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
+          integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+"
+          crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-panel-layers@1.2.6"
+            integrity="sha384-4rVgZGQX2B9Sms7EdxN709DKnXwtIoUqLUky6mxpSqxBSWkfTSAUMUvVRBZzRr3U"
+            crossorigin=""></script>
 
 </head>
+
+<style>
+    .marker-pin {
+        width: 30px;
+        height: 30px;
+        border-radius: 50% 50% 50% 0;
+        background: dodgerblue;
+        position: absolute;
+        transform: rotate(-45deg);
+        left: 50%;
+        top: 50%;
+        margin: -15px 0 0 -15px;
+    }
+
+    .marker-pin::after {
+        content: '';
+        width: 24px;
+        height: 24px;
+        margin: 3px 0 0 3px;
+        background: #fff;
+        position: absolute;
+        border-radius: 50%;
+    }
+
+    .pin-icon i {
+        position: absolute;
+        width: 22px;
+        font-size: 19px;
+        font-weight: bold;
+        left: 0;
+        right: 0;
+        margin: 10px auto;
+        text-align: center;
+    }
+</style>
+
 <body>
 
 <div id="mapid" style="width: 95%; height: 600px;"></div>
@@ -109,6 +151,12 @@
     }
 
     function buildMap() {
+        var icon = L.divIcon({
+            className: 'pin-icon',
+            html: "<div class='marker-pin'></div><i class='wi wi-night-sleet'>25%</i>",
+            iconSize: [30, 42],
+            iconAnchor: [15, 42]
+        });
         var mymap = L.map('mapid').setView([-34, 19], 10);
 
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -137,7 +185,8 @@
                 }
                 markup = markup.concat(`<small>${new Date(loc.series.values[0][0])}</small>`);
             }
-            markers.push(L.marker(loc.gpsCoordinate).addTo(mymap).bindPopup(markup).bindTooltip(loc.label));
+            markers.push(L.marker(loc.gpsCoordinate, {icon: icon}).addTo(mymap)
+                .bindPopup(markup).bindTooltip(loc.label));
         }
 
         var group = L.featureGroup(markers);
