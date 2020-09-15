@@ -21,25 +21,39 @@
 
 <style>
     .marker-pin {
-        width: 30px;
+        width: 100px;
         height: 30px;
-        border-radius: 50% 50% 50% 0;
-        background: dodgerblue;
+        border-radius: 30px 30px 30px 0;
         position: absolute;
-        transform: rotate(-45deg);
         left: 50%;
         top: 50%;
         margin: -15px 0 0 -15px;
     }
 
+    .pin-icon.Temperature .marker-pin {
+        background: firebrick;
+    }
+
+    .pin-icon.Wind.speed .marker-pin {
+        background: lightblue;
+    }
+
+    .pin-icon.Wind.Direction .marker-pin {
+        background: lightseagreen;
+    }
+
+    .pin-icon.Humidity .marker-pin {
+        background: darkblue;
+    }
+
     .marker-pin::after {
         content: '';
-        width: 24px;
+        width: 94px;
         height: 24px;
         margin: 3px 0 0 3px;
         background: #fff;
         position: absolute;
-        border-radius: 50%;
+        border-radius: 24px;
     }
 
     .pin-icon i {
@@ -50,6 +64,20 @@
         left: 0;
         right: 0;
         margin: 10px auto;
+        text-align: center;
+    }
+
+    .pin-icon.Temperature i {
+        padding-top: 3px
+    }
+
+    .pin-icon span {
+        position: absolute;
+        left: 30px;
+        top: 12px;
+        font-weight: bold;
+        font-family: monospace;
+        width: 50px;
         text-align: center;
     }
 </style>
@@ -75,6 +103,7 @@
     //     tags: String[];
     // }
 
+    var map = L.map('mapid').setView([-34, 19], 10);
     var siteId = "1";
     var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
     var dateSelection = {};
@@ -84,6 +113,11 @@
     var locationResponse = [];
     var selector = "Temperature";
     var units = ['', '°C', 'm/s', '°', '%'];
+    // TODO set wind arrow
+    var icons = {
+        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "direction-up",
+        "Humidity": "raindrops"
+    };
 
     // load query result
     function loadMapQuery() {
@@ -135,14 +169,12 @@
 
     function buildMeasurements(response) {
         locationCounter -= 1;
-        if (!response.results[0].series) {
-            return;
-        }
-
-        var series = response.results[0].series[0];
-        for (var loc of locations) {
-            if (series.tags.installation_id === loc.id) {
-                loc.series = series;
+        if (response.results[0].series) {
+            var series = response.results[0].series[0];
+            for (var loc of locations) {
+                if (series.tags.installation_id === loc.id) {
+                    loc.series = series;
+                }
             }
         }
         if (locationCounter === 0 && locationIndex === locationResponse.length) {
@@ -151,15 +183,7 @@
     }
 
     function buildMap() {
-        var icon = L.divIcon({
-            className: 'pin-icon',
-            html: "<div class='marker-pin'></div><i class='wi wi-night-sleet'>25%</i>",
-            iconSize: [30, 42],
-            iconAnchor: [15, 42]
-        });
-        var mymap = L.map('mapid').setView([-34, 19], 10);
-
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        layer = new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -167,30 +191,58 @@
             id: 'mapbox/streets-v11',
             tileSize: 512,
             zoomOffset: -1
-        }).addTo(mymap);
+        });
+        layer.addTo(map);
 
+        var measurementSelectors = [];
         var markers = [];
         for (var loc of locations) {
             var value = 0;
             var unit = '';
 
             var markup = `<h4>${loc.label}</h4>`;
+            var iconMarkup = `<div class='marker-pin'></div><i class='wi wi-${icons[selector]}'></i>`
             if (loc.series) {
+                measurementSelectors = [];
                 for (var ix = 1; ix < loc.series.columns.length; ix += 1) {
-                    markup = markup.concat(`<span>${loc.series.columns[ix]}: ${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
-                    if (loc.series.columns[ix] === selector) {
+                    var column = loc.series.columns[ix];
+                    measurementSelectors.push({
+                        name: column,
+                        icon: `<i class='wi wi-${icons[column]}'></i>`,
+                        layer: new L.tileLayer(column)
+                    });
+                    markup = markup.concat(`<span>${column}: ${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
+
+                    if (column === selector) {
+                        // TODO use first value in result
                         value = loc.series.values[0][ix];
                         unit = units[ix];
                     }
                 }
                 markup = markup.concat(`<small>${new Date(loc.series.values[0][0])}</small>`);
+                iconMarkup = iconMarkup.concat(`<span>${Math.round(value)}${unit}</span>`);
             }
-            markers.push(L.marker(loc.gpsCoordinate, {icon: icon}).addTo(mymap)
+
+            var icon = L.divIcon({
+                className: 'pin-icon ' + selector,
+                html: iconMarkup,
+                iconSize: [30, 42],
+                iconAnchor: [15, 42]
+            });
+            markers.push(L.marker(loc.gpsCoordinate, {icon: icon}).addTo(map)
                 .bindPopup(markup).bindTooltip(loc.label));
         }
 
+        var panelLayers = new L.Control.PanelLayers(measurementSelectors);
+        map.addControl(panelLayers);
+        panelLayers.on('panel:selected', function (e) {
+            map.removeControl(panelLayers);
+            selector = e.name;
+            buildMap();
+        });
+
         var group = L.featureGroup(markers);
-        mymap.fitBounds(group.getBounds());
+        map.fitBounds(group.getBounds());
     }
 
     window.addEventListener("message", receiveMessage, false);
