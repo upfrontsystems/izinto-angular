@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
           integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+"
           crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons-wind.min.css"
+          integrity="sha384-g4oQZS4k73PgyNjIkafsdCAFLLtQIPCcjGfYfTD69WV6kgccm2oCtEnbKZYMSyv4"
+          crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
@@ -80,6 +83,15 @@
         width: 50px;
         text-align: center;
     }
+
+    span.leaflet-panel-layers-title {
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    i.leaflet-panel-layers-icon i.wi {
+        width: 15px;
+    }
 </style>
 
 <body>
@@ -111,11 +123,11 @@
     var locationIndex = 0;
     var locationCounter = 0;
     var locationResponse = [];
-    var selector = "Temperature";
+    var columns = [];
     var units = ['', '°C', 'm/s', '°', '%'];
     // TODO set wind arrow
     var icons = {
-        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "direction-up",
+        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "towards-336-deg",
         "Humidity": "raindrops"
     };
 
@@ -171,6 +183,7 @@
         locationCounter -= 1;
         if (response.results[0].series) {
             var series = response.results[0].series[0];
+            columns = series.columns;
             for (var loc of locations) {
                 if (series.tags.installation_id === loc.id) {
                     loc.series = series;
@@ -194,55 +207,88 @@
         });
         layer.addTo(map);
 
+        // build pins displaying value per layer
+        var pins = buildPins();
+        // build text in popup from pin
+        pins = buildPopups(pins);
+        // zoom to fix pins
+        var group = L.featureGroup(pins[columns[1]]);
+        map.fitBounds(group.getBounds());
+
+        // add pins layers to map
+        buildMeasurementToggle(pins);
+    }
+
+    function buildMeasurementToggle(pins) {
         var measurementSelectors = [];
-        var markers = [];
-        for (var loc of locations) {
-            var value = 0;
-            var unit = '';
-
-            var markup = `<h4>${loc.label}</h4>`;
-            var iconMarkup = `<div class='marker-pin'></div><i class='wi wi-${icons[selector]}'></i>`
-            if (loc.series) {
-                measurementSelectors = [];
-                for (var ix = 1; ix < loc.series.columns.length; ix += 1) {
-                    var column = loc.series.columns[ix];
-                    measurementSelectors.push({
-                        name: column,
-                        icon: `<i class='wi wi-${icons[column]}'></i>`,
-                        layer: new L.tileLayer(column)
-                    });
-                    markup = markup.concat(`<span>${column}: ${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
-
-                    if (column === selector) {
-                        // TODO use first value in result
-                        value = loc.series.values[0][ix];
-                        unit = units[ix];
-                    }
-                }
-                markup = markup.concat(`<small>${new Date(loc.series.values[0][0])}</small>`);
-                iconMarkup = iconMarkup.concat(`<span>${Math.round(value)}${unit}</span>`);
-            }
-
-            var icon = L.divIcon({
-                className: 'pin-icon ' + selector,
-                html: iconMarkup,
-                iconSize: [30, 42],
-                iconAnchor: [15, 42]
+        for (var ix = 1; ix < columns.length; ix += 1) {
+            measurementSelectors.push({
+                name: columns[ix],
+                active: ix === 1,
+                icon: `<i class='wi wi-${icons[columns[ix]]}'></i>`,
+                layer: L.layerGroup(pins[columns[ix]])
             });
-            markers.push(L.marker(loc.gpsCoordinate, {icon: icon}).addTo(map)
-                .bindPopup(markup).bindTooltip(loc.label));
         }
 
-        var panelLayers = new L.Control.PanelLayers(measurementSelectors);
+        var panelLayers = new L.Control.PanelLayers([{
+            group: 'Show measurement',
+            layers: measurementSelectors
+        }]);
         map.addControl(panelLayers);
-        panelLayers.on('panel:selected', function (e) {
-            map.removeControl(panelLayers);
-            selector = e.name;
-            buildMap();
-        });
+    }
 
-        var group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds());
+    function buildPins() {
+        var pins = {};
+        for (var ix = 1; ix < columns.length; ix += 1) {
+            pins[columns[ix]] = [];
+        }
+
+        for (var loc of locations) {
+            for (var ix = 1; ix < columns.length; ix += 1) {
+                var column = columns[ix];
+                var value = '';
+                var unit = '';
+                var iconMarkup = `<div class='marker-pin'></div><i class='wi wi-${icons[column]}'></i>`;
+                if (loc.series) {
+                    // TODO using first value in result
+                    value = Math.round(loc.series.values[0][ix]);
+                    unit = units[ix];
+                }
+                iconMarkup = iconMarkup.concat(`<span>${value}${unit}</span>`);
+
+                var icon = L.divIcon({
+                    className: 'pin-icon ' + column,
+                    html: iconMarkup,
+                    iconSize: [30, 42],
+                    iconAnchor: [15, 42]
+                });
+                pins[column].push(L.marker(loc.gpsCoordinate, {icon: icon}).bindTooltip(loc.label));
+            }
+        }
+        return pins;
+    }
+
+    function buildPopups(pins) {
+        for (var lix = 0; lix < locations.length; lix += 1) {
+            var loc = locations[lix];
+            var markup = `<h4>${loc.label}</h4>`;
+            var date = new Date();
+            for (var ix = 1; ix < columns.length; ix += 1) {
+                var column = columns[ix];
+                markup = markup.concat(`<span>${column}: `);
+                if (loc.series) {
+                    date = new Date(loc.series.values[0][0]);
+                    markup = markup.concat(`${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
+                } else {
+                    markup = markup.concat(`</span><br>`);
+                }
+            }
+            markup = markup.concat(`<small>${date}</small>`);
+            for (var ix = 1; ix < columns.length; ix += 1) {
+                pins[columns[ix]][lix].bindPopup(markup);
+            }
+        }
+        return pins;
     }
 
     window.addEventListener("message", receiveMessage, false);
