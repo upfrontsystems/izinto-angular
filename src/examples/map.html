@@ -10,9 +10,6 @@
     <link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
           integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+"
           crossorigin=""/>
-    <link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons-wind.min.css"
-          integrity="sha384-g4oQZS4k73PgyNjIkafsdCAFLLtQIPCcjGfYfTD69WV6kgccm2oCtEnbKZYMSyv4"
-          crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
@@ -125,9 +122,8 @@
     var locationResponse = [];
     var columns = [];
     var units = ['', '°C', 'm/s', '°', '%'];
-    // TODO set wind arrow
     var icons = {
-        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "towards-336-deg",
+        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "thermometer-internal",
         "Humidity": "raindrops"
     };
 
@@ -253,6 +249,11 @@
                     // TODO using first value in result
                     value = Math.round(loc.series.values[0][ix]);
                     unit = units[ix];
+
+                    // rotate wind direction
+                    if (column === 'Wind Direction') {
+                        iconMarkup = `<div class='marker-pin'></div><i style='transform: rotate(${value - 90}deg)' class='wi wi-direction-left'></i>`;
+                    }
                 }
                 iconMarkup = iconMarkup.concat(`<span>${value}${unit}</span>`);
 
