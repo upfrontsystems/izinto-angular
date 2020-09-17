@@ -376,7 +376,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             ymin = ymin - scale * pixelHeight / this.chartHeight;
         }
         if (ascending) {
-            return d3Scale.scaleLinear().domain([ymin, ymax]).range([0, this.innerHeight]);
+            return d3Scale.scaleLinear().domain([ymin, ymax]).range([this.innerHeight, 0]);
         } else {
             return d3Scale.scaleLinear().domain([ymax, ymin]).range([0, this.innerHeight]);
         }
@@ -776,11 +776,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                     .attr('class', bar_selector)
                     .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
                     .attr('y', function (d: Record) {
-                        return height - yScale(d.value);
+                        return yScale(Math.max(0, +d.value));
                     })
                     .attr('width', bandwidth - padding * 2)
                     .attr('height', function (d: Record) {
-                        return yScale(d.value);
+                        return Math.abs(yScale(d.value) - yScale(0));
                     })
                     .attr('fill', function (d: Record) {
                         if (fillFunc) {
