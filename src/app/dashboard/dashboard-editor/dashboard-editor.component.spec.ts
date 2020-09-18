@@ -37,6 +37,7 @@ describe('DashboardEditorComponent', () => {
     const dashboard = new Dashboard();
     dashboard.users = [];
     dashboard.title = 'Title';
+    dashboard.collection_id = 1;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
