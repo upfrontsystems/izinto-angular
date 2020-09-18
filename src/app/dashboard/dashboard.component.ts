@@ -107,7 +107,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     // load query and return result to iframe
     runQuery(queryName, params) {
         this.queryService.runQuery(this.dashboardId, queryName, params).subscribe(resp => {
-            const result = {result:  {query_name: queryName, results: resp}};
+            const result = {result: {query_name: queryName, results: resp}};
             const data = {type: 'result', message: result};
             this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
         });

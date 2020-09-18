@@ -5,9 +5,9 @@
             <app-dashboard-date-selector [mobileQueryMatches]="mobileQuery.matches" [dateViews]="dateViews">
             </app-dashboard-date-selector>
 
-            <mat-card-content>
+            <mat-card-content [class]="'dashboard-' + dashboard.type">
 
-                <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
+                <mat-card-subtitle *ngIf="dashboard.description">{{dashboard.description}}</mat-card-subtitle>
 
                 <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId"
                                       [addedSingleStat]="addedSingleStat"

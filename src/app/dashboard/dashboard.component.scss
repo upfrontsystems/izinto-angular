@@ -97,11 +97,18 @@ button.edit-button {
 .html-content {
     font-family: monospace;
     background: whitesmoke;
-    padding: 0px !important;
+    padding: 0 !important;
 }
 
 iframe {
     width: 100%;
-    height: 90%;
-    padding: 1em;
+    height: 100%;
+}
+
+.mat-card-content.dashboard-new {
+    padding: 0 0 60px;
+}
+
+mat-card.full-height {
+    overflow: hidden;
 }
