@@ -72,6 +72,7 @@ export class QueryDialogComponent implements OnInit {
 
     testQuery() {
         const form = this.form.value;
+        this.testResults = '...';
         this.queryService.testQuery(this.query.dashboard_id, form, form.test_data).subscribe(resp => {
             if (typeof resp === 'string') {
                 this.testResults = JSON.stringify(JSON.parse(resp.toString()), null, 2);

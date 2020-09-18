@@ -139,6 +139,8 @@
     function receiveMessage(event) {
         // date selection updated load query
         if (event.data.type === 'date_range_updated') {
+            results = {};
+            ready = false;
             dateSelection = event.data.message;
             loadForecastQuery();
             loadRainQuery();

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+<!-- CSS Reset -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+<!-- Milligram CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+<style>
+    th {
+        text-transform: capitalize;
+    }
+
+    table {
+        width: 80%;
+        margin: 2em auto auto;
+        font-size: 15px;
+    }
+
+    td {
+        min-width: 1em;
+    }
+</style>
+
+<body>
+
+<script type="module">
+    import 'https://d3js.org/d3-fetch.v1.min.js';
+    import 'https://d3js.org/d3-selection.v1.min.js';
+
+    var siteId = "3";
+    var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '30d'};
+    var dateSelection = {};
+    var locations = [];
+    var locationIndex = 0;
+    var locationCounter = 0;
+    var locationResponse = [];
+
+    // load query result
+    function loadSiteQuery() {
+        if (!dateSelection) {
+            return;
+        }
+        var query = {
+            'query':
+                {
+                    'name': 'site_query',
+                    'values': {site_id: siteId}
+                }
+        };
+        window.top.postMessage(query, '*');
+    }
+
+    function loadInstallationQuery(installationId) {
+        var query_group_by = GroupBy[dateSelection['view']];
+        var query = {
+            'query':
+                {
+                    'name': 'installation_query',
+                    'values': {
+                        installation_id: installationId,
+                        range: dateSelection.dateRange,
+                        query_group_by: query_group_by
+                    }
+                }
+        };
+        window.top.postMessage(query, '*');
+    }
+
+    function buildLocations(response) {
+        locationResponse = response;
+        for (locationIndex = 0; locationIndex < response.length; locationIndex += 1) {
+            var result = response[locationIndex];
+            if (result.latitude && result.longitude) {
+                locations.push({
+                    gpsCoordinate: {lat: result.latitude, lng: result.longitude},
+                    label: result.name, id: result.id.toString()
+                });
+                loadInstallationQuery(result.id.toString());
+                locationCounter += 1;
+            }
+        }
+    }
+
+    function buildMeasurements(response) {
+        locationCounter -= 1;
+        if (response.results[0].series) {
+            var series = response.results[0].series[0];
+            for (var loc of locations) {
+                if (series.tags.installation_id === loc.id) {
+                    loc.series = series;
+                }
+            }
+        }
+        if (locationCounter === 0 && locationIndex === locationResponse.length) {
+            buildTable();
+        }
+    }
+
+    // build d3 table with results
+    function buildTable() {
+        var headers = locations.map(loc => loc.label);
+        headers.unshift('Installation:');
+        d3.selectAll('table').remove();
+        var table = d3.select("body").append("table"),
+            thead = table.append("thead"),
+            tbody = table.append("tbody");
+
+        // append the header row
+        thead.append("tr").selectAll("th").data(headers).enter()
+            .append("th")
+            .html(function (d, i) {
+                if (i > 0) {
+                    return '<span style="text-align: right;">' + d + '</span>';
+                }
+                return d;
+            });
+
+        var data = [];
+        var dates = [];
+        // build rows
+        for (var location of locations) {
+            if (location.series && location.series.values.length > dates.length) {
+                dates = location.series.values;
+            }
+        }
+        for (var ix = 0; ix < dates.length; ix += 1) {
+            data.push([dates[ix][0]]);
+            for (var location of locations) {
+                if (location.series && location.series.values[ix]) {
+                    data[ix].push(location.series.values[ix][1]);
+                } else {
+                    data[ix].push(null);
+                }
+            }
+        }
+
+        var rows = tbody.selectAll('tr').data(data).enter()
+            .append('tr');
+
+        // create a row for each object in the data
+        rows.selectAll('td')
+            .data(function (row) {
+                return row;
+            })
+            .enter()
+            .append('td')
+            .html(function (d, i) {
+                if (i > 0) {
+                    if (d === null) {
+                        return '';
+                    }
+                    return '<span class="float-right">' + Math.round(d) + ' mm</span>';
+                } else {
+                    var date = new Date(d);
+                    var options = {month: 'short', day: 'numeric'};
+                    if (dateSelection.view === 'Hour' || dateSelection.view === 'Day') {
+                        return date.toLocaleString('en-US', {hour: 'numeric', minute: '2-digit', hour12: false});
+                    } else if (dateSelection.view === 'Year') {
+                        options = {year: 'numeric', month: 'short'};
+                    }
+                    return date.toLocaleDateString('en-US', options);
+                }
+            });
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
+    function receiveMessage(event) {
+        // date selection updated load query
+        if (event.data.type === 'date_range_updated') {
+            locations = [];
+            locationIndex = 0;
+            locationCounter = 0;
+            locationResponse = [];
+            dateSelection = event.data.message;
+            loadSiteQuery();
+            // handle query result
+        } else if (event.data.type === 'result') {
+            if (event.data.message.result.query_name === 'site_query') {
+                buildLocations(JSON.parse(event.data.message.result.results));
+            } else if (event.data.message.result.query_name === 'installation_query') {
+                buildMeasurements(event.data.message.result.results);
+            }
+        }
+    }
+
+    // send ready message
+    window.top.postMessage({'status': 'ready'}, '*');
+
+</script>
+</body>
+</html>

@@ -169,7 +169,7 @@
                     gpsCoordinate: {lat: result.latitude, lng: result.longitude},
                     label: result.name, id: result.id.toString()
                 });
-                this.loadDeviceQuery(result.id.toString());
+                loadDeviceQuery(result.id.toString());
                 locationCounter += 1;
             }
         }
@@ -187,7 +187,7 @@
             }
         }
         if (locationCounter === 0 && locationIndex === locationResponse.length) {
-            this.buildMap();
+            buildMap();
         }
     }
 
@@ -297,6 +297,10 @@
     function receiveMessage(event) {
         // date selection updated load query
         if (event.data.type === 'date_range_updated') {
+            locations = [];
+            locationIndex = 0;
+            locationCounter = 0;
+            locationResponse = [];
             dateSelection = event.data.message;
             loadMapQuery();
             // handle query result
