@@ -35,7 +35,7 @@ export class QueryDialogComponent implements OnInit {
             name: [this.query.name, [Validators.required, Validators.pattern(/^[\w]+$/)] ],
             query: this.query.query,
             dashboard_id: this.query.dashboard_id,
-            data_source_id: this.query.data_source_id,
+            data_source_id: [this.query.data_source_id, Validators.required],
             test_data: ''
         });
 

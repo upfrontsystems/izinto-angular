@@ -11,6 +11,7 @@ Issue Fixes
 * [#179](https://github.com/upfrontsystems/izinto-angular/issues/179) Link queries per dashboard
 * [#181](https://github.com/upfrontsystems/izinto-angular/issues/181) Update dashboard UI
 * [#107](https://github.com/upfrontsystems/izinto-angular/issues/107) Add map visualisation example
+* [#184](https://github.com/upfrontsystems/izinto-angular/issues/184) Add forecasts table
 
 
 ## 0.6
