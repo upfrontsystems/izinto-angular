@@ -7,7 +7,7 @@
 
             <mat-card-content [class]="'dashboard-' + dashboard.type">
 
-                <mat-card-subtitle *ngIf="dashboard.description">{{dashboard.description}}</mat-card-subtitle>
+                <mat-card-subtitle *ngIf="dashboard.description" class="m-l-30">{{dashboard.description}}</mat-card-subtitle>
 
                 <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId"
                                       [addedSingleStat]="addedSingleStat"

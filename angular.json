@@ -25,7 +25,8 @@
             "styles": [
               "src/styles.css",
               "node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
-              "src/assets/styles/style.scss"
+              "src/assets/styles/style.scss",
+              "node_modules/weather-icons-npm/css/weather-icons.min.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js"

@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
 <!-- Milligram CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+<!-- weather icons -->
+<link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
+      integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+"
+      crossorigin=""/>
 
 <style>
     th {
@@ -21,6 +25,7 @@
     .arrow {
         float: right;
         color: black;
+        font-size: 18px;
     }
 
 </style>
@@ -96,7 +101,7 @@
                     var record = parseFloat(d).toFixed(decimals[i]) + units[i];
                     var arrow = '';
                     if (i === 3) {
-                        arrow = '<b class="arrow" style="transform: rotate(' + (d - 90) + 'deg)">&#8592</b>';
+                        arrow = `<i style='transform: rotate(${d - 90}deg)' class='wi wi-direction-left arrow'></i>`;
                     }
                     return arrow + '<span class="float-right" style="color: ' + colours[i] + '; margin-right: 15px">' + record + '</span>';
                 } else {

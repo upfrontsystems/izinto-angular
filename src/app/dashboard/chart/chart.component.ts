@@ -918,34 +918,19 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
-        const xint = arrowX,
-            x = xint.toString(),
-            x_min_3 = (xint - 3).toString(),
-            x_plus_3 = (xint + 3).toString(),
-            position = this.chartHeight - (this.margin.bottom * 1.35);
+        const position = this.chartHeight - this.margin.bottom;
             // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
             // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
             // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
             // a wind direction of 0° (360°); a wind blowing from the east has a wind direction of 90°; a wind blowing from the
             // south has a wind direction of 180°; and a wind blowing from the west has a wind direction of 270°.
-            direction += 180;
-        let d = '',
-            arrowStart = 0;
+            direction -= 90;
+        const arrowStart = arrowX + 16;
 
-        if (arrowWidth <= 20) {
-            d = 'M' + x + ',10L' + x + ',5L' + x_min_3 + ',5L' + x + ',1L' + x_plus_3 + ',5L' + x + ',5';
-            arrowStart = 16 + (arrowWidth / 2.0 - 10);
-        } else {
-            d = 'M' + x + ',15L' + x + ',5L' + x_min_3 + ',5L' + x + ',1L' + x_plus_3 + ',5L' + x + ',5';
-            arrowStart = 16 + (arrowWidth / 2.0 - 5);
-        }
-
-        svg.append('path')
-            .attr('d', d)
-            .attr('class', 'arrowHead')
-            .attr('fill', 'black')
-            .attr('stroke', 'black')
-            .attr('stroke-width', '2px')
-            .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ', ' + x + ', 7.5)');
+        svg.append('text')
+            .attr('font-family', 'WeatherIcons')
+            .attr('font-size', '18px')
+            .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ')')
+            .text(function (a) { return '\uf048'; });
     }
 }
