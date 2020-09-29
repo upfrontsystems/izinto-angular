@@ -371,7 +371,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
-            const pixelHeight = this.margin.bottom * 0.9;
+            const pixelHeight = this.margin.bottom;
             const scale = ymax - ymin;
             ymin = ymin - scale * pixelHeight / this.chartHeight;
         }
@@ -918,19 +918,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     windArrow(idx, arrowX, arrowWidth, direction, svg) {
-        const position = this.chartHeight - this.margin.bottom;
+        const position = this.chartHeight - this.margin.bottom,
+              arrowStart = arrowX + 16;
             // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
             // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
             // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
             // a wind direction of 0° (360°); a wind blowing from the east has a wind direction of 90°; a wind blowing from the
             // south has a wind direction of 180°; and a wind blowing from the west has a wind direction of 270°.
-            direction -= 90;
-        const arrowStart = arrowX + 16;
-
         svg.append('text')
             .attr('font-family', 'WeatherIcons')
             .attr('font-size', '18px')
             .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ')')
-            .text(function (a) { return '\uf048'; });
+            .text(function (a) { return '\uf044'; });
     }
 }

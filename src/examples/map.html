@@ -21,64 +21,31 @@
 
 <style>
     .marker-pin {
-        width: 100px;
-        height: 30px;
-        border-radius: 30px 30px 30px 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.4);
+        border: 2px solid;
         position: absolute;
-        left: 50%;
-        top: 50%;
-        margin: -15px 0 0 -15px;
-    }
-
-    .pin-icon.Temperature .marker-pin {
-        background: firebrick;
-    }
-
-    .pin-icon.Wind.speed .marker-pin {
-        background: lightblue;
-    }
-
-    .pin-icon.Wind.Direction .marker-pin {
-        background: lightseagreen;
-    }
-
-    .pin-icon.Humidity .marker-pin {
-        background: darkblue;
-    }
-
-    .marker-pin::after {
-        content: '';
-        width: 94px;
-        height: 24px;
-        margin: 3px 0 0 3px;
-        background: #fff;
-        position: absolute;
-        border-radius: 24px;
+        top: 40px;
+        left: -12px;
     }
 
     .pin-icon i {
-        position: absolute;
-        width: 22px;
-        font-size: 19px;
+        width: 100%;
+        font-size: 18px;
         font-weight: bold;
-        left: 0;
-        right: 0;
-        margin: 10px auto;
         text-align: center;
-    }
-
-    .pin-icon.Temperature i {
-        padding-top: 3px
+        padding-top: 5px;
     }
 
     .pin-icon span {
-        position: absolute;
-        left: 30px;
-        top: 12px;
         font-weight: bold;
-        font-family: monospace;
-        width: 50px;
+        width: 100%;
         text-align: center;
+        margin: auto;
+        display: block;
+        font-size: 14px;
     }
 
     span.leaflet-panel-layers-title {
@@ -88,6 +55,33 @@
 
     i.leaflet-panel-layers-icon i.wi {
         width: 15px;
+    }
+
+    h4 {
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    h5 {
+        font-size: 16px;
+        margin-top: 0;
+        margin-bottom: 0;
+        text-transform: capitalize;
+    }
+
+    p.sub {
+        font-weight: bold;
+        margin: 10px;
+    }
+
+    p.sub i {
+        font-size: 20px;
+    }
+
+    p.sub span {
+        font-size: 16px;
+        padding-left: 10px
     }
 </style>
 
@@ -100,19 +94,8 @@
 </script>
 
 <script>
-
-    // class Location {
-    //     gpsCoordinate: String;
-    //     label: String;
-    //     thresholds: number[];
-    //     textColours: String[];
-    //     markerColours: String[];
-    //     query: String;
-    //     url: String;
-    //     tags: String[];
-    // }
-
     var map = L.map('mapid').setView([-34, 19], 10);
+
     var siteId = "1";
     var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
     var dateSelection = {};
@@ -120,12 +103,26 @@
     var locationIndex = 0;
     var locationCounter = 0;
     var locationResponse = [];
-    var columns = [];
-    var units = ['', '°C', 'm/s', '°', '%'];
-    var icons = {
-        "Temperature": "thermometer", "Wind speed": "strong-wind", "Wind Direction": "thermometer-internal",
-        "Humidity": "raindrops"
-    };
+    var weatherIcons = {clear: 'day-sunny'};
+    // labels and formats for response columns
+    var columnSpecifications = [
+        {
+            fieldname: 'temperature', label: 'Temperature', unit: '°C', decimals: 0, colour: 'FireBrick',
+            icon: 'thermometer', format: '${Math.round(value)}${unit}</>'
+        },
+        {
+            fieldname: 'wind', label: 'Wind speed', unit: 'm/s', decimals: 0, colour: 'SeaGreen',
+            icon: 'strong-wind', format: '${Math.round(value)}${unit}</>'
+        },
+        {
+            fieldname: 'windDirection', label: 'Wind Direction', unit: '°', decimals: 0, colour: 'lightseagreen',
+            icon: 'thermometer-internal', format: '${Math.round(value)}${unit}'
+        },
+        {
+            fieldname: 'humidity', label: 'Humidity', unit: '%', decimals: 0, colour: 'SteelBlue',
+            icon: 'raindrops', format: '${Math.round(value)}${unit}'
+        }
+    ];
 
     // load query result
     function loadMapQuery() {
@@ -150,6 +147,25 @@
                 {
                     'name': 'measurement_query',
                     'values': {
+                        installation_id: installationId.toString(),
+                        range: dateSelection.dateRange,
+                        query_group_by: query_group_by
+                    }
+                }
+        };
+
+        window.top.postMessage(query, '*');
+    }
+
+    function loadForecastQuery(installationId) {
+        // installation id as float
+        installationId = String(parseFloat(installationId).toFixed(1));
+        var query_group_by = GroupBy[dateSelection['view']];
+        var query = {
+            'query':
+                {
+                    'name': 'forecast_query',
+                    'values': {
                         installation_id: installationId,
                         range: dateSelection.dateRange,
                         query_group_by: query_group_by
@@ -169,23 +185,43 @@
                     gpsCoordinate: {lat: result.latitude, lng: result.longitude},
                     label: result.name, id: result.id.toString()
                 });
-                loadDeviceQuery(result.id.toString());
+                loadDeviceQuery(result.id);
                 locationCounter += 1;
             }
         }
     }
 
     function buildMeasurements(response) {
-        locationCounter -= 1;
         if (response.results[0].series) {
             var series = response.results[0].series[0];
-            columns = series.columns;
             for (var loc of locations) {
                 if (series.tags.installation_id === loc.id) {
                     loc.series = series;
+                    // load sky icon for installation
+                    loadForecastQuery(loc.id);
+                }
+            }
+        } else {
+            locationCounter -= 1;
+            if (locationCounter === 0 && locationIndex === locationResponse.length) {
+                buildMap();
+            }
+        }
+    }
+
+    function buildForecasts(response) {
+        locationCounter -= 1;
+        if (response.results[0].series) {
+            var series = response.results[0].series[0];
+            for (var loc of locations) {
+                if (parseInt(series.values[0][1]) === parseInt(loc.id)) {
+                    // add forecast result to location data
+                    loc.series.values[0].push(series.values[0][2]);
+                    loc.series.values[0].push(series.values[0][2]);
                 }
             }
         }
+
         if (locationCounter === 0 && locationIndex === locationResponse.length) {
             buildMap();
         }
@@ -212,7 +248,8 @@
         // build text in popup from pin
         pins = buildPopups(pins);
         // zoom to fix pins
-        var group = L.featureGroup(pins[columns[1]]);
+        var temperature = columnSpecifications[0];
+        var group = L.featureGroup(pins[temperature.fieldname]);
         map.fitBounds(group.getBounds());
 
         // add pins layers to map
@@ -221,12 +258,12 @@
 
     function buildMeasurementToggle(pins) {
         var measurementSelectors = [];
-        for (var ix = 1; ix < columns.length; ix += 1) {
+        for (var spec of columnSpecifications) {
             measurementSelectors.push({
-                name: columns[ix],
-                active: ix === 1,
-                icon: `<i class='wi wi-${icons[columns[ix]]}'></i>`,
-                layer: L.layerGroup(pins[columns[ix]])
+                name: spec.label,
+                active: spec.fieldname === 'temperature',
+                icon: `<i class='wi wi-${spec.icon}'></i>`,
+                layer: L.layerGroup(pins[spec.fieldname])
             });
         }
 
@@ -241,35 +278,37 @@
 
     function buildPins() {
         var pins = {};
-        for (var ix = 1; ix < columns.length; ix += 1) {
-            pins[columns[ix]] = [];
+        for (var spec of columnSpecifications) {
+            pins[spec.fieldname] = [];
         }
 
         for (var loc of locations) {
-            for (var ix = 1; ix < columns.length; ix += 1) {
-                var column = columns[ix];
-                var value = '';
-                var unit = '';
-                var iconMarkup = `<div class='marker-pin'></div><i class='wi wi-${icons[column]}'></i>`;
+            for (var ix = 0; ix < columnSpecifications.length; ix += 1) {
+                var spec = columnSpecifications[ix];
+                var record = '';
+                var clas = `class='marker-pin' style='border-color: ${spec.colour}'`;
+                var weatherIcon = `class='wi wi-${spec.icon}'`;
                 if (loc.series) {
-                    // TODO using first value in result
-                    value = Math.round(loc.series.values[0][ix]);
-                    unit = units[ix];
+                    // only using 1 result
+                    var value = loc.series.values[0][ix + 1];
+                    var unit = spec.unit;
+                    // format record value
+                    record = eval('`' + spec.format + '`');
 
                     // rotate wind direction
-                    if (column === 'Wind Direction') {
-                        iconMarkup = `<div class='marker-pin'></div><i style='transform: rotate(${value - 90}deg)' class='wi wi-direction-left'></i>`;
+                    if (spec.fieldname === 'windDirection') {
+                        weatherIcon = `style='transform: rotate(${value}deg)' class='wi wi-direction-down'`;
                     }
                 }
-                iconMarkup = iconMarkup.concat(`<span>${value}${unit}</span>`);
+                var iconMarkup = `<div ${clas}><i ${weatherIcon}></i><span>${record}</span></div>`;
 
                 var icon = L.divIcon({
-                    className: 'pin-icon ' + column,
+                    className: 'pin-icon ' + spec.icon,
                     html: iconMarkup,
                     iconSize: [30, 42],
                     iconAnchor: [15, 42]
                 });
-                pins[column].push(L.marker(loc.gpsCoordinate, {icon: icon}).bindTooltip(loc.label));
+                pins[spec.fieldname].push(L.marker(loc.gpsCoordinate, {icon: icon}).bindTooltip(loc.label));
             }
         }
         return pins;
@@ -278,21 +317,49 @@
     function buildPopups(pins) {
         for (var lix = 0; lix < locations.length; lix += 1) {
             var loc = locations[lix];
-            var markup = `<h4>${loc.label}</h4>`;
             var date = new Date();
-            for (var ix = 1; ix < columns.length; ix += 1) {
-                var column = columns[ix];
-                markup = markup.concat(`<span>${column}: `);
+            var markup = `<h4>${loc.label}</h4>`;
+
+            // add forecasts text and icon
+            if (loc.series && loc.series.values[0][6]) {
+                date = new Date(loc.series.values[0][0]);
+                var forecastDescription = loc.series.values[0][6],
+                    forecastIcon = weatherIcons[loc.series.values[0][5]] || loc.series.values[0][5],
+                    unit = columnSpecifications[0].unit,
+                    value = loc.series.values[0][1],
+                    record = eval('`' + columnSpecifications[0].format + '`');
+                markup = markup.concat(`<h5>${forecastDescription}</h5>`);
+                markup = markup.concat(`<p class="sub"><i class='wi wi-${forecastIcon}'></i><span>${record}</span></p>`);
+            } else if (loc.series) {
+                var unit = columnSpecifications[0].unit,
+                    value = loc.series.values[0][1],
+                    record = eval('`' + columnSpecifications[0].format + '`');
+                markup = markup.concat(`<p class="sub"><span>${record}</span></p>`);
+            }
+
+            // temperature included in heading
+            for (var ix = 1; ix < columnSpecifications.length; ix += 1) {
+                var spec = columnSpecifications[ix];
+                markup = markup.concat(`<span>${spec.label}: `);
                 if (loc.series) {
-                    date = new Date(loc.series.values[0][0]);
-                    markup = markup.concat(`${Math.round(loc.series.values[0][ix])} ${units[ix]}</span><br>`);
+                    var unit = spec.unit,
+                        value = loc.series.values[0][ix + 1],
+                        record = eval('`' + spec.format + '`');
+                    markup = markup.concat(`${record}</span><br>`);
                 } else {
                     markup = markup.concat(`</span><br>`);
                 }
             }
-            markup = markup.concat(`<small>${date}</small>`);
-            for (var ix = 1; ix < columns.length; ix += 1) {
-                pins[columns[ix]][lix].bindPopup(markup);
+            date = date.toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            markup = markup.concat(`<p><small>${date}</small></p>`);
+            for (var spec of columnSpecifications) {
+                pins[spec.fieldname][lix].bindPopup(markup);
             }
         }
         return pins;
@@ -315,6 +382,8 @@
                 buildLocations(JSON.parse(event.data.message.result.results));
             } else if (event.data.message.result.query_name === 'measurement_query') {
                 buildMeasurements(event.data.message.result.results);
+            } else if (event.data.message.result.query_name === 'forecast_query') {
+                buildForecasts(event.data.message.result.results);
             }
         }
     }
