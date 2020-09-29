@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
 <!-- Milligram CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+<!-- weather icons -->
+<link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
+      integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+"
+      crossorigin=""/>
 
 <style>
     th {
@@ -22,6 +26,11 @@
         min-width: 1em;
     }
 
+    i.wi {
+        color: deepskyblue;
+        padding-right: 10px;
+    }
+
 </style>
 
 <body>
@@ -33,6 +42,7 @@
     var dateSelection = {};
     var ready = false;
     var results = {};
+    var weatherIcons = {clear: 'day-sunny'};
 
     // load query result on forecasts db
     function loadForecastQuery() {
@@ -54,6 +64,7 @@
         };
         window.top.postMessage(query, '*');
     }
+
     // load query result on aggregations db
     function loadRainQuery() {
         if (!dateSelection) {
@@ -81,7 +92,7 @@
             return;
         }
 
-        var headers = ['Date', 'Actual', 'Forecast'];
+        var headers = ['Date', 'Actual', 'Forecast', ''];
         d3.selectAll('table').remove();
         var table = d3.select("body").append("table"),
             thead = table.append("thead"),
@@ -102,8 +113,12 @@
         var forecast = results['forecasts_query'].series ? results['forecasts_query'].series[0].values : [];
         var actual = results['aggregations_query'].series ? results['aggregations_query'].series[0].values : [];
         for (var ix = 0; ix < Math.max(forecast.length, actual.length); ix += 1) {
-            data.push([actual[ix] ? actual[ix][0] : forecast[ix][0],
-                actual[ix] && actual[ix][1], forecast[ix] && forecast[ix][1]]);
+            data.push([
+                actual[ix] ? actual[ix][0] : forecast[ix][0],
+                actual[ix] && actual[ix][1],
+                forecast[ix] && forecast[ix][1],
+                forecast[ix] && ix
+            ]);
         }
 
         var rows = tbody.selectAll('tr').data(data).enter()
@@ -116,12 +131,7 @@
             .enter()
             .append('td')
             .html(function (d, i) {
-                if (i > 0) {
-                    if (d === undefined || d === null) {
-                        return '';
-                    }
-                    return '<span class="float-right">' + parseFloat(d).toFixed(1) + ' °C</span>';
-                } else {
+                if (i === 0) {
                     var date = new Date(d);
                     var options = {month: 'short', day: 'numeric'};
                     if (dateSelection.view === 'Hour' || dateSelection.view === 'Day') {
@@ -130,6 +140,21 @@
                         options = {year: 'numeric', month: 'short'};
                     }
                     return date.toLocaleDateString('en-US', options);
+                } else if (i < 3) {
+                    if (d === undefined || d === null) {
+                        return '';
+                    }
+                    return '<span class="float-right">' + parseFloat(d).toFixed(1) + ' °C</span>';
+                } else {
+                    if (d === undefined || d === null) {
+                        return '';
+                    }
+                    var icon = weatherIcons[forecast[d][2]] || forecast[d][2];
+                    var description = forecast[d][3];
+                    if (description === null) {
+                        return '';
+                    }
+                    return `<span><i class="wi wi-${icon}"></i> ${description}</span>`;
                 }
             });
     }
