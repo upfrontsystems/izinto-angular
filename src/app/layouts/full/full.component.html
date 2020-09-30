@@ -3,7 +3,85 @@
 <!-- ============================================================== -->
 <div class="main-container" [dir]="dir"
      [ngClass]="{'minisidebar': minisidebar, 'boxed': boxed, 'danger': danger, 'blue': blue, 'green': green, 'dark': dark, 'sidebar-opened': sidebarOpened, 'sidebar-closed': !sidebarOpened }">
-    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 0 : 0"
+
+    <!-- ============================================================== -->
+    <!-- Topbar - style you can find in header.scss -->
+    <!-- ============================================================== -->
+    <mat-toolbar #menu color="white" class="topbar telative" [class.toolbar-hidden]="toolbarHidden">
+
+        <!-- ============================================================== -->
+        <!-- Logo - style you can find in header.scss -->
+        <!-- ============================================================== -->
+        <div class="navbar-header" fxShow="false" fxShow.gt-sm>
+            <a class="navbar-brand" href="/">
+                <!-- Logo icon -->
+                <b>
+                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                    <!-- Dark Logo icon -->
+                    <img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo">
+                    <!-- Light Logo icon -->
+                    <img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo">
+                </b>
+                <!--End Logo icon -->
+                <!-- Logo text -->
+                <span>
+                    <!-- dark Logo text -->
+                    <img src="assets/images/logo-text.png" alt="homepage" class="dark-logo">
+                    <!-- Light Logo text -->
+                    <img src="assets/images/logo-light-text.png" class="light-logo" alt="homepage">
+                </span>
+            </a>
+        </div>
+
+        <ng-container *ngIf="mobileQuery.matches || !mobileQuery.matches && !router.url.includes('/dashboards/')">
+            <!-- ============================================================== -->
+            <!-- sidebar toggle -->
+            <!-- ============================================================== -->
+            <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <button mat-icon-button routerLink="/">
+                <mat-icon>home</mat-icon>
+            </button>
+            <span fxFlex></span>
+            <!-- ============================================================== -->
+            <!-- app header component - style you can find in header.scss / header.component.ts-->
+            <!-- ============================================================== -->
+            <app-header></app-header>
+            <!-- ============================================================== -->
+            <!-- settings dropdown -->
+            <!-- ============================================================== -->
+            <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
+                    mat-icon-button class="ml-xs overflow-visible">
+                <mat-icon>settings</mat-icon>
+            </button>
+            <mat-menu #settings="matMenu" class="mymegamenu">
+                <button mat-menu-item [routerLink]="['/users']">
+                    <mat-icon>people_alt</mat-icon>
+                    Users
+                </button>
+                <button mat-menu-item [routerLink]="['/datasources']">
+                    <mat-icon>table_chart</mat-icon>
+                    Data Sources
+                </button>
+            </mat-menu>
+        </ng-container>
+        <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/dashboards/')">
+            <button mat-icon-button [routerLink]="parentURL">
+                <mat-icon>keyboard_backspace</mat-icon>
+            </button>
+            <span class="dashboard-title">{{this.currentDashboard?.title}}</span>
+            <span fxFlex></span>
+            <button mat-icon-button (click)="toggleDateSelect()">
+                <mat-icon>date_range</mat-icon>
+            </button>
+        </ng-container>
+    </mat-toolbar>
+    <!-- ============================================================== -->
+    <!-- End Topbar - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+
+    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="topMargin"
                            [ngClass]="{'minisidebar': minisidebar}">
         <!-- ============================================================== -->
         <!-- Sidebar - style you can find in sidebar.scss -->
@@ -16,84 +94,7 @@
         <!-- ============================================================== -->
         <!-- Page container - style you can find in pages.scss -->
         <!-- ============================================================== -->
-        <mat-sidenav-content class="page-wrapper" [class.full-height]="toolbarHidden" cdkScrollable>
-
-            <!-- ============================================================== -->
-            <!-- Topbar - style you can find in header.scss -->
-            <!-- ============================================================== -->
-            <mat-toolbar #menu color="white" class="topbar telative" [class.toolbar-hidden]="toolbarHidden">
-
-                <!-- ============================================================== -->
-                <!-- Logo - style you can find in header.scss -->
-                <!-- ============================================================== -->
-                <div class="navbar-header" fxShow="false" fxShow.gt-sm>
-                    <a class="navbar-brand" href="/">
-                        <!-- Logo icon -->
-                        <b>
-                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-                            <!-- Dark Logo icon -->
-                            <img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo">
-                            <!-- Light Logo icon -->
-                            <img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo">
-                        </b>
-                        <!--End Logo icon -->
-                        <!-- Logo text -->
-                        <span>
-                    <!-- dark Logo text -->
-                    <img src="assets/images/logo-text.png" alt="homepage" class="dark-logo">
-                            <!-- Light Logo text -->
-                    <img src="assets/images/logo-light-text.png" class="light-logo" alt="homepage">
-                </span>
-                    </a>
-                </div>
-
-                <ng-container *ngIf="mobileQuery.matches || !mobileQuery.matches && !router.url.includes('/dashboards/')">
-                    <!-- ============================================================== -->
-                    <!-- sidebar toggle -->
-                    <!-- ============================================================== -->
-                    <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
-                        <mat-icon>menu</mat-icon>
-                    </button>
-                    <button mat-icon-button routerLink="/">
-                        <mat-icon>home</mat-icon>
-                    </button>
-                    <span fxFlex></span>
-                    <!-- ============================================================== -->
-                    <!-- app header component - style you can find in header.scss / header.component.ts-->
-                    <!-- ============================================================== -->
-                    <app-header></app-header>
-                    <!-- ============================================================== -->
-                    <!-- settings dropdown -->
-                    <!-- ============================================================== -->
-                    <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
-                            mat-icon-button class="ml-xs overflow-visible">
-                        <mat-icon>settings</mat-icon>
-                    </button>
-                    <mat-menu #settings="matMenu" class="mymegamenu">
-                        <button mat-menu-item [routerLink]="['/users']">
-                            <mat-icon>people_alt</mat-icon>
-                            Users
-                        </button>
-                        <button mat-menu-item [routerLink]="['/datasources']">
-                            <mat-icon>table_chart</mat-icon>
-                            Data Sources
-                        </button>
-                    </mat-menu>
-                </ng-container>
-                <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/dashboards/')">
-                    <button mat-icon-button [routerLink]="parentURL">
-                        <mat-icon>keyboard_backspace</mat-icon>
-                    </button>
-                    <span class="dashboard-title">{{this.currentDashboard?.title}}</span>
-                    <span fxFlex></span>
-                    <button mat-icon-button (click)="toggleDateSelect()">
-                        <mat-icon>date_range</mat-icon>
-                    </button>
-                </ng-container>
-            </mat-toolbar>
-            <!-- ============================================================== -->
-            <!-- End Topbar - style you can find in pages.scss -->
-            <!-- ============================================================== -->
+        <mat-sidenav-content class="page-wrapper" style="height: calc(100vh - {{topMargin}}px)" cdkScrollable>
 
             <div class="page-content">
 

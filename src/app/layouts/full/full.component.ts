@@ -34,6 +34,7 @@ export class FullComponent implements OnInit, OnDestroy {
     dateSelectOpened = false;
     currentDashboard = undefined;
     scrollTop = 0;
+    topMargin = 64;
     parentURL = '/';
 
     public config: PerfectScrollbarConfigInterface = {};
@@ -71,6 +72,7 @@ export class FullComponent implements OnInit, OnDestroy {
                 if (newScrollTop !== this.scrollTop) {
                     this.toolbarHidden = newScrollTop - this.scrollTop > 0;
                     this.scrollTop = newScrollTop;
+                    this.topMargin = ((64 - this.scrollTop) > 0) ? 64 - this.scrollTop : 0;
                 }
             }));
     }
@@ -82,5 +84,4 @@ export class FullComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.mobileQuery.removeListener(this._mobileQueryListener);
     }
-
 }

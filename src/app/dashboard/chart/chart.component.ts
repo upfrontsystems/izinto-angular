@@ -371,7 +371,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
-            const pixelHeight = this.margin.bottom;
+            const pixelHeight = this.margin.bottom * 0.8;
             const scale = ymax - ymin;
             ymin = ymin - scale * pixelHeight / this.chartHeight;
         }
@@ -908,21 +908,21 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
         const arrowScale = this.xAxisScale();
         const arrowWidth = this.barWidth();
-        const minArrowWidth = 20;
+        const minArrowWidth = 20,
+              position = this.chartHeight - this.margin.bottom - 2;
         let previousArrow = 0;
         for (let i = 0; i < dataset.length; i++) {
             const arrowX = arrowScale(dataset[i].date);
             if (previousArrow > arrowX) {
                 continue;
             }
-            this.windArrow(i, arrowX, arrowWidth, dataset[i].value, svg);
+            this.windArrow(i, position, arrowX, arrowWidth, dataset[i].value, svg);
             previousArrow = arrowX + minArrowWidth;
         }
     }
 
-    windArrow(idx, arrowX, arrowWidth, direction, svg) {
-        const position = this.chartHeight - this.margin.bottom,
-              arrowStart = arrowX + 16;
+    windArrow(idx, position, arrowX, arrowWidth, direction, svg) {
+        const arrowStart = arrowX + 16;
             // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
             // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
             // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
