@@ -29,8 +29,9 @@
     i.wi {
         color: deepskyblue;
         padding-right: 10px;
+        display: block;
+        text-align: center;
     }
-
 </style>
 
 <body>
@@ -43,6 +44,18 @@
     var ready = false;
     var results = {};
     var weatherIcons = {clear: 'day-sunny'};
+    // columns format with query name and index in result
+    var columns = [
+        {query: '', index: 0, fieldname: 'date', label: 'Date', format: ''},
+        {query: 'aggregations_query', index: 1, fieldname: 'temperature', label: 'Actual',
+            format: '<span class="float-right">${parseFloat(value).toFixed(1)} °C</span>'},
+        {query: 'forecasts_query', index: 1, fieldname: 'temperature', label: 'Forecast',
+            format: '<span class="float-right">${parseFloat(value).toFixed(1)} °C</span>'},
+        {query: 'forecasts_query', index: 2, fieldname: 'icon', label: '',
+            format: '<i class="wi wi-${weatherIcons[value] || value}"></i>'},
+        {query: 'forecasts_query', index: 3, fieldname: 'description', label: '',
+            format: '<span>${value}</span>'}
+    ];
 
     // load query result on forecasts db
     function loadForecastQuery() {
@@ -92,7 +105,7 @@
             return;
         }
 
-        var headers = ['Date', 'Actual', 'Forecast', ''];
+        var headers = columns.map(column => column.label);
         d3.selectAll('table').remove();
         var table = d3.select("body").append("table"),
             thead = table.append("thead"),
@@ -102,7 +115,8 @@
         thead.append("tr").selectAll("th").data(headers).enter()
             .append("th")
             .html(function (d, i) {
-                if (i > 0) {
+                // align other columns
+                if (d !== 'Date') {
                     return '<span class="float-right">' + d + '</span>';
                 }
                 return d;
@@ -110,19 +124,21 @@
 
         var data = [];
         // match number of records in both queries
-        var forecast = results['forecasts_query'].series ? results['forecasts_query'].series[0].values : [];
-        var actual = results['aggregations_query'].series ? results['aggregations_query'].series[0].values : [];
-        for (var ix = 0; ix < Math.max(forecast.length, actual.length); ix += 1) {
-            data.push([
-                actual[ix] ? actual[ix][0] : forecast[ix][0],
-                actual[ix] && actual[ix][1],
-                forecast[ix] && forecast[ix][1],
-                forecast[ix] && ix
-            ]);
+        for (var ix = 0; ix < Math.max(results['aggregations_query'].length, results['forecasts_query'].length); ix += 1) {
+            // merge results into a single set
+            // get date value from longer result set
+            var row = [results['aggregations_query'][ix] ?
+                results['aggregations_query'][ix][columns[0].index] : results['forecasts_query'][ix][columns[0].index]];
+
+            for (var cix = 1; cix < columns.length; cix += 1) {
+                var column = columns[cix];
+                // extract data from results and result column index
+                row.push(results[column.query][ix] && results[column.query][ix][column.index]);
+            }
+            data.push(row);
         }
 
-        var rows = tbody.selectAll('tr').data(data).enter()
-            .append('tr');
+        var rows = tbody.selectAll('tr').data(data).enter().append('tr');
         // create a row for each object in the data
         rows.selectAll('td')
             .data(function (row) {
@@ -130,9 +146,10 @@
             })
             .enter()
             .append('td')
-            .html(function (d, i) {
+            .html(function (value, i) {
                 if (i === 0) {
-                    var date = new Date(d);
+                    // format date
+                    var date = new Date(value);
                     var options = {month: 'short', day: 'numeric'};
                     if (dateSelection.view === 'Hour' || dateSelection.view === 'Day') {
                         return date.toLocaleString('en-US', {hour: 'numeric', minute: '2-digit', hour12: false});
@@ -140,21 +157,11 @@
                         options = {year: 'numeric', month: 'short'};
                     }
                     return date.toLocaleDateString('en-US', options);
-                } else if (i < 3) {
-                    if (d === undefined || d === null) {
-                        return '';
-                    }
-                    return '<span class="float-right">' + parseFloat(d).toFixed(1) + ' °C</span>';
                 } else {
-                    if (d === undefined || d === null) {
+                    if (value === undefined || value === null) {
                         return '';
                     }
-                    var icon = weatherIcons[forecast[d][2]] || forecast[d][2];
-                    var description = forecast[d][3];
-                    if (description === null) {
-                        return '';
-                    }
-                    return `<span><i class="wi wi-${icon}"></i> ${description}</span>`;
+                    return eval('`' + columns[i].format + '`');
                 }
             });
     }
@@ -171,7 +178,8 @@
             loadRainQuery();
         } else if (event.data.type === 'result') {
             // wait for both queries to finish
-            results[event.data.message.result.query_name] = event.data.message.result.results.results[0];
+            var series = event.data.message.result.results.results[0].series;
+            results[event.data.message.result.query_name] = series ? series[0].values : [];
             if (ready) {
                 buildTable();
             } else {
