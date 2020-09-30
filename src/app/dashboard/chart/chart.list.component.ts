@@ -8,7 +8,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 @Component({
     selector: 'app-chart-list',
     templateUrl: './chart.list.component.html',
-    styleUrls: ['./../dashboard.component.scss']
+    styleUrls: ['./chart.component.scss']
 })
 export class ChartListComponent extends QueryBaseComponent implements OnInit, OnChanges {
 

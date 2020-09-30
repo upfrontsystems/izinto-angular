@@ -26,7 +26,7 @@ import {Subscription} from 'rxjs';
 @Component({
     selector: 'app-chart',
     templateUrl: './chart.component.html',
-    styleUrls: ['./../dashboard.component.scss']
+    styleUrls: ['./chart.component.scss']
 })
 export class ChartComponent extends QueryBaseComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -435,7 +435,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         const toolTipInfo = focus.append('g').attr('class', 'tooltip');
         // add date label
         toolTipInfo.append('text')
-            .style('font-size', '0.8em')
+            .style('font-size', '12px')
             .attr('class', 'hover-text dataset-date')
             .attr('x', 10)
             .attr('y', 40)
@@ -479,6 +479,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 labelWidth = fieldName.length * 10,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
             const seriesLegend = legendGroup.append('g')
+                .style('font-size', '12px')
                 .attr('class', 'series-legend')
                 .attr('series-index', dix)
                 .on('click', function () {
@@ -547,6 +548,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('stroke-opacity', 0.5)
                 .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
+                .style('font-size', '12px')
                 .attr('x', -20))
             .call(g => g.select('.domain')
                 .remove());
@@ -560,6 +562,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         svg.selectAll('g.x-axis').remove();
         svg.append('g')
             .attr('class', 'x-axis')
+            .style('font-size', '12px')
             .attr('transform', 'translate(0,' + this.innerHeight + ')')
             .call(d3Axis.axisBottom(xAxisScale)
                 .ticks(interval)
@@ -928,7 +931,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         svg.append('text')
             .attr('font-family', 'WeatherIcons')
             .attr('font-size', '18px')
-            .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ')')
+            .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ' 3 -7.5)')
             .text(function (a) { return '\uf044'; });
     }
 }

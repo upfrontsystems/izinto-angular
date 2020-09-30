@@ -9,7 +9,7 @@ import {DashboardView} from '../../_models/dashboard_view';
 @Component({
     selector: 'app-chart-dialog',
     templateUrl: './chart.dialog.component.html',
-    styleUrls: ['./../dashboard.component.scss']
+    styleUrls: ['./chart.component.scss']
 })
 export class ChartDialogComponent implements OnInit {
 

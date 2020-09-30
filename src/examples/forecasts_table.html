@@ -28,7 +28,6 @@
 
     i.wi {
         color: deepskyblue;
-        padding-right: 10px;
         display: block;
         text-align: center;
     }
@@ -51,7 +50,7 @@
             format: '<span class="float-right">${parseFloat(value).toFixed(1)} °C</span>'},
         {query: 'forecasts_query', index: 1, fieldname: 'temperature', label: 'Forecast',
             format: '<span class="float-right">${parseFloat(value).toFixed(1)} °C</span>'},
-        {query: 'forecasts_query', index: 2, fieldname: 'icon', label: '',
+        {query: 'forecasts_query', index: 2, fieldname: 'icon', label: 'Sky',
             format: '<i class="wi wi-${weatherIcons[value] || value}"></i>'},
         {query: 'forecasts_query', index: 3, fieldname: 'description', label: '',
             format: '<span>${value}</span>'}
