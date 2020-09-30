@@ -253,24 +253,44 @@
         map.fitBounds(group.getBounds());
 
         // add pins layers to map
-        buildMeasurementToggle(pins);
+        buildMeasurementToggle(layer, pins);
     }
 
-    function buildMeasurementToggle(pins) {
+    function buildMeasurementToggle(mblayer, pins) {
         var measurementSelectors = [];
         for (var spec of columnSpecifications) {
             measurementSelectors.push({
                 name: spec.label,
+                exclusiveGroup: "measurements",
                 active: spec.fieldname === 'temperature',
                 icon: `<i class='wi wi-${spec.icon}'></i>`,
                 layer: L.layerGroup(pins[spec.fieldname])
             });
         }
-
-        var panelLayers = new L.Control.PanelLayers([{
+        var controlLayers = {
             group: 'Show measurement',
             layers: measurementSelectors
-        }]);
+        };
+
+        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            maxZoom: 18,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        var baselayer = {
+            group: 'Map',
+            layers: [{
+                name: "Base view",
+                active: true,
+                layer: mblayer
+            },
+            {
+                active: false,
+                name: 'Satellite view',
+                layer: googleSat
+            }]
+        };
+
+        var panelLayers = new L.Control.PanelLayers([baselayer], [controlLayers]);
         // TODO control panel not removed on redraw
         map.removeControl(panelLayers);
         map.addControl(panelLayers);
