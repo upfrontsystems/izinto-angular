@@ -83,6 +83,10 @@
         font-size: 16px;
         padding-left: 10px
     }
+
+    .toGrayscale img {
+        filter: grayscale(1);
+    }
 </style>
 
 <body>
@@ -123,6 +127,46 @@
             icon: 'raindrops', format: '${Math.round(value)}${unit}'
         }
     ];
+
+    // add layers to map
+    // https: also suppported.
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        fadeAnimation: false
+    });
+
+    // https: also suppported.
+    var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: 'abcd',
+        minZoom: 0,
+        maxZoom: 20,
+        ext: 'png',
+        fadeAnimation: false
+    });
+
+    var OpenStreetMap_Mapnik_Grayscale = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '<a href="https://www.skylab.nl" title="Powered by SkyLab B.V.">Powered by SkyLab B.V.</a> | <a href="https://www.openstreetmap.org" title="&copy; OpenStreetMap">&copy; OpenStreetMap</a>',
+        fadeAnimation: false,
+        className: 'toGrayscale'
+    });
+
+    // https: also suppported.
+    var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '<a href="https://www.skylab.nl" title="Powered by SkyLab B.V.">Powered by SkyLab B.V.</a> | <a href="https://www.openstreetmap.org" title="&copy; OpenStreetMap">&copy; OpenStreetMap</a>',
+        fadeAnimation: false
+    });
+
+    var baseMaps = {
+        "Stamen TonerLite": Stamen_TonerLite,
+        "OSM Mapnik Grayscale": OpenStreetMap_Mapnik_Grayscale,
+        "OSM Mapnik": OpenStreetMap_Mapnik,
+        "Satellite": Esri_WorldImagery
+    };
 
     // load query result
     function loadMapQuery() {
@@ -228,20 +272,10 @@
     }
 
     function buildMap() {
+        // TODO layers not removed when map updates
         map.eachLayer(layer => {
             map.removeLayer(layer)
         });
-
-        layer = new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1
-        });
-        layer.addTo(map);
 
         // build pins displaying value per layer
         var pins = buildPins();
@@ -253,47 +287,45 @@
         map.fitBounds(group.getBounds());
 
         // add pins layers to map
-        buildMeasurementToggle(layer, pins);
+        buildLayers(pins);
     }
 
-    function buildMeasurementToggle(mblayer, pins) {
-        var measurementSelectors = [];
-        for (var spec of columnSpecifications) {
-            measurementSelectors.push({
-                name: spec.label,
-                exclusiveGroup: "measurements",
-                active: spec.fieldname === 'temperature',
-                icon: `<i class='wi wi-${spec.icon}'></i>`,
-                layer: L.layerGroup(pins[spec.fieldname])
+    // TODO overlays not deselected
+    // deselect other overlays on checking overlay
+    var activelayer = null;
+    map.on('overlayadd', function (e) {
+        if (activelayer) {
+            map.eachLayer(function (layer) {
+                if (activelayer && activelayer._leaflet_id === layer._leaflet_id) {
+                    activelayer = null;
+                    map.removeLayer(layer);
+                }
             });
         }
-        var controlLayers = {
-            group: 'Show measurement',
-            layers: measurementSelectors
-        };
+        activelayer = e.layer;
+    });
+    map.on('overlayremove', function(e) {
+        if (activelayer && (activelayer._leaflet_id === e.layer._leaflet_id)) {
+            activelayer = null;
+        }
+    });
 
-        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-            maxZoom: 18,
-            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    function buildLayers(pins) {
+        // add overlay and base layers to map
+        var overlayMaps = {};
+        for (var spec of columnSpecifications) {
+            overlayMaps[spec.label] = L.layerGroup(pins[spec.fieldname]);
+        }
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        // set default view
+        Esri_WorldImagery.addTo(map);
+        overlayMaps[columnSpecifications[0].label].addTo(map);
+        activelayer = overlayMaps[columnSpecifications[0].label];
+
+        // do not open control layer on hover
+        $('.leaflet-control-layers-toggle').on('mouseover', function (e) {
+            e.stopPropagation();
         });
-        var baselayer = {
-            group: 'Map',
-            layers: [{
-                name: "Base view",
-                active: true,
-                layer: mblayer
-            },
-            {
-                active: false,
-                name: 'Satellite view',
-                layer: googleSat
-            }]
-        };
-
-        var panelLayers = new L.Control.PanelLayers([baselayer], [controlLayers]);
-        // TODO control panel not removed on redraw
-        map.removeControl(panelLayers);
-        map.addControl(panelLayers);
     }
 
     function buildPins() {
