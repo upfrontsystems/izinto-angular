@@ -3,7 +3,7 @@
          class='slider' id='slider' (pan)="sliderManager($event)">
         <div class='slider-panel'>
 
-            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutAlign.lt-sm="center center">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
                 <div class="m-l-20 m-r-20">
                     <div class="pull-right" *ngIf="dashboard && dashboard.collection_id==15"><img
                         src="assets/images/water-hunters.png"/></div>
@@ -13,11 +13,15 @@
                     </h3>
                 </div>
 
-                <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin">
-                    <a mat-tab-link *ngFor="let tab of tabs"
-                       (click)="activeTab = tab"
-                       [active]="activeTab == tab"> {{tab}} </a>
-                </nav>
+                <div class="m-r-10">
+                <button class="pull-right" mat-icon-button [matMenuTriggerFor]="tabMenu" *ngIf="isAdmin">
+                    <mat-icon>settings</mat-icon>
+                </button>
+                <mat-menu #tabMenu="matMenu">
+                    <a mat-menu-item class="text-right" *ngFor="let tab of tabs"
+                       (click)="activeTab = tab" [class.text-themecolor]="activeTab == tab"> {{tab}} </a>
+                </mat-menu>
+                </div>
             </div>
 
             <!-- Dashboard view page -->
