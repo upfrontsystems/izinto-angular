@@ -69,14 +69,6 @@ div.d3-chart {
     margin-top: 40px;
 }
 
-.chart-row .drag-handle, .chart-row .chart-actions {
-    display: none;
-}
-
-.chart-row:hover .drag-handle {
-    display: block !important;
-}
-
 .picker-button {
     cursor: pointer;
 }

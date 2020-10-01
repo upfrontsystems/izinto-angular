@@ -1,9 +1,9 @@
 <ng-container *ngFor="let collection of collections">
     <div fxLayout="row">
-        <div fxFlex="100%">
+        <div fxFlex="100%" class="hover-row">
             <mat-card>
                 <mat-card-content>
-                    <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
+                    <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                         <mat-icon>more_horiz</mat-icon>
                     </button>
                     <mat-menu #itemMenu="matMenu">

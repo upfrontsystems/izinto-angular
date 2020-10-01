@@ -1,9 +1,9 @@
 <div fxLayout="row wrap" fxLayoutAlign="center">
     <mat-card class="single-stat" fxFlex="15" fxFlex.xl="10" fxFlex.lg="15" fxFlex.sm="25" fxFlex.md="25" fxFlex.xs="40"
               *ngFor="let stat of singleStats">
-        <mat-card-content>
+        <mat-card-content class="hover-row">
 
-            <button class="pull-right" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
+            <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                 <mat-icon>more_horiz</mat-icon>
             </button>
             <mat-menu #itemMenu="matMenu">

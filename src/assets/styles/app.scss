@@ -1015,22 +1015,6 @@ list inline
     }
 }
 
-#dashboard {
-    button.download-csv,
-    button.mat-menu-trigger {
-        display:none;
-    }
-
-    mat-card.single-stat:hover button.mat-menu-trigger {
-        display:inline;
-    }
-
-    div.chart-row:hover button.download-csv,
-    div.chart-row:hover button.mat-menu-trigger {
-        display:inline;
-    }
-}
-
 .page-title {
     font-weight: 500;
     margin: 0.5em 0 0.25em;

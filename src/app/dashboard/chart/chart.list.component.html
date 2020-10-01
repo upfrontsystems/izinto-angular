@@ -1,8 +1,8 @@
 <div cdkDropList (cdkDropListDropped)="reorderChart($event)" (pan)="sliderManager($event)">
     <ng-container *ngFor="let chart of charts">
-        <div fxLayout="row" class="chart-row" cdkDrag [cdkDragData]="chart"
+        <div fxLayout="row" class="chart-row hover-row" cdkDrag [cdkDragData]="chart"
              cdkDragLockAxis="y" cdkDragBoundary=".rowgroup" [cdkDragDisabled]="!canEdit">
-            <button mat-button class="drag-handle" cdkDragHandle title="Reposition chart" *ngIf="canEdit">
+            <button mat-button class="drag-handle action-button" cdkDragHandle title="Reposition chart" *ngIf="canEdit">
                 <mat-icon>swap_vert</mat-icon>
             </button>
             <app-chart [chart]="chart" [variables]="variables" [dataSources]="dataSources" [dateViews]="dateViews"

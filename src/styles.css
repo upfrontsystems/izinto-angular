@@ -45,3 +45,11 @@ mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
         flex-direction: column !important;
     }
 }
+
+.hover-row .action-button {
+    color: rgba(0, 0, 0, 0) !important;
+}
+
+.hover-row:hover .action-button {
+    color: initial !important;
+}
