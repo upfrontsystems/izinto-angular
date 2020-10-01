@@ -6,7 +6,7 @@
                 <h3>Edit {{dashboard.title}}</h3>
                 <div class="p-30">
                     <div [formGroup]="form" autocomplete="off">
-                        <div fxLayout="row wrap">
+                        <div fxLayout="row wrap" fxLayoutAlign="space-between">
 
                             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                                 <mat-form-field style="width: 100%">
@@ -22,13 +22,20 @@
                                 </mat-form-field>
                             </div>
 
-                            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                            <div fxFlex.gt-sm="60" fxFlex.gt-xs="100" fxFlex="100">
                                 <mat-form-field style="width: 100%">
                                     <mat-select [formControl]="form.get('type')" placeholder="Dashboard Type">
                                         <mat-option value="old">Charts & Single Stats</mat-option>
                                         <mat-option value="new">HTML Content</mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                            </div>
+
+                            <div fxFlex.gt-sm="35" fxFlex.gt-xs="100" fxFlex="100">
+                                <div fxFlex class="m-t-15">
+                                    <mat-checkbox [formControl]="form.get('date_hidden')">Hide dashboard date selector
+                                    </mat-checkbox>
+                                </div>
                             </div>
 
                             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"

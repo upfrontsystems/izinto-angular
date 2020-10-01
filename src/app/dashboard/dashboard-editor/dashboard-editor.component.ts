@@ -41,7 +41,8 @@ export class DashboardEditorComponent implements OnInit, AfterViewInit, OnDestro
             collection_id: this.dashboard.collection_id,
             type: this.dashboard.type,
             content: this.dashboard.content,
-            users: [this.dashboard.users]
+            users: [this.dashboard.users],
+            date_hidden: this.dashboard.date_hidden
         };
         this.form = this.fb.group(formData);
         this.filteredUsers.next(this.dashboard.users);

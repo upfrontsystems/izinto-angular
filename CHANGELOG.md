@@ -12,6 +12,7 @@ Issue Fixes
 * [#181](https://github.com/upfrontsystems/izinto-angular/issues/181) Update dashboard UI
 * [#107](https://github.com/upfrontsystems/izinto-angular/issues/107) Add map visualisation example
 * [#184](https://github.com/upfrontsystems/izinto-angular/issues/184) Add forecasts table
+* [#197](https://github.com/upfrontsystems/izinto-angular/issues/197) Add optional date selector flag to dashboard
 
 
 ## 0.6

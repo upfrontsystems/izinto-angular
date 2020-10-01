@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>{{state}} Dashboard</h1>
 <div mat-dialog-content>
     <div [formGroup]="form" autocomplete="off">
-        <div fxLayout="row wrap">
+        <div fxLayout="row wrap" fxLayoutAlign="space-between">
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
@@ -17,7 +17,7 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="45" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <mat-select [formControl]="form.get('type')" placeholder="Dashboard Type">
                         <mat-option value="old">Charts & Single Stats</mat-option>
@@ -26,10 +26,18 @@
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="45" fxFlex.gt-xs="100" fxFlex="100">
+                <div fxFlex class="m-t-15">
+                    <mat-checkbox [formControl]="form.get('date_hidden')">Hide dashboard date selector
+                    </mat-checkbox>
+                </div>
+            </div>
+
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
                  *ngIf="authService.hasRole('Administrator') && !dashboard.collection_id">
                 <mat-form-field>
-                    <mat-select formControlName="users" [formControl]="form.get('users')" placeholder="Users" [multiple]="true" #userSelect>
+                    <mat-select formControlName="users" [formControl]="form.get('users')" placeholder="Users"
+                                [multiple]="true" #userSelect>
                         <mat-option>
                             <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
                                                    placeholderLabel="Search users" noEntriesFoundLabel="No users found">

@@ -13,4 +13,5 @@ export class Dashboard {
     index: number;
     users: User[];
     variables: Variable[];
+    date_hidden: Boolean;
 }

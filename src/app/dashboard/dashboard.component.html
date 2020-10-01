@@ -2,7 +2,8 @@
     <div fxFlex="100" class="p-b-20">
         <mat-card *ngIf="dashboard" [class]="dashboard.type == 'new' && 'full-height' || ''">
 
-            <app-dashboard-date-selector [mobileQueryMatches]="mobileQuery.matches" [dateViews]="dateViews">
+            <app-dashboard-date-selector *ngIf="!dashboard.date_hidden" [mobileQueryMatches]="mobileQuery.matches"
+                                         [dateViews]="dateViews">
             </app-dashboard-date-selector>
 
             <mat-card-content [class]="'dashboard-' + dashboard.type">
