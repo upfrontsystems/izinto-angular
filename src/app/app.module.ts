@@ -9,6 +9,7 @@ import {Injectable, NgModule} from '@angular/core';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
@@ -119,6 +120,7 @@ export class HammerConfig extends HammerGestureConfig {
         BrowserModule,
         BrowserAnimationsModule,
         ColorCompactModule,
+        FileUploadModule,
         FlexLayoutModule,
         FormsModule,
         HammerModule,

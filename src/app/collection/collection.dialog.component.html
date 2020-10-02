@@ -32,6 +32,19 @@
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <div *ngIf="!previewImage" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                     (onFileDrop)="dropped($event)" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"
+                     [uploader]="uploader"
+                     class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone">
+                    Image Upload
+                </div>
+                <img [src]="previewImage" (click)="fileInput.click()" *ngIf="previewImage"
+                     class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone image-preview">
+                <input #fileInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
+                       (change)="showPreviewImage(fileInput.files)" accept='image/*'/>
+            </div>
+
         </div>
     </form>
 </div>

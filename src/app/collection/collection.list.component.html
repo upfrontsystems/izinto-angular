@@ -27,8 +27,10 @@
                         </button>
                     </mat-menu>
 
-                    <mat-card-actions></mat-card-actions>
-                    <mat-icon class="list-icon">library_books</mat-icon>
+                    <mat-icon *ngIf="!collection.image" class="list-icon">library_books</mat-icon>
+                    <div *ngIf="collection.image" class="list-image-content">
+                        <img class="list-image" [src]="collection.image"/>
+                    </div>
                     <mat-card-title><a class="link-title" [routerLink]="['/collections', collection.id]">
                         {{collection.title}}
                     </a></mat-card-title>

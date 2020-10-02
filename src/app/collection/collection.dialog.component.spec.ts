@@ -8,6 +8,18 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {FileUploadModule} from 'ng2-file-upload';
+import {AuthenticationService} from '../_services/authentication.service';
+
+export class AuthenticationServiceStub {
+    getToken() {
+        return 'token';
+    }
+
+    hasRole(role) {
+        return false;
+    }
+}
 
 describe('CollectionDialogComponent', () => {
     let component: CollectionDialogComponent;
@@ -19,9 +31,10 @@ describe('CollectionDialogComponent', () => {
         TestBed.configureTestingModule({
             declarations: [CollectionDialogComponent],
             imports: [FormsModule, ReactiveFormsModule, RouterTestingModule, MaterialModule, BrowserAnimationsModule,
-                HttpClientTestingModule],
+                HttpClientTestingModule, FileUploadModule],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
             providers: [
+                {provide: AuthenticationService, useClass: AuthenticationServiceStub},
                 {provide: MatDialogRef, useValue: {}},
                 {provide: MAT_DIALOG_DATA, useValue: {collection}}
             ]

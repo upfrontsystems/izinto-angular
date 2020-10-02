@@ -8,8 +8,8 @@ mat-card.full-height mat-card-content {
 
 .list-icon {
     float: left;
-    margin-top: -0.2em;
-    padding-bottom: 2em;
+    margin-top: -4px;
+    padding: 0 30px 40px 40px;
 }
 
 .picker-button {
@@ -48,4 +48,39 @@ mat-card.full-height {
     position: absolute;
     top: -3px;
     right: 5px;
+}
+
+.image-drop-zone {
+    border: dotted 2px #dadada;
+    background-color: aliceblue !important;
+    min-height: 200px;
+    line-height: 200px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.nv-file-over {
+    border: dotted 2px cadetblue;
+}
+
+.image-preview {
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    height: auto !important;
+}
+
+/* TODO positioning image in rows */
+.list-image-content {
+    padding: 35px;
+    float: left;
+}
+
+img.list-image {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 50px;
+    width: auto;
+    border-radius: 3px;
 }

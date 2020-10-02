@@ -14,4 +14,5 @@ export class Dashboard {
     users: User[];
     variables: Variable[];
     date_hidden: Boolean;
+    image: string;
 }

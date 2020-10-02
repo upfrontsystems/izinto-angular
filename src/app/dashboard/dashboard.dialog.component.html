@@ -17,7 +17,7 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="45" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="48" fxFlex.gt-xs="100" fxFlex="100">
                 <mat-form-field style="width: 100%">
                     <mat-select [formControl]="form.get('type')" placeholder="Dashboard Type">
                         <mat-option value="old">Charts & Single Stats</mat-option>
@@ -26,7 +26,7 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="45" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="48" fxFlex.gt-xs="100" fxFlex="100">
                 <div fxFlex class="m-t-15">
                     <mat-checkbox [formControl]="form.get('date_hidden')">Hide dashboard date selector
                     </mat-checkbox>
@@ -50,6 +50,18 @@
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <div *ngIf="!previewImage" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                     (onFileDrop)="dropped($event)" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"
+                     [uploader]="uploader"
+                     class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone">
+                    Image Upload
+                </div>
+                <img [src]="previewImage" (click)="fileInput.click()" *ngIf="previewImage"
+                     class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone image-preview">
+                <input #fileInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
+                       (change)="showPreviewImage(fileInput.files)" accept='image/*'/>
+            </div>
         </div>
     </div>
 </div>

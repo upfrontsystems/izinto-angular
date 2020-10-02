@@ -114,7 +114,7 @@ export class HomeComponent implements OnInit {
 
     addDashboard() {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
-            width: '800px',
+            width: '600px',
             data: {dashboard: {users: []}}
         });
 

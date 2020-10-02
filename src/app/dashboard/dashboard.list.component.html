@@ -1,10 +1,12 @@
 <div cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
     <ng-container *ngFor="let dashboard of dashboards">
-        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" [cdkDragDisabled]="!canEdit" cdkDragLockAxis="y" cdkDragBoundary=".rowgroup">
+        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" [cdkDragDisabled]="!canEdit" cdkDragLockAxis="y"
+             cdkDragBoundary=".rowgroup">
             <div fxFlex="100%" class="hover-row">
                 <mat-card>
                     <mat-card-content>
-                        <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
+                        <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu"
+                                *ngIf="canEdit">
                             <mat-icon>more_horiz</mat-icon>
                         </button>
 
@@ -30,11 +32,16 @@
                             </button>
                         </mat-menu>
 
-                        <mat-icon class="list-icon">insert_chart</mat-icon>
+                        <button class="pull-right action-button" mat-icon-button cdkDragHandle
+                                title="Reposition dashboard" *ngIf="canEdit">
+                            <mat-icon>swap_vert</mat-icon>
+                        </button>
+
+                        <mat-icon *ngIf="!dashboard.image" class="list-icon">insert_chart</mat-icon>
+                        <div *ngIf="dashboard.image" class="list-image-content">
+                            <img class="list-image" [src]="dashboard.image"/>
+                        </div>
                         <mat-card-title>
-                            <button class="pull-right action-button" mat-icon-button cdkDragHandle title="Reposition dashboard" *ngIf="canEdit">
-                                <mat-icon>swap_vert</mat-icon>
-                            </button>
                             <a class="link-title" [routerLink]="['/dashboards', dashboard.id]">
                                 {{dashboard.title}}
                             </a>

@@ -7,4 +7,5 @@ export class Collection {
     description: string;
     users: User[];
     dashboards: Dashboard[];
+    image: string;
 }
