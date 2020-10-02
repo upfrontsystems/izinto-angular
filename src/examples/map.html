@@ -25,7 +25,7 @@
         height: 50px;
         border-radius: 15px;
         background: rgba(255, 255, 255, 0.4);
-        border: 2px solid;
+        border: 1px solid rgba(0, 0, 0, 0.4);
         position: absolute;
         top: 25px;
         left: -12px;
@@ -290,37 +290,16 @@
         buildLayers(pins);
     }
 
-    // TODO overlays not deselected
-    // deselect other overlays on checking overlay
-    var activelayer = null;
-    map.on('overlayadd', function (e) {
-        if (activelayer) {
-            map.eachLayer(function (layer) {
-                if (activelayer && activelayer._leaflet_id === layer._leaflet_id) {
-                    activelayer = null;
-                    map.removeLayer(layer);
-                }
-            });
-        }
-        activelayer = e.layer;
-    });
-    map.on('overlayremove', function(e) {
-        if (activelayer && (activelayer._leaflet_id === e.layer._leaflet_id)) {
-            activelayer = null;
-        }
-    });
-
     function buildLayers(pins) {
         // add overlay and base layers to map
         var overlayMaps = {};
         for (var spec of columnSpecifications) {
             overlayMaps[spec.label] = L.layerGroup(pins[spec.fieldname]);
         }
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        L.control.layers(baseMaps).addTo(map);
         // set default view
         Esri_WorldImagery.addTo(map);
         overlayMaps[columnSpecifications[0].label].addTo(map);
-        activelayer = overlayMaps[columnSpecifications[0].label];
 
         // do not open control layer on hover
         $('.leaflet-control-layers-toggle').on('mouseover', function (e) {
@@ -338,12 +317,17 @@
             for (var ix = 0; ix < columnSpecifications.length; ix += 1) {
                 var spec = columnSpecifications[ix];
                 var record = '';
-                var clas = `class='marker-pin' style='border-color: ${spec.colour}'`;
-                var weatherIcon = `class='wi wi-${spec.icon}'`;
+                var clas = `class='marker-pin'`;
+
+                // use sky icon
+                var weatherIcon = `class='wi wi-moon-new'`;
                 if (loc.series) {
                     // only using 1 result
                     var value = loc.series.values[0][ix + 1];
                     var unit = spec.unit;
+                    // use sky icon
+                    var forecastIcon = weatherIcons[loc.series.values[0][5]] || loc.series.values[0][5];
+                    weatherIcon = `class='wi wi-${forecastIcon}'`;
                     // format record value
                     record = eval('`' + spec.format + '`');
 
