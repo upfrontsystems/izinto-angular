@@ -7,7 +7,8 @@
     <!-- ============================================================== -->
     <!-- Topbar - style you can find in header.scss -->
     <!-- ============================================================== -->
-    <mat-toolbar #menu color="white" class="topbar telative" [class.toolbar-hidden]="toolbarHidden">
+    <mat-toolbar #menu color="white" class="topbar relative is-animating"
+                 [style.transform]="'translateY(' + toolbarMargin + 'px)'">
 
         <!-- ============================================================== -->
         <!-- Logo - style you can find in header.scss -->

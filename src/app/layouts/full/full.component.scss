@@ -1,0 +1,13 @@
+.site-title {
+    font-family: Dosis, sans-serif;
+    font-size: 36px;
+    color: black
+}
+
+.main-container {
+    background: #eef5f9;
+}
+
+.is-animating {
+    transition: transform 150ms cubic-bezier(0.5, 0, 0.5, 1);
+}

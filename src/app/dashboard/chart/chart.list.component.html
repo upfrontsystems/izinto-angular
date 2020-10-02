@@ -1,4 +1,4 @@
-<div cdkDropList (cdkDropListDropped)="reorderChart($event)" (pan)="sliderManager($event)">
+<div cdkDropList (cdkDropListDropped)="reorderChart($event)" (pan)="sliderManager($event)" class="chart-panel">
     <ng-container *ngFor="let chart of charts">
         <div fxLayout="row" class="chart-row hover-row" cdkDrag [cdkDragData]="chart"
              cdkDragLockAxis="y" cdkDragBoundary=".rowgroup" [cdkDragDisabled]="!canEdit">

@@ -19,7 +19,7 @@ import {Router} from '@angular/router';
 @Component({
     selector: 'app-full-layout',
     templateUrl: 'full.component.html',
-    styles: ['.site-title {font-family: Dosis, sans-serif; font-size: 36px; color: black}']
+    styleUrls: ['./full.component.scss']
 })
 export class FullComponent implements OnInit, OnDestroy {
     mobileQuery: MediaQueryList;
@@ -34,12 +34,12 @@ export class FullComponent implements OnInit, OnDestroy {
     dateSelectOpened = false;
     currentDashboard = undefined;
     scrollTop = 0;
+    toolbarMargin = 0;
     topMargin = 64;
     parentURL = '/';
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;
-    public toolbarHidden = false;
 
     constructor(
         changeDetectorRef: ChangeDetectorRef,
@@ -70,9 +70,14 @@ export class FullComponent implements OnInit, OnDestroy {
             .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
-                    this.toolbarHidden = newScrollTop - this.scrollTop > 0;
+                    if (newScrollTop - this.scrollTop > 0) {
+                        this.topMargin = ((64 - newScrollTop) > 0) ? 64 - newScrollTop : 0;
+                        this.toolbarMargin = (this.topMargin - 64) * 2;
+                    } else {
+                        this.topMargin = 64;
+                        this.toolbarMargin = 0;
+                    }
                     this.scrollTop = newScrollTop;
-                    this.topMargin = ((64 - this.scrollTop) > 0) ? 64 - this.scrollTop : 0;
                 }
             }));
     }
