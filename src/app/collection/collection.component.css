@@ -38,6 +38,7 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 
 .mat-card-subtitle {

@@ -19,7 +19,7 @@
                             <mat-icon>swap_vert</mat-icon>
                         </button>
 
-                        <mat-card-title>{{dashboard.title}}</mat-card-title>
+                        <mat-card-title [routerLink]="['/dashboards', dashboard.id]">{{dashboard.title}}</mat-card-title>
 
                         <button class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
                             <mat-icon>more_vert</mat-icon>
