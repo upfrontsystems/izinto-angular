@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FileUploader} from 'ng2-file-upload';
-import {Collection} from '../_models/collection';
+import {Collection, ImageDimensions} from '../_models/collection';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import {User} from '../_models/user';
@@ -33,7 +33,7 @@ export class CollectionDialogComponent implements OnInit, AfterViewInit, OnDestr
     });
     hasBaseDropZoneOver = false;
     previewImage: any;
-    maxDimensions = {width: 640, height: 400};
+    maxDimensions = ImageDimensions;
 
     @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
 

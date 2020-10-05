@@ -9,3 +9,5 @@ export class Collection {
     dashboards: Dashboard[];
     image: string;
 }
+
+export const ImageDimensions = {width: 640, height: 400};

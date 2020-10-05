@@ -9,6 +9,7 @@ import {CollectionService} from '../_services/collection.service';
 import {AlertService} from '../_services/alert.service';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
+import {PlaceholderBackgrounds} from '../collection/collection.list.component';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class DashboardListComponent implements OnInit {
 
     canEdit = false;
     collectionId: number;
+    backgrounds = PlaceholderBackgrounds;
     @Input() dashboards: Dashboard[];
     @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
     @Output() deleted: EventEmitter<Dashboard> = new EventEmitter();

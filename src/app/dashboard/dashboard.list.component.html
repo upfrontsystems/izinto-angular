@@ -1,15 +1,29 @@
-<div cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
-    <ng-container *ngFor="let dashboard of dashboards">
-        <div fxLayout="row" cdkDrag [cdkDragData]="dashboard" [cdkDragDisabled]="!canEdit" cdkDragLockAxis="y"
-             cdkDragBoundary=".rowgroup">
-            <div fxFlex="100%" class="hover-row">
-                <mat-card>
-                    <mat-card-content>
-                        <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu"
-                                *ngIf="canEdit">
-                            <mat-icon>more_horiz</mat-icon>
+<div fxLayout="row wrap" cdkDropList (cdkDropListDropped)="reorderDashboard($event)">
+    <ng-container *ngFor="let dashboard of dashboards; let i=index">
+        <div fxFlex="20%" fxFlex.md="25%" fxLayoutGap.md="5px" fxFlex.sm="50%" fxFlex.xs="100%" class="hover-row"
+             fxLayoutAlign="space-between stretch" cdkDrag [cdkDragData]="dashboard"
+             [cdkDragDisabled]="!canEdit" cdkDragBoundary=".rowgroup">
+
+                <mat-card class="card-list">
+                    <img *ngIf="dashboard.image" mat-card-image [src]="dashboard.image"
+                         alt="Collection">
+                    <mat-card-content *ngIf="!dashboard.image" class="placeholder"
+                                      [style.background]="backgrounds[i % backgrounds.length]">
+                        <mat-icon>bar_chart</mat-icon>
+                    </mat-card-content>
+
+                    <mat-card-header>
+
+                        <button class="action-button drag-button" mat-icon-button cdkDragHandle
+                                title="Reposition dashboard" *ngIf="canEdit">
+                            <mat-icon>swap_vert</mat-icon>
                         </button>
 
+                        <mat-card-title>{{dashboard.title}}</mat-card-title>
+
+                        <button class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
                         <mat-menu #itemMenu="matMenu">
                             <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
                                     title="Delete">
@@ -32,25 +46,9 @@
                             </button>
                         </mat-menu>
 
-                        <button class="pull-right action-button" mat-icon-button cdkDragHandle
-                                title="Reposition dashboard" *ngIf="canEdit">
-                            <mat-icon>swap_vert</mat-icon>
-                        </button>
-
-                        <mat-icon *ngIf="!dashboard.image" class="list-icon">insert_chart</mat-icon>
-                        <div *ngIf="dashboard.image" class="list-image-content">
-                            <img class="list-image" [src]="dashboard.image"/>
-                        </div>
-                        <mat-card-title>
-                            <a class="link-title" [routerLink]="['/dashboards', dashboard.id]">
-                                {{dashboard.title}}
-                            </a>
-                        </mat-card-title>
                         <mat-card-subtitle>{{dashboard.description}}</mat-card-subtitle>
-
-                    </mat-card-content>
+                    </mat-card-header>
                 </mat-card>
             </div>
-        </div>
     </ng-container>
 </div>

@@ -24,17 +24,45 @@
     height: auto !important;
 }
 
-/* TODO positioning image in rows */
-.list-image-content {
-    padding: 35px;
-    float: left;
+.mat-card {
+    width: 100%;
 }
 
-img.list-image {
+.mat-card-header.card-list-header {
+    padding: 0;
+}
+
+.mat-card-title {
+    padding-left: 30px;
+    padding-top: 5px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mat-card-subtitle {
+    padding: 0 20px 15px 30px;
+}
+
+img.mat-card-image {
+    width: 100%;
+    height: auto;
+    margin-top: 0 !important;
+    background-position: center;
+    background-size: cover;
+}
+
+.mat-card-content.placeholder {
+    width: 100%;
+    height: 0;
+    padding-top: 50%;
+    position: relative;
+    padding-bottom: 32px;
+    margin-bottom: 6px;
+}
+
+.placeholder .mat-icon {
+    font-size: 80px;
     position: absolute;
-    top: 10px;
-    left: 10px;
-    height: 50px;
-    width: auto;
-    border-radius: 3px;
+    top: 20px;
 }

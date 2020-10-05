@@ -46,6 +46,7 @@ mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
     }
 }
 
+/* global style action buttons on hover */
 .hover-row .action-button {
     color: rgba(0, 0, 0, 0) !important;
 }

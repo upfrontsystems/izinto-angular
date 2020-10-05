@@ -2,12 +2,26 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Collection} from '../_models/collection';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {CollectionService} from '../_services/collection.service';
 import {CollectionDialogComponent} from './collection.dialog.component';
 import {AlertService} from '../_services/alert.service';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
+
+export const PlaceholderBackgrounds = [
+        '#CC334B',
+        '#98CC33',
+        '#33CCB4',
+        '#6733CC',
+        '#3163CE',
+        '#31CE4E',
+        '#31B2CE',
+        '#CE9C31',
+        '#F95606',
+        '#CE31B1',
+        '#2B27B8',
+        '#27B874'];
 
 @Component({
   selector: 'app-collection-list',
@@ -17,6 +31,7 @@ import {CopyService} from '../_services/copy.service';
 export class CollectionListComponent implements OnInit {
 
     canEdit = false;
+    backgrounds = PlaceholderBackgrounds;
 
     @Input() collections: Collection[];
     @Output() edited: EventEmitter<Collection> = new EventEmitter();

@@ -10,6 +10,7 @@ import {take, takeUntil} from 'rxjs/operators';
 import {UserService} from '../_services/user.service';
 import {DashboardService} from '../_services/dashboard.service';
 import {AuthenticationService} from '../_services/authentication.service';
+import {ImageDimensions} from '../_models/collection';
 
 const URL = 'api/files';
 
@@ -33,7 +34,7 @@ export class DashboardDialogComponent implements OnInit, AfterViewInit, OnDestro
     });
     hasBaseDropZoneOver = false;
     previewImage: any;
-    maxDimensions = {width: 640, height: 400};
+    maxDimensions = ImageDimensions;
 
     @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
 

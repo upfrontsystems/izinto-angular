@@ -1,10 +1,23 @@
-<ng-container *ngFor="let collection of collections">
-    <div fxLayout="row">
-        <div fxFlex="100%" class="hover-row">
-            <mat-card>
-                <mat-card-content>
-                    <button class="pull-right action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
-                        <mat-icon>more_horiz</mat-icon>
+<div fxLayout="row wrap">
+    <div fxFlex="20%" fxFlex.md="25%" fxLayoutGap.md="5px" fxFlex.sm="50%" fxFlex.xs="100%"
+         fxLayoutAlign="space-between stretch" class="hover-row"
+         *ngFor="let collection of collections; let i = index">
+
+        <mat-card>
+            <img *ngIf="collection.image" mat-card-image [src]="collection.image"
+                 alt="Collection">
+            <mat-card-content *ngIf="!collection.image" class="placeholder"
+                              [style.background]="backgrounds[i % backgrounds.length]">
+                <mat-icon>assessment</mat-icon>
+            </mat-card-content>
+
+            <div class="mat-card-header card-list-header" fxLayout="column">
+                <div fxFlex="100%" fxLayout="row" fxLayoutAlign="space-between start">
+                    <mat-card-title fxFlex="grow">{{collection.title}}</mat-card-title>
+
+                    <button fxFlex="initial" class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu"
+                            *ngIf="canEdit">
+                        <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #itemMenu="matMenu">
                         <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
@@ -21,23 +34,17 @@
                             <mat-icon>edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <button mat-menu-item class="pull-right" color="accent" (click)="copyCollection(collection)" title="Copy">
+                        <button mat-menu-item class="pull-right" color="accent" (click)="copyCollection(collection)"
+                                title="Copy">
                             <mat-icon>file_copy</mat-icon>
                             <span>Copy</span>
                         </button>
                     </mat-menu>
+                </div>
 
-                    <mat-icon *ngIf="!collection.image" class="list-icon">library_books</mat-icon>
-                    <div *ngIf="collection.image" class="list-image-content">
-                        <img class="list-image" [src]="collection.image"/>
-                    </div>
-                    <mat-card-title><a class="link-title" [routerLink]="['/collections', collection.id]">
-                        {{collection.title}}
-                    </a></mat-card-title>
-                    <mat-card-subtitle>{{collection.description}}</mat-card-subtitle>
+                <mat-card-subtitle fxFlex="100%">{{collection.description}}</mat-card-subtitle>
+            </div>
 
-                </mat-card-content>
-            </mat-card>
-        </div>
+        </mat-card>
     </div>
-</ng-container>
+</div>
