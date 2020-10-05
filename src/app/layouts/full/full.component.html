@@ -45,15 +45,6 @@
                 <mat-icon>home</mat-icon>
             </button>
             <span fxFlex></span>
-
-            <button mat-icon-button [matMenuTriggerFor]="tabMenu"
-                    *ngIf="authService.hasRole('Administrator') && currentDashboard">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <mat-menu #tabMenu="matMenu">
-                <a mat-menu-item class="text-right text-capitalize" *ngFor="let tab of dashboardLinks"
-                 [routerLink]="['/dashboards', currentDashboard?.id || 0, tab]"> {{tab}} </a>
-            </mat-menu>
             <!-- ============================================================== -->
             <!-- app header component - style you can find in header.scss / header.component.ts-->
             <!-- ============================================================== -->
@@ -83,15 +74,20 @@
             <span class="dashboard-title">{{this.currentDashboard?.title}}</span>
             <span fxFlex></span>
 
-            <button mat-icon-button [matMenuTriggerFor]="tabMenu" *ngIf="authService.hasRole('Administrator')">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <mat-menu #tabMenu="matMenu">
-                <a mat-menu-item class="text-right" *ngFor="let tab of dashboardLinks"> {{tab}} </a>
-            </mat-menu>
             <button mat-icon-button (click)="toggleDateSelect()">
                 <mat-icon>date_range</mat-icon>
             </button>
+            <button mat-icon-button [matMenuTriggerFor]="tabMenu" *ngIf="authService.hasRole('Administrator')">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #tabMenu="matMenu">
+                <a mat-menu-item *ngFor="let tab of dashboardLinks"
+                   [routerLink]="['/dashboards', currentDashboard?.id || 0, tab.link]"
+                   routerLinkActive="active">
+                    <mat-icon>{{tab.icon}}</mat-icon>
+                    {{tab.name}}
+                </a>
+            </mat-menu>
         </ng-container>
     </mat-toolbar>
     <!-- ============================================================== -->

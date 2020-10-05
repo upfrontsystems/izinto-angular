@@ -16,3 +16,10 @@ export class Dashboard {
     date_hidden: Boolean;
     image: string;
 }
+
+export const DashboardLinks = [
+    {name: 'View', link: 'view', icon: 'preview'},
+    {name: 'Edit', link: 'edit', icon: 'edit'},
+    {name: 'Queries', link: 'queries', icon: 'query_builder'},
+    {name: 'Variables', link: 'variables', icon: 'view_module'}
+];

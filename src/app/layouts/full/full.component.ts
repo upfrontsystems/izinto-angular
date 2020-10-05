@@ -1,19 +1,14 @@
 import {MediaMatcher} from '@angular/cdk/layout';
 import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
-import {
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit,
-    NgZone
-} from '@angular/core';
-import { map } from 'rxjs/operators';
+import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {map} from 'rxjs/operators';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {Router} from '@angular/router';
+import {DashboardLinks} from '../../_models/dashboard';
 
 /** @title Responsive sidenav */
 @Component({
@@ -37,7 +32,7 @@ export class FullComponent implements OnInit, OnDestroy {
     toolbarMargin = 0;
     topMargin = 64;
     parentURL = '/';
-    dashboardLinks = ['view', 'edit', 'queries', 'variables'];
+    dashboardLinks = DashboardLinks;
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;

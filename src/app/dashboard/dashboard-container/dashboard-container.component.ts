@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {Location} from '@angular/common';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
-import {Dashboard} from '../../_models/dashboard';
+import {Dashboard, DashboardLinks} from '../../_models/dashboard';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {MediaMatcher} from '@angular/cdk/layout';
 
 export class Slider {
     sensitivity: number;
@@ -21,21 +22,29 @@ export class Slider {
     templateUrl: './dashboard-container.component.html',
     styleUrls: ['./dashboard-container.component.css']
 })
-export class DashboardContainerComponent implements OnInit {
+export class DashboardContainerComponent implements OnInit, OnDestroy {
     dashboard: Dashboard;
     siblings: Dashboard[] = [];
     parent: any;
     slider: Slider = new Slider();
     canSlide = false;
     isAdmin = false;
+    dashboardLinks = DashboardLinks;
+    mobileQuery: MediaQueryList;
+    private readonly _mobileQueryListener: () => void;
 
-    constructor(protected route: ActivatedRoute,
+    constructor(changeDetectorRef: ChangeDetectorRef,
+                media: MediaMatcher,
+                protected route: ActivatedRoute,
                 private router: Router,
                 protected http: HttpClient,
                 private location: Location,
                 protected authService: AuthenticationService,
                 protected collectionService: CollectionService,
                 protected dashboardService: DashboardService) {
+        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+        this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit(): void {
@@ -64,6 +73,10 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        this.mobileQuery.removeListener(this._mobileQueryListener);
+    }
+
     getDashboard(dashboardId) {
         // check if dashboard is in service
         const existing = this.dashboardService.currentDashboardValue;
@@ -76,6 +89,7 @@ export class DashboardContainerComponent implements OnInit {
                 this.dashboard = resp;
                 this.dashboardService.setCurrentDashboard(this.dashboard);
                 this.getSiblings();
+                this.getCollection();
             });
         }
     }

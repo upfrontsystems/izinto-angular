@@ -25,8 +25,9 @@
     height: 2.5em;
     align-items: center;
     opacity: 0.9;
+    padding: 0 15px;
 }
 
-.mat-tab-label-active {
+.mat-tab-label-active, .mat-tab-link.active {
     color: #1e88e5;
 }

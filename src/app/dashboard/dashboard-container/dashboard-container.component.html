@@ -12,7 +12,15 @@
                         &gt; {{dashboard?.title}}
                     </h3>
                 </div>
+
+                <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin && mobileQuery.matches">
+                    <a mat-tab-link *ngFor="let tab of dashboardLinks" [routerLinkActive]="'active'"
+                       [routerLink]="['/dashboards', dashboard?.id || 0, tab.link]">
+                        <mat-icon class="m-r-5">{{tab.icon}}</mat-icon> {{tab.name}}
+                    </a>
+                </nav>
             </div>
+
 
             <!-- route to dashboard tabs -->
             <router-outlet></router-outlet>
