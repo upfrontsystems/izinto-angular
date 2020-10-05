@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardView} from '../_models/dashboard_view';
 import {DateSelection} from '../_models/date_selection';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 
 @Injectable({
@@ -11,11 +12,22 @@ import {DateSelection} from '../_models/date_selection';
 export class DashboardService {
 
     toggleDateSelect: EventEmitter<boolean> = new EventEmitter<boolean>();
-    currentDashboard: EventEmitter<Dashboard> = new EventEmitter<Dashboard>();
+    private currentDashboardSubject: BehaviorSubject<Dashboard>;
+    public currentDashboard: Observable<Dashboard>;
     datesUpdated: EventEmitter<DateSelection> = new EventEmitter<DateSelection>();
     private dateSelection: DateSelection;
 
     constructor(private http: HttpClient) {
+        this.currentDashboardSubject = new BehaviorSubject<Dashboard>(null);
+        this.currentDashboard = this.currentDashboardSubject.asObservable();
+    }
+
+    public get currentDashboardValue(): Dashboard {
+        return this.currentDashboardSubject.value;
+    }
+
+    setCurrentDashboard(dashboard) {
+        this.currentDashboardSubject.next(dashboard);
     }
 
     getDashboards(filters) {

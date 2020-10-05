@@ -11,3 +11,7 @@
 .is-animating {
     transition: transform 150ms cubic-bezier(0.5, 0, 0.5, 1);
 }
+
+.text-capitalize {
+    text-transform: capitalize !important;
+}

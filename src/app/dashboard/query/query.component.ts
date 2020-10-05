@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {MatPaginator} from '@angular/material/paginator';
@@ -18,7 +18,7 @@ import {DataSource} from '../../_models/data.source';
 export class QueryComponent implements OnInit, AfterViewInit {
 
     queries: Query[];
-    @Input() dashboardId: number;
+    dashboardId: number;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Query>(this.queries);
     displayedColumns: string[] = ['name', 'data_source', 'action'];
@@ -39,11 +39,11 @@ export class QueryComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('dashboard_id');
+        this.route.parent.params.subscribe(params => {
+            this.dashboardId = +params['dashboard_id'];
+            this.getQueries();
         });
         this.dataSource.sort = this.sort;
-        this.getQueries();
         this.getDataSources();
     }
 

@@ -14,6 +14,9 @@ import {DataSourceComponent} from './data-source/data.source.component';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardContainerComponent} from './dashboard/dashboard-container/dashboard-container.component';
 import {QueryComponent} from './dashboard/query/query.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {DashboardEditorComponent} from './dashboard/dashboard-editor/dashboard-editor.component';
+import {VariableComponent} from './dashboard/variable/variable.component';
 
 const appRoutes: Routes = [
     {
@@ -34,8 +37,24 @@ const appRoutes: Routes = [
                 path: 'dashboards/:dashboard_id',
                 component: DashboardContainerComponent,
                 children: [{
+                    path: '',
+                    redirectTo: 'view',
+                    pathMatch: 'full'
+                }, {
+                    path: 'view',
+                    component: DashboardComponent
+                }, {
+                    path: 'edit',
+                    component: DashboardEditorComponent,
+                    data: {roles: [Role.Administrator]}
+                }, {
                     path: 'queries',
-                    component: QueryComponent
+                    component: QueryComponent,
+                    data: {roles: [Role.Administrator]}
+                }, {
+                    path: 'variables',
+                    component: VariableComponent,
+                    data: {roles: [Role.Administrator]}
                 }]
             },
             {

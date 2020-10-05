@@ -12,31 +12,10 @@
                         &gt; {{dashboard?.title}}
                     </h3>
                 </div>
-
-                <div class="m-r-10">
-                <button class="pull-right" mat-icon-button [matMenuTriggerFor]="tabMenu" *ngIf="isAdmin">
-                    <mat-icon>settings</mat-icon>
-                </button>
-                <mat-menu #tabMenu="matMenu">
-                    <a mat-menu-item class="text-right" *ngFor="let tab of tabs"
-                       (click)="activeTab = tab" [class.text-themecolor]="activeTab == tab"> {{tab}} </a>
-                </mat-menu>
-                </div>
             </div>
 
-            <!-- Dashboard view page -->
-            <app-dashboard *ngIf="dashboard && activeTab == 'View'" (edited)="dashboardEdited($event)"
-                           [dashboardId]="dashboardId" [dashboard]="dashboard" [isAdmin]="isAdmin"
-                           [dataSources]="dataSources" [parent]="parent"
-                           [dateViews]="dateViews"></app-dashboard>
-            <!-- Dashboard editor page -->
-            <app-dashboard-editor *ngIf="isAdmin && activeTab == 'Edit'" [dashboard]="dashboard"
-                                  (edited)="dashboardEdited($event)"></app-dashboard-editor>
-            <!-- Dashboard queries page -->
-            <app-query *ngIf="isAdmin && activeTab == 'Queries'" [dashboardId]="dashboardId"></app-query>
-            <!-- Dashboard variables page -->
-            <app-variable *ngIf="isAdmin && activeTab == 'Variables'" [dashboardId]="dashboardId"></app-variable>
-
+            <!-- route to dashboard tabs -->
+            <router-outlet></router-outlet>
         </div>
     </div>
 </div>

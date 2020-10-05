@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {Variable} from '../../_models/variable';
 import {DataSource} from '../../_models/data.source';
 import {MatTableDataSource} from '@angular/material/table';
@@ -11,14 +11,14 @@ import {MatDialog} from '@angular/material/dialog';
 import {VariableDialogComponent} from './variable-dialog.component';
 
 @Component({
-  selector: 'app-variable',
-  templateUrl: './variable.component.html',
-  styleUrls: ['./variable.component.css']
+    selector: 'app-variable',
+    templateUrl: './variable.component.html',
+    styleUrls: ['./variable.component.css']
 })
 export class VariableComponent implements OnInit, AfterViewInit {
 
     variables: Variable[];
-    @Input() dashboardId: number;
+    dashboardId: number;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Variable>(this.variables);
     displayedColumns: string[] = ['name', 'value', 'action'];
@@ -40,7 +40,10 @@ export class VariableComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.dataSource.sort = this.sort;
-        this.getVariables();
+        this.route.parent.params.subscribe(params => {
+            this.dashboardId = +params['dashboard_id'];
+            this.getVariables();
+        });
     }
 
     ngAfterViewInit(): void {

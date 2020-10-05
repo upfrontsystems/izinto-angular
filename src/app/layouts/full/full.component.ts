@@ -37,6 +37,7 @@ export class FullComponent implements OnInit, OnDestroy {
     toolbarMargin = 0;
     topMargin = 64;
     parentURL = '/';
+    dashboardLinks = ['view', 'edit', 'queries', 'variables'];
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;
@@ -60,7 +61,7 @@ export class FullComponent implements OnInit, OnDestroy {
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             this.currentDashboard = dashboard;
-            if (dashboard.collection_id) {
+            if (dashboard && dashboard.collection_id) {
                 this.parentURL = '/collections/' + dashboard.collection_id;
             } else {
                 this.parentURL = '/';

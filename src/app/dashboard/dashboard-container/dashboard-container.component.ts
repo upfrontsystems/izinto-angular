@@ -1,13 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Location} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {CollectionService} from '../../_services/collection.service';
-import {DataSourceService} from '../../_services/data.source.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {Dashboard} from '../../_models/dashboard';
-import {DataSource} from '../../_models/data.source';
-import {DashboardView} from '../../_models/dashboard_view';
 import {AuthenticationService} from '../../_services/authentication.service';
 
 export class Slider {
@@ -25,16 +22,11 @@ export class Slider {
     styleUrls: ['./dashboard-container.component.css']
 })
 export class DashboardContainerComponent implements OnInit {
-    canEdit = false;
-    dashboardId: number;
     dashboard: Dashboard;
     siblings: Dashboard[] = [];
     parent: any;
-    dataSources: DataSource[];
-    dateViews: DashboardView[] = [];
     slider: Slider = new Slider();
-    tabs = ['View', 'Edit', 'Queries', 'Variables'];
-    activeTab = 'View';
+    canSlide = false;
     isAdmin = false;
 
     constructor(protected route: ActivatedRoute,
@@ -43,7 +35,6 @@ export class DashboardContainerComponent implements OnInit {
                 private location: Location,
                 protected authService: AuthenticationService,
                 protected collectionService: CollectionService,
-                protected dataSourceService: DataSourceService,
                 protected dashboardService: DashboardService) {
     }
 
@@ -56,44 +47,53 @@ export class DashboardContainerComponent implements OnInit {
         this.slider.slideCount = 1;
 
         this.route.paramMap.subscribe(params => {
-            this.dashboardId = +params.get('dashboard_id');
-            this.getDashboardViews();
-            this.getDataSources();
-            this.getDashboard();
+            this.getDashboard(+params.get('dashboard_id'));
         });
-    }
-
-    getDashboardViews() {
-        this.dashboardService.listDashboardViews().subscribe(resp => {
-            this.dateViews = resp;
-        });
-    }
-
-    getDataSources() {
-        this.dataSourceService.getAll({}).subscribe(resp => {
-            this.dataSources = resp;
-        });
-    }
-
-    getDashboard() {
-        this.dashboardService.getById(this.dashboardId).subscribe(resp => {
-            this.dashboard = resp;
-            this.dashboardService.currentDashboard.emit(this.dashboard);
-            this.getSiblings();
-            if (resp.collection_id) {
-                this.collectionService.getById(resp.collection_id).subscribe(collection => {
-                    this.parent = {
-                        title: collection.title,
-                        url: '/collections/' + collection.id
-                    };
-                });
-            } else {
-                this.parent = {
-                    title: 'Home',
-                    url: '/'
-                };
+        // check if back in view tab
+        this.canSlide = this.router.url.includes('view');
+        this.router.events.subscribe((val) => {
+            if (val instanceof NavigationEnd) {
+                this.canSlide = val.url.includes('view');
             }
         });
+
+        this.dashboardService.currentDashboard.subscribe(dashboard => {
+            if (dashboard) {
+                this.dashboardEdited(dashboard);
+            }
+        });
+    }
+
+    getDashboard(dashboardId) {
+        // check if dashboard is in service
+        const existing = this.dashboardService.currentDashboardValue;
+        if (existing && existing.id === dashboardId) {
+            this.dashboard = existing;
+            this.getSiblings();
+            this.getCollection();
+        } else {
+            this.dashboardService.getById(dashboardId).subscribe(resp => {
+                this.dashboard = resp;
+                this.dashboardService.setCurrentDashboard(this.dashboard);
+                this.getSiblings();
+            });
+        }
+    }
+
+    getCollection() {
+        if (this.dashboard.collection_id) {
+            this.collectionService.getById(this.dashboard.collection_id).subscribe(collection => {
+                this.parent = {
+                    title: collection.title,
+                    url: '/collections/' + collection.id
+                };
+            });
+        } else {
+            this.parent = {
+                title: 'Home',
+                url: '/'
+            };
+        }
     }
 
     getSiblings() {
@@ -101,32 +101,29 @@ export class DashboardContainerComponent implements OnInit {
         this.dashboardService.getDashboards({user_id: true, collection_id: parentId}).subscribe(resp => {
             this.siblings = resp;
 
-            this.slider.activeSlide = this.siblings.findIndex(dash => dash.id === this.dashboardId);
+            this.slider.activeSlide = this.siblings.findIndex(dash => dash.id === this.dashboard.id);
             this.slider.slideCount = this.siblings.length;
         });
     }
 
     setDashboard() {
-        if (this.dashboardId === this.siblings[this.slider.activeSlide].id) {
+        if (this.dashboard.id === this.siblings[this.slider.activeSlide].id) {
             return;
         }
         this.dashboard = this.siblings[this.slider.activeSlide];
-        this.location.replaceState(this.router.url.replace('dashboards/' + this.dashboardId,
+        this.location.replaceState(this.router.url.replace('dashboards/' + this.dashboard.id,
             'dashboards/' + this.dashboard.id));
-        this.dashboardId = this.dashboard.id;
-        this.dashboardService.currentDashboard.emit(this.dashboard);
+        this.dashboardService.setCurrentDashboard(this.dashboard);
     }
 
     dashboardEdited(dashboard) {
         this.siblings[this.slider.activeSlide] = dashboard;
         this.dashboard = dashboard;
-        this.dashboardService.currentDashboard.emit(this.dashboard);
-        this.activeTab = 'View';
     }
 
     sliderManager(e) {
         // dont animate when moving up/down
-        if (this.activeTab === 'View' && Math.abs(e.deltaX / 5) < Math.abs(e.deltaY)) {
+        if (this.canSlide && Math.abs(e.deltaX / 5) < Math.abs(e.deltaY)) {
             return;
         }
         // move element

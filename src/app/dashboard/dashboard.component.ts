@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
@@ -11,13 +11,14 @@ import {SingleStatDialogComponent} from './single-stat/single.stat.dialog.compon
 import {SingleStat} from '../_models/single.stat';
 import {DataSource} from '../_models/data.source';
 import {MediaMatcher} from '@angular/cdk/layout';
-import {DashboardView} from '../_models/dashboard_view';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
 import {environment} from '../../environments/environment';
 import {QueryBaseComponent} from './query.base.component';
 import {AlertService} from '../_services/alert.service';
 import {QueryService} from '../_services/query.service';
+import {DataSourceService} from '../_services/data.source.service';
+import {DashboardView} from '../_models/dashboard_view';
 
 @Component({
     selector: 'app-dashboard',
@@ -26,13 +27,11 @@ import {QueryService} from '../_services/query.service';
 })
 export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
-    @Input() dashboardId: number;
-    @Input() dashboard: Dashboard;
-    @Input() parent: any;
-    @Input() dataSources: DataSource[];
-    @Input() dateViews: DashboardView[] = [];
-    @Input() isAdmin: boolean;
-    @Output() edited: EventEmitter<Dashboard> = new EventEmitter();
+    dashboardId: number;
+    dashboard: Dashboard;
+    dataSources: DataSource[];
+    dateViews: DashboardView[] = [];
+    isAdmin = false;
     @ViewChild('iframe') iframe;
     mobileQuery: MediaQueryList;
     addedChart: Chart;
@@ -68,6 +67,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
                 protected dashboardService: DashboardService,
+                protected dataSourceService: DataSourceService,
                 private queryService: QueryService) {
         super(authService, dashboardService);
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
@@ -76,10 +76,22 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.variables = this.dashboard.variables;
+        // only admin can add and edit
+        this.isAdmin = this.authService.hasRole('Administrator');
+        this.route.parent.params.subscribe(params => {
+            this.dashboardId = +params['dashboard_id'];
+            this.getDashboard(this.dashboardId);
+        });
+        this.getDataSources();
+        this.getDashboardViews();
         this.dateSelection = this.dashboardService.getDateSelection();
         this.trustURL();
 
+        this.dashboardService.currentDashboard.subscribe(dashboard => {
+            if (dashboard) {
+                this.setDashboard(dashboard);
+            }
+        });
         this.dashboardService.datesUpdated.subscribe((selection) => {
             this.dateSelection = selection;
             this.postDateSelection();
@@ -116,6 +128,31 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     trustURL() {
         const url = environment.scriptBaseURL + '/api/dashboards/' + this.dashboardId + '/content';
         this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    getDashboard(dashboardId) {
+        // check if dashboard is in service
+        const existing = this.dashboardService.currentDashboardValue;
+        if (existing && existing.id === dashboardId) {
+            this.setDashboard(existing);
+        }
+    }
+
+    setDashboard(dashboard) {
+        this.dashboard = dashboard;
+        this.variables = this.dashboard.variables;
+    }
+
+    getDataSources() {
+        this.dataSourceService.getAll({}).subscribe(resp => {
+            this.dataSources = resp;
+        });
+    }
+
+    getDashboardViews() {
+        this.dashboardService.listDashboardViews().subscribe(resp => {
+            this.dateViews = resp;
+        });
     }
 
     fabClick(label) {
