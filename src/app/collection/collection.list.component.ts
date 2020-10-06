@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Collection} from '../_models/collection';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material/dialog';
 import {CollectionService} from '../_services/collection.service';
@@ -38,6 +38,7 @@ export class CollectionListComponent implements OnInit {
     @Output() deleted: EventEmitter<Collection> = new EventEmitter();
 
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private http: HttpClient,
                 public dialog: MatDialog,
                 protected alertService: AlertService,
@@ -74,5 +75,9 @@ export class CollectionListComponent implements OnInit {
     copyCollection(collection) {
         this.copyService.copy('collection', collection);
         this.alertService.success('Collection copied', false, 2000);
+    }
+
+    routeTo(collection) {
+        this.router.navigate(['/collections', collection.id]);
     }
 }

@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import { Dashboard } from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import { MatDialog } from '@angular/material/dialog';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DashboardDialogComponent} from './dashboard.dialog.component';
 import {CollectionService} from '../_services/collection.service';
 import {AlertService} from '../_services/alert.service';
@@ -28,6 +28,7 @@ export class DashboardListComponent implements OnInit {
     @Output() reordered: EventEmitter<any> = new EventEmitter();
 
     constructor(private route: ActivatedRoute,
+                private router: Router,
                 private http: HttpClient,
                 public dialog: MatDialog,
                 protected alertService: AlertService,
@@ -79,5 +80,9 @@ export class DashboardListComponent implements OnInit {
     copyDashboard(dashboard) {
         this.copyService.copy('dashboard', dashboard);
         this.alertService.success('Dashboard copied', false, 2000);
+    }
+
+    routeTo(dashboard) {
+        this.router.navigate(['/dashboards', dashboard.id]);
     }
 }

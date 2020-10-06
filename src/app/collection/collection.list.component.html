@@ -4,12 +4,15 @@
          *ngFor="let collection of collections; let i = index">
 
         <mat-card>
-            <img *ngIf="collection.image" mat-card-image [src]="collection.image"
-                 alt="Collection">
-            <mat-card-content *ngIf="!collection.image" class="placeholder"
-                              [style.background]="backgrounds[i % backgrounds.length]">
-                <mat-icon>assessment</mat-icon>
-            </mat-card-content>
+            <div class="image-container" (click)="routeTo(collection)">
+                <img *ngIf="collection.image" mat-card-image [src]="collection.image"
+                     alt="Collection">
+                <mat-card-content *ngIf="!collection.image" class="placeholder"
+                                  fxLayout="column" fxLayoutAlign="center center"
+                                  [style.background]="backgrounds[i % backgrounds.length]">
+                    <mat-icon fxFlex>assessment</mat-icon>
+                </mat-card-content>
+            </div>
 
             <div class="mat-card-header card-list-header" fxLayout="column">
                 <div fxFlex="100%" fxLayout="row" fxLayoutAlign="space-between start">

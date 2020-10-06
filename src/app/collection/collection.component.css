@@ -38,6 +38,8 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 19px !important;
+    word-wrap: break-word;
     cursor: pointer;
 }
 
@@ -53,17 +55,26 @@ img.mat-card-image {
     background-size: cover;
 }
 
+.image-container {
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 .mat-card-content.placeholder {
     width: 100%;
     height: 0;
     padding-top: 50%;
     position: relative;
-    padding-bottom: 32px;
+    padding-bottom: 13%;
     margin-bottom: 6px;
+    border-radius: 4px 4px 0 0;
 }
 
 .placeholder .mat-icon {
-    font-size: 80px;
-    position: absolute;
-    top: 20px;
+    font-size: 9rem;
+    color: white;
+    line-height: 9rem;
+    width: auto;
+    height: 9rem;
+    margin-top: -50%;
 }

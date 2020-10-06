@@ -1,14 +1,9 @@
-import {
-    ChangeDetectorRef,
-    Component,
-    OnInit,
-    OnDestroy, Input
-} from '@angular/core';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { MediaMatcher } from '@angular/cdk/layout';
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+import {MediaMatcher} from '@angular/cdk/layout';
 import {CollectionService} from '../../../_services/collection.service';
 import {DashboardService} from '../../../_services/dashboard.service';
-import { MatSidenav } from '@angular/material/sidenav';
+import {MatSidenav} from '@angular/material/sidenav';
 
 @Component({
     selector: 'app-sidebar',
@@ -20,9 +15,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     @Input() sidebar: MatSidenav;
     public config: PerfectScrollbarConfigInterface = {};
     mobileQuery: MediaQueryList;
-
-    private _mobileQueryListener: () => void;
     public menuItems = [];
+    private _mobileQueryListener: () => void;
 
     constructor(
         changeDetectorRef: ChangeDetectorRef,
@@ -36,6 +30,10 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.getCollections();
+    }
+
+    getCollections() {
         this.collectionService.getCollections({user_id: true, list_dashboards: true}).subscribe(resp => {
             for (const collection of resp) {
                 const menuitem = {
@@ -45,21 +43,25 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
                     icon: 'library_books'
                 };
                 menuitem['children'] = [];
-                const dashboards = collection['dashboards'].sort((a,b) => a.index - b.index);
+                const dashboards = collection['dashboards'].sort((a, b) => a.index - b.index);
                 for (const dashboard of dashboards) {
                     menuitem['children'].push(
                         {
                             state: dashboard.id,
                             name: dashboard.title,
                             type: 'link',
-                            link: '/collections/' + collection.id + '/dashboards/' + dashboard.id
+                            link: '/dashboards/' + dashboard.id
                         }
                     );
                 }
                 this.menuItems.push(menuitem);
             }
-        });
 
+            this.getDashboards();
+        });
+    }
+
+    getDashboards() {
         this.dashboardService.getDashboards({user_id: true, collection_id: ''}).subscribe(resp => {
             for (const dashboard of resp) {
                 this.menuItems.push(
