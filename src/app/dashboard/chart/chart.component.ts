@@ -549,7 +549,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
                 .style('font-size', '12px')
-                .attr('x', -20))
+                .attr('x', -15))
             .call(g => g.select('.domain')
                 .remove());
     }
