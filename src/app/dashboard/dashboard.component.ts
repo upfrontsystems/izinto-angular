@@ -27,7 +27,6 @@ import {DashboardView} from '../_models/dashboard_view';
 })
 export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
-    dashboardId: number;
     dashboard: Dashboard;
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
@@ -79,13 +78,12 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         // only admin can add and edit
         this.isAdmin = this.authService.hasRole('Administrator');
         this.route.parent.params.subscribe(params => {
-            this.dashboardId = +params['dashboard_id'];
-            this.getDashboard(this.dashboardId);
+            this.getDashboard(+params['dashboard_id']);
+            this.trustURL(+params['dashboard_id']);
         });
         this.getDataSources();
         this.getDashboardViews();
         this.dateSelection = this.dashboardService.getDateSelection();
-        this.trustURL();
 
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             if (dashboard) {
@@ -118,15 +116,15 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
     // load query and return result to iframe
     runQuery(queryName, params) {
-        this.queryService.runQuery(this.dashboardId, queryName, params).subscribe(resp => {
+        this.queryService.runQuery(this.dashboard.id, queryName, params).subscribe(resp => {
             const result = {result: {query_name: queryName, results: resp}};
             const data = {type: 'result', message: result};
             this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
         });
     }
 
-    trustURL() {
-        const url = environment.scriptBaseURL + '/api/dashboards/' + this.dashboardId + '/content';
+    trustURL(dashboardId) {
+        const url = environment.scriptBaseURL + '/api/dashboards/' + dashboardId + '/content';
         this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 
@@ -170,7 +168,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     addChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
-            data: {chart: {dashboard_id: this.dashboardId, group_by: []}, dataSources: this.dataSources, dateViews: this.dateViews},
+            data: {chart: {dashboard_id: this.dashboard.id, group_by: []}, dataSources: this.dataSources, dateViews: this.dateViews},
             disableClose: true
         });
 
@@ -191,7 +189,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     addSingleStat() {
         const dialogRef = this.dialog.open(SingleStatDialogComponent, {
             width: '600px',
-            data: {singleStat: {dashboard_id: this.dashboardId}, dataSources: this.dataSources},
+            data: {singleStat: {dashboard_id: this.dashboard.id}, dataSources: this.dataSources},
             disableClose: true
         });
 

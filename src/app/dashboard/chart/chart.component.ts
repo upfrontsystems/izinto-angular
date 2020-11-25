@@ -527,6 +527,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (!labels) {
             return [];
         }
+        // split up label to dict mapping if the labels are in dict format
         if (labels.includes(':')) {
             const mapping = {};
             for (const value of labels.split(',')) {
@@ -534,6 +535,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             }
             return mapping;
         }
+        // return labels in order
         return labels.split(',');
     }
 

@@ -10,13 +10,13 @@
 
                 <mat-card-subtitle *ngIf="dashboard.description" class="m-l-30">{{dashboard.description}}</mat-card-subtitle>
 
-                <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboardId"
+                <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboard.id"
                                       [addedSingleStat]="addedSingleStat"
                                       [variables]="dashboard.variables" [dataSources]="dataSources">
                 </app-single-stat-list>
 
                 <app-chart-list *ngIf="dashboard.type == 'old'" appMouseListener [dateViews]="dateViews"
-                                [dashboardId]="dashboardId" [addedChart]="addedChart" [variables]="dashboard.variables"
+                                [dashboardId]="dashboard.id" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
 
                 <iframe #iframe *ngIf="dashboard.type == 'new'" class="b-0" scrolling="yes"
