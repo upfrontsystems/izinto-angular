@@ -776,8 +776,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.addGrid(svg, this.yScale(merged, false));
 
         const fillFunc = this.chart.fillFunc,
-            colors = (this.chart.color || '').split(','),
-            height = this.innerHeight;
+            colors = (this.chart.color || '').split(',');
         dataSet.forEach((dataset, index) => {
             const bar_selector = 'dataset-' + index,
                 bandwidth = this.barWidth(),
@@ -804,15 +803,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                             return colors[index] || 'black';
                         }
                     });
+                // update only length and widths when chart redraws
                 update.transition()
                     .attr('x', (d: any) => padding + xAxisScale(d.date) + bandwidth * index + 1)
-                    .attr('y', function (d: Record) {
-                        return height - yScale(d.value);
-                    })
-                    .attr('width', bandwidth - padding * 2)
-                    .attr('height', function (d: Record) {
-                        return yScale(d.value);
-                    });
+                    .attr('width', bandwidth - padding * 2);
             }
         });
         if (create && dataSet.length > 0) {
@@ -915,7 +909,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         const arrowScale = this.xAxisScale();
         const arrowWidth = this.barWidth();
         const minArrowWidth = 20,
-              position = this.chartHeight - this.margin.bottom - 2;
+            position = this.chartHeight - this.margin.bottom - 2;
         let previousArrow = 0;
         for (let i = 0; i < dataset.length; i++) {
             const arrowX = arrowScale(dataset[i].date);
