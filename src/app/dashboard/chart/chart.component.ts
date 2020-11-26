@@ -541,7 +541,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     // add grid to chart
     addGrid(svg, yScale) {
-        const gridLines = d3Axis.axisLeft(yScale).ticks(4).tickSize(-this.innerWidth);
+        const gridLines = d3Axis.axisLeft(yScale).ticks(4, 's').tickSize(-this.innerWidth);
 
         svg.selectAll('g.grid > *').remove();
         svg.select('g.grid')
@@ -550,7 +550,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('stroke-opacity', 0.5)
                 .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-                .style('font-size', '12px')
+                .style('font-size', '11px')
                 .attr('x', -15))
             .call(g => g.select('.domain')
                 .remove());
@@ -564,7 +564,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         svg.selectAll('g.x-axis').remove();
         svg.append('g')
             .attr('class', 'x-axis')
-            .style('font-size', '12px')
+            .style('font-size', '11px')
             .attr('transform', 'translate(0,' + this.innerHeight + ')')
             .call(d3Axis.axisBottom(xAxisScale)
                 .ticks(interval)
