@@ -334,7 +334,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     buildChart() {
-        console.log('buildc');
         this.setChartDimensions();
         if (this.chart.type === 'Line') {
             this.lineChart(this.dataSets);
@@ -369,6 +368,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (ymax === null) {
             ymax = d3Array.max<number>(dataset.map(d => d.value));
         }
+        // default chart min and max values
+        ymin = ymin === undefined ? 0 : ymin;
+        ymax = ymax === undefined ? 1.5 : ymax;
 
         // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
@@ -553,7 +555,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     // add grid to chart
     addGrid(svg, yScale) {
-        const gridLines = d3Axis.axisLeft(yScale).ticks(4, 's').tickSize(-this.innerWidth);
+        let tickCount = 4;
+        if (!this.dataSets.length) {
+            tickCount = 2;
+        }
+        const gridLines = d3Axis.axisLeft(yScale).ticks(tickCount, 's').tickSize(-this.innerWidth);
 
         svg.selectAll('g.grid > *').remove();
         svg.select('g.grid')
