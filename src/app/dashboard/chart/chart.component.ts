@@ -334,6 +334,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     buildChart() {
+        console.log('buildc');
         this.setChartDimensions();
         if (this.chart.type === 'Line') {
             this.lineChart(this.dataSets);
@@ -451,6 +452,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             .attr('height', this.chartHeight - this.margin.bottom)
             .attr('fill', 'none')
             .attr('pointer-events', 'all');
+    }
+
+    addTitle(svg) {
+        svg.selectAll('text.section-label').remove();
+        svg.append('text')
+            .attr('class', 'section-label')
+            .attr('x', 0)
+            .attr('y', -40)
+            .attr('dy', '0.8em')
+            .attr('fill', 'black')
+            .text(this.chart.title);
     }
 
     addLegend(svg) {
@@ -750,16 +762,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('height', this.chartHeight - this.margin.bottom);
         }
 
+        this.addTitle(svg);
         this.addLegend(svg);
-        svg.selectAll('text.section-label').remove();
-        svg.append('text')
-            .attr('class', 'section-label')
-            .attr('x', 0)
-            .attr('y', -40)
-            .attr('dy', '0.8em')
-            .attr('fill', 'black')
-            .text(this.chart.title);
-
         // add x axis
         this.addXAxis(svg, xAxisScale);
         // add grid
@@ -866,19 +870,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                         .style('stroke-width', '2px')
                         .attr('class', 'line')
                         .attr('d', line);
-                    linechart.append('text')
-                        .attr('class', 'section-label')
-                        .attr('x', 0)
-                        .attr('y', -40)
-                        .attr('dy', '0.8em')
-                        .attr('fill', 'black')
-                        .text(this.chart.title);
                 } else {
                     ch.select('path').transition(trans).attr('d', line(dataset));
                 }
             }
         });
 
+        this.addTitle(svg);
         // add legend
         this.addLegend(svg);
         // add x axis
