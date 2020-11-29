@@ -19,11 +19,7 @@
                                 [dashboardId]="dashboard.id" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources"></app-chart-list>
 
-                <iframe #iframe *ngIf="dashboard.type == 'new'" class="b-0" scrolling="yes"
-                        allowfullscreen id="dashboard-{{dashboard.id}}"
-                        sandbox="allow-same-origin allow-scripts allow-downloads allow-popups allow-forms allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-                        [src]="contentURL"></iframe>
-
+                <app-script-container [dashboard]="dashboard" *ngIf="dashboard.type == 'new'"></app-script-container>
             </mat-card-content>
 
         </mat-card>

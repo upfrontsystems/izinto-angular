@@ -1,6 +1,5 @@
-import {ChangeDetectorRef, Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Chart} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
@@ -13,10 +12,8 @@ import {DataSource} from '../_models/data.source';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {AuthenticationService} from '../_services/authentication.service';
 import {CopyService} from '../_services/copy.service';
-import {environment} from '../../environments/environment';
 import {QueryBaseComponent} from './query.base.component';
 import {AlertService} from '../_services/alert.service';
-import {QueryService} from '../_services/query.service';
 import {DataSourceService} from '../_services/data.source.service';
 import {DashboardView} from '../_models/dashboard_view';
 
@@ -31,11 +28,9 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
     isAdmin = false;
-    @ViewChild('iframe') iframe;
     mobileQuery: MediaQueryList;
     addedChart: Chart;
     addedSingleStat: SingleStat;
-    contentURL: SafeResourceUrl;
     fabButtons = [
         {
             icon: 'collections_bookmark',
@@ -59,15 +54,13 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     constructor(changeDetectorRef: ChangeDetectorRef,
                 media: MediaMatcher,
                 protected alertService: AlertService,
-                private sanitizer: DomSanitizer,
                 protected route: ActivatedRoute,
                 protected http: HttpClient,
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
                 protected dashboardService: DashboardService,
-                protected dataSourceService: DataSourceService,
-                private queryService: QueryService) {
+                protected dataSourceService: DataSourceService) {
         super(authService, dashboardService);
         this.mobileQuery = media.matchMedia('(min-width: 820px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -79,7 +72,6 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         this.isAdmin = this.authService.hasRole('Administrator');
         this.route.parent.params.subscribe(params => {
             this.getDashboard(+params['dashboard_id']);
-            this.trustURL(+params['dashboard_id']);
         });
         this.getDataSources();
         this.getDashboardViews();
@@ -92,40 +84,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         });
         this.dashboardService.datesUpdated.subscribe((selection) => {
             this.dateSelection = selection;
-            this.postDateSelection();
         });
-    }
-
-    @HostListener('window:message', ['$event']) onPostMessage(event) {
-        if (event.origin === environment.scriptBaseURL) {
-            const data = event.data;
-            if (data.query) {
-                this.runQuery(data.query.name, data.query.values);
-            } else if (data.status && data.status === 'ready') {
-                this.postDateSelection();
-            }
-        }
-    }
-
-    postDateSelection() {
-        if (this.iframe && this.iframe.nativeElement.contentWindow) {
-            const data = {type: 'date_range_updated', message: this.dateSelection};
-            this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
-        }
-    }
-
-    // load query and return result to iframe
-    runQuery(queryName, params) {
-        this.queryService.runQuery(this.dashboard.id, queryName, params).subscribe(resp => {
-            const result = {result: {query_name: queryName, results: resp}};
-            const data = {type: 'result', message: result};
-            this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
-        });
-    }
-
-    trustURL(dashboardId) {
-        const url = environment.scriptBaseURL + '/api/dashboards/' + dashboardId + '/content';
-        this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 
     getDashboard(dashboardId) {

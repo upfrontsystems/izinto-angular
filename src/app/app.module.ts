@@ -55,6 +55,7 @@ import {DashboardDateSelectorComponent} from './shared/dashboard-date-selector/d
 import { DashboardEditorComponent } from './dashboard/dashboard-editor/dashboard-editor.component';
 import { VariableComponent } from './dashboard/variable/variable.component';
 import { VariableDialogComponent } from './dashboard/variable/variable-dialog.component';
+import { ScriptContainerComponent } from './dashboard/script-container/script.container.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -113,7 +114,8 @@ export class HammerConfig extends HammerGestureConfig {
         QueryDialogComponent,
         DashboardEditorComponent,
         VariableComponent,
-        VariableDialogComponent
+        VariableDialogComponent,
+        ScriptContainerComponent
     ],
     imports: [
         AppRoutes,
