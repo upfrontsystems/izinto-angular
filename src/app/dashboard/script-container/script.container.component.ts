@@ -44,6 +44,8 @@ export class ScriptContainerComponent extends QueryBaseComponent implements OnIn
             const data = event.data;
             if (data.query) {
                 this.runQuery(data.query.name, data.query.values);
+            } else if (data.variables) {
+                this.postVariables();
             } else if (data.status && data.status === 'ready') {
                 this.postDateSelection();
             }
@@ -53,6 +55,14 @@ export class ScriptContainerComponent extends QueryBaseComponent implements OnIn
     trustURL(dashboardId) {
         const url = environment.scriptBaseURL + '/api/dashboards/' + dashboardId + '/content';
         this.contentURL = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    // send dashboard variables to iframe
+    postVariables() {
+        if (this.iframe && this.iframe.nativeElement.contentWindow) {
+            const data = {type: 'variables', message: this.dashboard.variables};
+            this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
+        }
     }
 
     // send date selection to iframe
