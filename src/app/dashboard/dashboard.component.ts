@@ -62,7 +62,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
                 protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService) {
         super(authService, dashboardService);
-        this.mobileQuery = media.matchMedia('(min-width: 820px)');
+        this.mobileQuery = media.matchMedia('(min-width: 768px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }

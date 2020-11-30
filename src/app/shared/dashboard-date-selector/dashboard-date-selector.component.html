@@ -1,6 +1,6 @@
 <mat-expansion-panel hideToggle class="no-shadow sticky-toolbar date-range-toolbar mat-toolbar"
                      fxLayout="row" fxLayout.xs="column" [expanded]="dateSelectVisible()">
-    <mat-toolbar-row fxFlex fxFlex.xs="100">
+    <mat-toolbar-row fxFlex fxFlex.xs="100" fxLayoutAlign.xs="center center">
         <button *ngFor="let view of dateViews" mat-button (click)="updateView(view.name)"
                 [class.active]="dateSelection.view == view.name">{{view.name}}
         </button>
