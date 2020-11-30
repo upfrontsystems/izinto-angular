@@ -15,6 +15,7 @@ Issue Fixes
 * [#197](https://github.com/upfrontsystems/izinto-angular/issues/197) Add optional date selector flag to dashboard
 * [#199](https://github.com/upfrontsystems/izinto-angular/issues/199) Add image to collection and dashboard
 * [#214](https://github.com/upfrontsystems/izinto-angular/issues/214) Fix setting date range navigation
+* [#13](https://github.com/upfrontsystems/izinto-angular/issues/13) Add dashboard variables to scripts
 
 
 ## 0.6

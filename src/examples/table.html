@@ -37,7 +37,7 @@
 
     var GroupBy = {'Hour': '10m', 'Day': '1h', 'Week': '1d', 'Month': '1d', 'Year': '1d'};
     var dateSelection = {};
-    var variables = [];
+    var variables = {};
     // labels and formats for response columns
     var columns = [
         {
@@ -72,6 +72,9 @@
                 }
         };
 
+        // ask for dashboard variables
+        window.top.postMessage({'variables': true}, '*');
+        // execute query
         window.top.postMessage(query, '*');
     }
 
@@ -154,8 +157,6 @@
 
     // send ready message
     window.top.postMessage({'status': 'ready'}, '*');
-    // ask for dashboard variables
-    window.top.postMessage('variables', '*');
 
 </script>
 </body>

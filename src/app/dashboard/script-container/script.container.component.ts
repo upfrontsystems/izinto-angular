@@ -60,7 +60,12 @@ export class ScriptContainerComponent extends QueryBaseComponent implements OnIn
     // send dashboard variables to iframe
     postVariables() {
         if (this.iframe && this.iframe.nativeElement.contentWindow) {
-            const data = {type: 'variables', message: this.dashboard.variables};
+            // format variables to dict
+            const variables = {};
+            for (const item of this.dashboard.variables) {
+                variables[item.name] = item;
+            }
+            const data = {type: 'variables', message: variables};
             this.iframe.nativeElement.contentWindow.postMessage(data, environment.scriptBaseURL);
         }
     }
