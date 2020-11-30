@@ -9,6 +9,8 @@ import {DataSourceService} from '../../_services/data.source.service';
 import {VariableService} from '../../_services/variable.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VariableDialogComponent} from './variable-dialog.component';
+import {Dashboard} from '../../_models/dashboard';
+import {DashboardService} from '../../_services/dashboard.service';
 
 @Component({
     selector: 'app-variable',
@@ -19,6 +21,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
 
     variables: Variable[];
     dashboardId: number;
+    dashboard: Dashboard;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Variable>(this.variables);
     displayedColumns: string[] = ['name', 'value', 'action'];
@@ -33,6 +36,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
     constructor(private route: ActivatedRoute,
+                private dashboardService: DashboardService,
                 private dataSourceService: DataSourceService,
                 private variableService: VariableService,
                 public dialog: MatDialog) {
@@ -43,6 +47,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
         this.route.parent.params.subscribe(params => {
             this.dashboardId = +params['dashboard_id'];
             this.getVariables();
+            this.getDashboard();
         });
     }
 
@@ -57,6 +62,19 @@ export class VariableComponent implements OnInit, AfterViewInit {
                 this.refresh();
             }
         );
+    }
+
+    getDashboard() {
+        // check if dashboard is in service
+        // otherwise load dashboard
+        const existing = this.dashboardService.currentDashboardValue;
+        if (existing && existing.id === this.dashboardId) {
+            this.dashboard = existing;
+        } else {
+            this.dashboardService.getById(this.dashboardId).subscribe(resp => {
+                this.dashboard = resp;
+            });
+        }
     }
 
     add() {
@@ -106,5 +124,8 @@ export class VariableComponent implements OnInit, AfterViewInit {
 
     refresh() {
         this.dataSource.data = this.dataSource.sortData(this.variables, this.sort);
+        // update variables on cached dashboard
+        this.dashboard.variables = this.variables;
+        this.dashboardService.setCurrentDashboard(this.dashboard);
     }
 }
