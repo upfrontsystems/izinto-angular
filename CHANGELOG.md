@@ -16,6 +16,7 @@ Issue Fixes
 * [#199](https://github.com/upfrontsystems/izinto-angular/issues/199) Add image to collection and dashboard
 * [#214](https://github.com/upfrontsystems/izinto-angular/issues/214) Fix setting date range navigation
 * [#13](https://github.com/upfrontsystems/izinto-angular/issues/13) Add dashboard variables to scripts
+* [#167](https://github.com/upfrontsystems/izinto-angular/issues/167) More compact mobile display
 
 
 ## 0.6

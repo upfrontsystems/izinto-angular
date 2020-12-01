@@ -8,7 +8,7 @@
     <!-- Topbar - style you can find in header.scss -->
     <!-- ============================================================== -->
     <mat-toolbar #menu color="white" class="topbar relative is-animating"
-                 [style.transform]="'translateY(' + toolbarMargin + 'px)'">
+                 [ngStyle]="{transform: 'translateY(' + toolbarMargin + 'px)', height: (mobileQuery.matches ? topMarginValue : topMarginMobileValue) + 'px'}">
 
         <!-- ============================================================== -->
         <!-- Logo - style you can find in header.scss -->

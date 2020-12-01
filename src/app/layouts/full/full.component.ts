@@ -1,6 +1,6 @@
 import {MediaMatcher} from '@angular/cdk/layout';
 import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
-import {ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {map} from 'rxjs/operators';
 
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
@@ -31,7 +31,9 @@ export class FullComponent implements OnInit, OnDestroy {
     currentDashboard = undefined;
     scrollTop = 0;
     toolbarMargin = 0;
-    topMargin = 64;
+    topMarginValue = 64;
+    topMarginMobileValue = 40;
+    topMargin = this.topMarginValue;
     parentURL = '/';
     dashboardLinks = DashboardLinks;
 
@@ -53,7 +55,14 @@ export class FullComponent implements OnInit, OnDestroy {
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
+    @HostListener('window:resize', ['$event'])
+    onResize(event) {
+        this.topMargin = this.mobileQuery.matches ? this.topMarginValue : this.topMarginMobileValue;
+    }
+
     ngOnInit() {
+        // smaller top margin for mobile view
+        this.topMargin = this.mobileQuery.matches ? this.topMarginValue : this.topMarginMobileValue;
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
         this.dashboardService.currentDashboard.subscribe(dashboard => {
             this.currentDashboard = dashboard;
@@ -67,11 +76,14 @@ export class FullComponent implements OnInit, OnDestroy {
             .pipe(map((event: CdkScrollable) => event.getElementRef().nativeElement.scrollTop))
             .subscribe(newScrollTop => this.ngZone.run(() => {
                 if (newScrollTop !== this.scrollTop) {
+                    // smaller top margin for mobile view
+                    const margin = this.mobileQuery.matches ? this.topMarginValue : this.topMarginMobileValue;
                     if (newScrollTop - this.scrollTop > 0) {
-                        this.topMargin = ((64 - newScrollTop) > 0) ? 64 - newScrollTop : 0;
-                        this.toolbarMargin = (this.topMargin - 64) * 2;
+                        // recalculate nav bar placeholder size based on scrolled distance
+                        this.topMargin = ((margin - newScrollTop) > 0) ? margin - newScrollTop : 0;
+                        this.toolbarMargin = (this.topMargin - margin) * 2;
                     } else {
-                        this.topMargin = 64;
+                        this.topMargin = margin;
                         this.toolbarMargin = 0;
                     }
                     this.scrollTop = newScrollTop;
