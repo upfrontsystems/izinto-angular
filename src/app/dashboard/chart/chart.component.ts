@@ -377,7 +377,16 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             const pixelHeight = this.margin.bottom * 0.8;
             const scale = ymax - ymin;
             ymin = ymin - scale * pixelHeight / this.chartHeight;
+        // bar chart needs 0 on axis
+        } else if (this.chart.type === 'Bar') {
+            if (ymax > ymin && ymax > 0) {
+                ymin = 0;
+            // show negative bars
+            } else if (ymax > ymin && ymax < 0) {
+                ymax = 0;
+            }
         }
+
         if (ascending) {
             return d3Scale.scaleLinear().domain([ymin, ymax]).range([this.innerHeight, 0]);
         } else {
