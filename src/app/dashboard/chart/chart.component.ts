@@ -167,7 +167,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             const header = dataset[0].header,
                 fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
                 rectWidth = charWidth,
-                recordValueWidth = 7 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
+                recordValueWidth = 8 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
                 labelWidth = fieldName.length * charWidth,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
 
@@ -179,7 +179,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             }
         }
 
-        this.legendHeight = legendRows * 30;
+        this.legendHeight = legendRows * (charWidth * 2.5);
         this.chartHeight += this.legendHeight;
         this.margin.bottom = 20 + this.legendHeight;
         this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
@@ -318,7 +318,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                         }
 
                         // if there is only one record in this dataset exclude it
-                            if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
+                        if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
                             continue;
                         }
                         for (const dataset of datasets) {
@@ -380,11 +380,11 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             const pixelHeight = this.margin.bottom * 0.8;
             const scale = ymax - ymin;
             ymin = ymin - scale * pixelHeight / this.chartHeight;
-        // bar chart needs 0 on axis
+            // bar chart needs 0 on axis
         } else if (this.chart.type === 'Bar') {
             if (ymax > ymin && ymax > 0) {
                 ymin = 0;
-            // show negative bars
+                // show negative bars
             } else if (ymax > ymin && ymax < 0) {
                 ymax = 0;
             }
@@ -493,7 +493,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             colors = (this.chart.color || '').split(','),
             labels = this.buildLegendLabels();
         let yOffset = this.chartHeight - 30 - this.legendHeight,
-            xOffset = 0;
+            xOffset = -charWidth * 2;
         // prepend arrow colour to colours
         if (this.chart.type === 'Wind Arrow') {
             colors.unshift('black');
@@ -507,7 +507,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header);
             const padding = 5,
                 rectWidth = charWidth,
-                recordValueWidth = 7 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
+                recordValueWidth = 8 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
                 labelWidth = fieldName.length * charWidth,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
             const seriesLegend = legendGroup.append('g')
@@ -547,8 +547,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             xOffset += legendWidth;
             // wrap to next line if legend does not fit
             if ((xOffset + legendWidth) > this.chartWidth) {
-                xOffset = 0;
-                yOffset += 22;
+                xOffset = -charWidth * 2;
+                yOffset += (charWidth * 2.5);
             }
         }
     }
@@ -941,15 +941,17 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     windArrow(idx, position, arrowX, arrowWidth, direction, svg) {
         const arrowStart = arrowX + 16;
-            // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
-            // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
-            // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
-            // a wind direction of 0° (360°); a wind blowing from the east has a wind direction of 90°; a wind blowing from the
-            // south has a wind direction of 180°; and a wind blowing from the west has a wind direction of 270°.
+        // Wind direction is reported by the direction from which it originates. For example, a northerly wind blows from
+        // the north to the south.[1] Wind direction is usually reported in cardinal directions or in azimuth degrees.
+        // Wind direction is measured in degrees clockwise from due north. Consequently, a wind blowing from the north has
+        // a wind direction of 0° (360°); a wind blowing from the east has a wind direction of 90°; a wind blowing from the
+        // south has a wind direction of 180°; and a wind blowing from the west has a wind direction of 270°.
         svg.append('text')
             .attr('font-family', 'WeatherIcons')
             .attr('font-size', '18px')
             .attr('transform', 'translate(' + arrowStart + ',' + position + ') rotate(' + direction + ' 3 -7.5)')
-            .text(function (a) { return '\uf044'; });
+            .text(function (a) {
+                return '\uf044';
+            });
     }
 }
