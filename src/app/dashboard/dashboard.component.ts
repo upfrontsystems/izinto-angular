@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Chart} from '../_models/chart';
+import {Chart, MobileBreakpoint} from '../_models/chart';
 import {Dashboard} from '../_models/dashboard';
 import {DashboardService} from '../_services/dashboard.service';
 import {ChartDialogComponent} from './chart/chart.dialog.component';
@@ -62,7 +62,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
                 protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService) {
         super(authService, dashboardService);
-        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this.mobileQuery = media.matchMedia('(min-width: ' + MobileBreakpoint + 'px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }

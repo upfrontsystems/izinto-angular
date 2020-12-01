@@ -4,6 +4,7 @@ import {MediaMatcher} from '@angular/cdk/layout';
 import {CollectionService} from '../../../_services/collection.service';
 import {DashboardService} from '../../../_services/dashboard.service';
 import {MatSidenav} from '@angular/material/sidenav';
+import {MobileBreakpoint} from '../../../_models/chart';
 
 @Component({
     selector: 'app-sidebar',
@@ -24,7 +25,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         private collectionService: CollectionService,
         private dashboardService: DashboardService,
     ) {
-        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this.mobileQuery = media.matchMedia('(min-width: ' + MobileBreakpoint + 'px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
     }

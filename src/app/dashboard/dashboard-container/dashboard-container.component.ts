@@ -7,6 +7,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 import {Dashboard, DashboardLinks} from '../../_models/dashboard';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {MediaMatcher} from '@angular/cdk/layout';
+import {MobileBreakpoint} from '../../_models/chart';
 
 export class Slider {
     sensitivity: number;
@@ -42,7 +43,7 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
                 protected authService: AuthenticationService,
                 protected collectionService: CollectionService,
                 protected dashboardService: DashboardService) {
-        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this.mobileQuery = media.matchMedia('(min-width: ' + MobileBreakpoint + 'px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }

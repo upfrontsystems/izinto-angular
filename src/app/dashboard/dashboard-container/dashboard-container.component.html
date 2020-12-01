@@ -3,7 +3,7 @@
          class='slider' id='slider' (pan)="sliderManager($event)">
         <div class='slider-panel'>
 
-            <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-between center">
                 <div class="m-l-20 m-r-20">
                     <div class="pull-right" *ngIf="dashboard && dashboard.collection_id==15"><img
                         src="assets/images/water-hunters.png"/></div>

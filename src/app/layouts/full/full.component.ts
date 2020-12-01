@@ -9,6 +9,7 @@ import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {Router} from '@angular/router';
 import {DashboardLinks} from '../../_models/dashboard';
+import {MobileBreakpoint} from '../../_models/chart';
 
 /** @title Responsive sidenav */
 @Component({
@@ -47,7 +48,7 @@ export class FullComponent implements OnInit, OnDestroy {
         private ngZone: NgZone,
         public router: Router,
     ) {
-        this.mobileQuery = media.matchMedia('(min-width: 768px)');
+        this.mobileQuery = media.matchMedia('(min-width: ' + MobileBreakpoint + 'px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }

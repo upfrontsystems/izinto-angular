@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
-import {AutoGroupBy, Chart, GroupBy} from '../../_models/chart';
+import {AutoGroupBy, Chart, GroupBy, MobileBreakpoint} from '../../_models/chart';
 import {ChartService} from '../../_services/chart.service';
 import {ChartDialogComponent} from './chart.dialog.component';
 import {Record} from '../../_models/record';
@@ -145,10 +145,13 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         // default height of 250
         this.chartHeight = this.chart.height || 200;
         this.windowWidth = window.innerWidth;
-        if (this.windowWidth > 700) {
+        // smaller legend font size on mobile
+        let charWidth = 10;
+        if (this.windowWidth > MobileBreakpoint) {
             this.chartWidth = this.windowWidth - 130;
         } else {
             this.chartWidth = this.windowWidth - 30;
+            charWidth = 8;
         }
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
 
@@ -163,14 +166,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             }
             const header = dataset[0].header,
                 fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
-                rectWidth = 10,
-                recordValueWidth = 7 * 10 + (this.chart.unit || '').length * 10 + this.chart.decimals * 10,
-                labelWidth = fieldName.length * 10,
+                rectWidth = charWidth,
+                recordValueWidth = 7 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
+                labelWidth = fieldName.length * charWidth,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
 
             xOffset += legendWidth;
             // count next row
-            if ((dix < this.dataSets.length - 1) && (xOffset + legendWidth) > this.innerWidth) {
+            if ((dix < this.dataSets.length - 1) && (xOffset + legendWidth) > this.chartWidth) {
                 xOffset = 0;
                 legendRows += 1;
             }
@@ -315,7 +318,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                         }
 
                         // if there is only one record in this dataset exclude it
-                        if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
+                            if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
                             continue;
                         }
                         for (const dataset of datasets) {
@@ -477,6 +480,12 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     addLegend(svg) {
+        // smaller legend font size on mobile
+        let charWidth = 10;
+        if (this.windowWidth < MobileBreakpoint) {
+            charWidth = 8;
+        }
+
         svg.selectAll('g.legend').remove();
         const legendGroup = svg.append('g')
                 .attr('class', 'legend g-' + this.chart.id),
@@ -497,9 +506,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             const header = dataset[0].header,
                 fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header);
             const padding = 5,
-                rectWidth = 10,
-                recordValueWidth = 7 * 10 + (this.chart.unit || '').length * 10 + this.chart.decimals * 10,
-                labelWidth = fieldName.length * 10,
+                rectWidth = charWidth,
+                recordValueWidth = 7 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
+                labelWidth = fieldName.length * charWidth,
                 legendWidth = rectWidth + labelWidth + recordValueWidth;
             const seriesLegend = legendGroup.append('g')
                 .style('font-size', '12px')
@@ -516,7 +525,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             seriesLegend.append('rect')
                 .attr('x', xOffset)
                 .attr('y', yOffset - 5)
-                .attr('width', '10')
+                .attr('width', charWidth)
                 .attr('height', '2')
                 .attr('fill', rectFill);
             const label = seriesLegend.append('text')
@@ -537,7 +546,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             }
             xOffset += legendWidth;
             // wrap to next line if legend does not fit
-            if ((xOffset + legendWidth) > this.innerWidth) {
+            if ((xOffset + legendWidth) > this.chartWidth) {
                 xOffset = 0;
                 yOffset += 22;
             }
