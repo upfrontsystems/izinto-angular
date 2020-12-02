@@ -28,9 +28,6 @@ File: scss
 @import 'sidebar';
 @import 'responsive';
 @import 'rtl';
-// DateRangePicker theme
-@import '~ngx-daterangepicker-material/daterangepicker-theme.scss';
-@include date-range-picker-theme($theme);
 
 // Red Theme
 
