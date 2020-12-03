@@ -11,32 +11,6 @@ button.active {
     cursor: pointer;
 }
 
-.date-navigator input {
-    background-color: inherit;
-    cursor: pointer;
-    border: none;
-    font-family: inherit;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    text-align: center;
-    width: auto !important;
-}
-
-/* smaller date nagivate selector for mobile */
-/*@media only screen and (max-width: 768px) {
-    .date-navigator {
-        padding-left: 10px !important;
-    }
-
-    .date-navigator button {
-        width: 25px !important;
-    }
-
-    .date-navigator .date-text {
-        font-size: 15px !important;
-    }
-}*/
-
 .sticky-toolbar {
     position: sticky;
     top: 0;

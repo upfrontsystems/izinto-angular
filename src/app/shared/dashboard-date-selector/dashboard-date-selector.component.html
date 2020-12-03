@@ -9,10 +9,14 @@
         <button mat-icon-button (click)="updateDateCounter(-1)">
             <mat-icon class="pull-right">keyboard_arrow_left</mat-icon>
         </button>
-        <input type="text" matInput ngxDaterangepickerMd [readonly]="!mobileQueryMatches" #datePicker timePicker="true"
-               [(ngModel)]="pickerRange" [locale]="{format: getDateFormat()}" [timePicker24Hour]="!mobileQueryMatches"
-               [autoApply]="false" (ngModelChange)="updateRange($event)" [size]="datePicker.value?.length || 1"
-               class="form-control"/>
+        <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate [(ngModel)]="pickerRange.startDate" (click)="picker.open()" (keydown)="false">
+            <input matEndDate [(ngModel)]="pickerRange.endDate" (click)="picker.open()" (keydown)="false">
+        </mat-date-range-input>
+
+        <mat-date-range-picker #picker (closed)="pickerClosed($event)"></mat-date-range-picker>
+
+
         <button mat-icon-button (click)="updateDateCounter(0)">
             <mat-icon class="pull-left">keyboard_arrow_right</mat-icon>
         </button>

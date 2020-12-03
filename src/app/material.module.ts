@@ -48,6 +48,7 @@ import { PlatformModule } from '@angular/cdk/platform';
 import { ObserversModule } from '@angular/cdk/observers';
 import { PortalModule } from '@angular/cdk/portal';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
 
 /**
  * NgModule that includes all Material modules that are required to serve the demo-app.
@@ -70,6 +71,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
         MatInputModule,
         MatListModule,
         MatMenuModule,
+        MatMomentDateModule,
         MatBadgeModule,
         MatPaginatorModule,
         MatProgressBarModule,
