@@ -17,6 +17,8 @@ import {QueryComponent} from './dashboard/query/query.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {DashboardEditorComponent} from './dashboard/dashboard-editor/dashboard-editor.component';
 import {VariableComponent} from './dashboard/variable/variable.component';
+import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/dashboard.user.access.component';
+import {CollectionUserAccessComponent} from './collection/collection-user-access/collection.user.access.component';
 
 const appRoutes: Routes = [
     {
@@ -55,6 +57,10 @@ const appRoutes: Routes = [
                     path: 'variables',
                     component: VariableComponent,
                     data: {roles: [Role.Administrator]}
+                }, {
+                    path: 'access',
+                    component: DashboardUserAccessComponent,
+                    data: {roles: [Role.Administrator]}
                 }]
             },
             {
@@ -63,7 +69,13 @@ const appRoutes: Routes = [
             },
             {
                 path: 'collections/:collection_id',
-                component: CollectionComponent
+                component: CollectionComponent,
+                children: [
+                    {
+                        path: 'access',
+                        component: CollectionUserAccessComponent,
+                        data: {roles: [Role.Administrator]}
+                    }]
             },
             {
                 path: 'collections/:collection_id/dashboards/:dashboard_id',

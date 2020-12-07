@@ -56,6 +56,9 @@ import { DashboardEditorComponent } from './dashboard/dashboard-editor/dashboard
 import { VariableComponent } from './dashboard/variable/variable.component';
 import { VariableDialogComponent } from './dashboard/variable/variable-dialog.component';
 import { ScriptContainerComponent } from './dashboard/script-container/script.container.component';
+import { DashboardUserAccessComponent } from './dashboard/dashboard-user-access/dashboard.user.access.component';
+import { CollectionUserAccessComponent } from './collection/collection-user-access/collection.user.access.component';
+import { UserAccessComponent } from './shared/user-access/user.access.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -115,7 +118,10 @@ export class HammerConfig extends HammerGestureConfig {
         DashboardEditorComponent,
         VariableComponent,
         VariableDialogComponent,
-        ScriptContainerComponent
+        ScriptContainerComponent,
+        DashboardUserAccessComponent,
+        CollectionUserAccessComponent,
+        UserAccessComponent
     ],
     imports: [
         AppRoutes,

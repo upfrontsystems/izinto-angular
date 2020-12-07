@@ -29,4 +29,13 @@ export class CollectionService {
     delete(collection) {
         return this.http.delete(`/api/collections/` + collection.id);
     }
+
+    // list the users and their access roles for this collection
+    getUserAccess(collectionId) {
+        return this.http.get<any>(`/api/collections/${collectionId}/access`);
+    }
+
+    updateUserAccess(userId, collectionId, role) {
+        return this.http.put(`/api/collections/${collectionId}/access`, {user_id: userId, role});
+    }
 }

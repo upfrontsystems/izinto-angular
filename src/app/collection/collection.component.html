@@ -1,13 +1,29 @@
-<div class="m-l-20 m-r-20">
-    <div class="pull-right" *ngIf="collectionId==15"><img src="assets/images/water-hunters.png"/></div>
-    <h1 class="page-title">{{collection?.title}}</h1>
-    <p>{{collection?.description}}</p>
+<div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-between center">
+    <div class="m-l-20 m-r-20">
+        <div class="pull-right" *ngIf="collectionId==15"><img src="assets/images/water-hunters.png"/></div>
+        <h1 class="page-title">{{collection?.title}}</h1>
+        <p>{{collection?.description}}</p>
+    </div>
+
+    <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin && mobileQuery.matches">
+        <a mat-tab-link [routerLinkActive]="'preview'"
+           [routerLink]="['/collections',  collection?.id || 0]">
+            <mat-icon class="m-r-5">preview</mat-icon>
+            View
+        </a>
+        <a mat-tab-link [routerLinkActive]="'active'"
+           [routerLink]="['/dashboards', collection?.id || 0, 'access']">
+            <mat-icon class="m-r-5">supervisor_account</mat-icon>
+            User Access
+        </a>
+    </nav>
 </div>
 
 <div fxLayout="row wrap" class="clear">
     <div fxFlex="100">
         <app-dashboard-list [dashboards]="sortedDashboards()" (edited)="dashboardEdited($event)"
-                    (deleted)="dashboardDeleted($event)" (reordered)="dashboardReordered($event)"></app-dashboard-list>
+                            (deleted)="dashboardDeleted($event)"
+                            (reordered)="dashboardReordered($event)"></app-dashboard-list>
     </div>
 </div>
 <app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

@@ -1,12 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {Collection} from '../_models/collection';
 import {CollectionService} from '../_services/collection.service';
 import {DashboardDialogComponent} from '../dashboard/dashboard.dialog.component';
 import {DashboardService} from '../_services/dashboard.service';
 import {CopyService} from '../_services/copy.service';
+import {MobileBreakpoint} from '../_models/chart';
+import {MediaMatcher} from '@angular/cdk/layout';
+import {AuthenticationService} from '../_services/authentication.service';
 
 @Component({
     selector: 'app-collection',
@@ -26,17 +29,29 @@ export class CollectionComponent implements OnInit {
             label: 'Paste Dashboard'
         }
     ];
+    isAdmin = false;
+    mobileQuery: MediaQueryList;
+    private readonly _mobileQueryListener: () => void;
 
-    constructor(private route: ActivatedRoute,
+    constructor(changeDetectorRef: ChangeDetectorRef,
+                media: MediaMatcher,
+                private route: ActivatedRoute,
                 private router: Router,
                 private http: HttpClient,
                 public dialog: MatDialog,
+                protected authService: AuthenticationService,
                 private copyService: CopyService,
                 private collectionService: CollectionService,
                 private dashboardService: DashboardService) {
+        this.mobileQuery = media.matchMedia('(min-width: ' + MobileBreakpoint + 'px)');
+        this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+        this.mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
 
     ngOnInit() {
+         // only admin can add and edit
+        this.isAdmin = this.authService.hasRole('Administrator');
+
         this.route.paramMap.subscribe(params => {
             this.collectionId = +params.get('collection_id');
             this.getCollection();

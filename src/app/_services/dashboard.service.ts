@@ -66,4 +66,13 @@ export class DashboardService {
     getDateSelection() {
         return this.dateSelection;
     }
+
+    // list the users and their access roles for this dashboard
+    getUserAccess(dashboardId) {
+        return this.http.get<any>(`/api/dashboards/${dashboardId}/access`);
+    }
+
+    updateUserAccess(userId, dashboardId, role) {
+        return this.http.put(`/api/dashboards/${dashboardId}/access`, {user_id: userId, role});
+    }
 }
