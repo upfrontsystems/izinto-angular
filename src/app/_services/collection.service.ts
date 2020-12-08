@@ -35,7 +35,15 @@ export class CollectionService {
         return this.http.get<any>(`/api/collections/${collectionId}/access`);
     }
 
-    updateUserAccess(userId, collectionId, role) {
+    addUserAccess(collectionId, data) {
+        return this.http.post(`/api/collections/${collectionId}/access`, data);
+    }
+
+    updateUserAccess(collectionId, userId, role) {
         return this.http.put(`/api/collections/${collectionId}/access`, {user_id: userId, role});
+    }
+
+    deleteUserAccess(collectionId, userId) {
+        return this.http.delete(`/api/collections/${collectionId}/access`, {params: {user_id: userId}});
     }
 }

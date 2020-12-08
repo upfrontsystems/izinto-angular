@@ -12,6 +12,7 @@ import {UserService} from '../../_services/user.service';
 import {User} from '../../_models/user';
 import {Role} from '../../_models/role';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {UserAccessDialogComponent} from './user.access.dialog.component';
 
 @Component({
     selector: 'app-user-access',
@@ -21,14 +22,14 @@ import {AuthenticationService} from '../../_services/authentication.service';
 export class UserAccessComponent implements OnInit, AfterViewInit {
 
     users: User[];
-    usersAccess = {};
-    roles: Role[];
+    usersAccess = [];
+    roles = Role;
     // http service for this class context
     contextService: (CollectionService | DashboardService);
     contextId: number;
     dataSource = new MatTableDataSource<User>(this.users);
     public form: FormGroup;
-    displayedColumns: string[] = ['name', 'role'];
+    displayedColumns: string[] = ['name', 'role', 'action'];
     fabButtons = [
         {
             icon: 'add',
@@ -48,53 +49,50 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
                 protected userService: UserService) {
     }
 
-
     ngOnInit() {
         this.route.parent.paramMap.subscribe(params => {
             this.contextId = +params.get('dashboard_id');
         });
 
-        this.getUsers({inactive: false});
         this.getUserAccess();
-        this.getRoles();
         this.dataSource.sort = this.sort;
-        this.form = this.fb.group({search: '', inactive: false});
-
-        this.form.get('search').valueChanges.pipe(debounceTime(1000), distinctUntilChanged())
-            .subscribe(value => this.getUsers({search: value, inactive: this.form.controls.inactive.value}));
-        this.form.get('inactive').valueChanges
-            .subscribe(value => this.getUsers({search: this.form.controls.search.value, inactive: value}));
     }
 
     ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
     }
 
-    getRoles() {
-        this.authService.getAllRoles().subscribe(resp => {
-            this.roles = resp;
+    fabClick(label) {
+        // add user access role
+        const dialogRef = this.dialog.open(UserAccessDialogComponent, {
+            width: '600px',
+            data: {context_id: this.contextId, context_service: this.contextService}
         });
-    }
 
-    getUsers(filters) {
-        this.userService.getAll(filters).subscribe(resp => {
-            this.users = resp;
-            this.refresh();
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.usersAccess.push(result);
+                this.refresh();
+            }
         });
     }
 
     getUserAccess() {
         this.contextService.getUserAccess(this.contextId).subscribe(resp => {
-            // map user roles to dictionary
-            this.usersAccess = Object.assign({}, ...resp.map((x) => ({[x.user_id]: x})));
+            this.usersAccess = resp;
+            this.refresh();
         });
     }
 
-    updateUserAccess(role, user) {
-        this.contextService.updateUserAccess(user.id, this.contextId, role);
+    update(role, user_access) {
+        this.contextService.updateUserAccess(this.contextId, user_access.user_id, role);
+    }
+
+    delete(user_access) {
+        this.contextService.deleteUserAccess(this.contextId, user_access.user_id);
     }
 
     refresh() {
-        this.dataSource.data = this.dataSource.sortData(this.users, this.sort);
+        this.dataSource.data = this.dataSource.sortData(this.usersAccess, this.sort);
     }
 }

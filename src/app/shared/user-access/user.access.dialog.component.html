@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Add User Access</h1>
+<div mat-dialog-content>
+    <div [formGroup]="form" autocomplete="off">
+        <div fxLayout="row wrap" fxLayoutAlign="space-between">
+
+            <div fxFlex="100">
+                <mat-form-field>
+                    <mat-select [formControl]="form.get('user_id')" placeholder="User" #userSelect>
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
+                                                   placeholderLabel="Search user" noEntriesFoundLabel="No users found">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let user of filteredUsers | async" [value]="user.id">
+                            {{user.fullname}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="100">
+                <mat-form-field>
+                    <mat-select [formControl]="form.get('role')" placeholder="Role">
+                        <mat-option *ngFor="let role of roles" [value]="role">
+                            {{role}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <span fxFlex></span>
+    <button class="pull-right" mat-button (click)="onNoClick()">Cancel</button>
+    <button class="pull-right" mat-button [disabled]="!form.valid"
+            (click)="submit()" color="primary" cdkFocusInitial>Submit
+    </button>
+</div>

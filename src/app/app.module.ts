@@ -9,7 +9,7 @@ import {Injectable, NgModule} from '@angular/core';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
-import { FileUploadModule } from 'ng2-file-upload';
+import {FileUploadModule} from 'ng2-file-upload';
 
 import {AppRoutes} from './app.routing';
 import {AppComponent} from './app.component';
@@ -36,8 +36,8 @@ import {FabSpeedDialComponent} from './shared/fab-speed-dial/fab-speed-dial.comp
 import {FullComponent} from './layouts/full/full.component';
 import {HomeComponent} from './home/home.component';
 import {MaterialModule} from './material.module';
-import { QueryComponent } from './dashboard/query/query.component';
-import { QueryDialogComponent } from './dashboard/query/query.dialog.component';
+import {QueryComponent} from './dashboard/query/query.component';
+import {QueryDialogComponent} from './dashboard/query/query.dialog.component';
 import {JwtInterceptor} from './_helpers/jwt.interceptor';
 import {SpinnerInterceptor} from './_helpers/spinner.interceptor';
 import {SpinnerService} from './_services/spinner.service';
@@ -52,13 +52,14 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardDateSelectorComponent} from './shared/dashboard-date-selector/dashboard-date-selector.component';
-import { DashboardEditorComponent } from './dashboard/dashboard-editor/dashboard-editor.component';
-import { VariableComponent } from './dashboard/variable/variable.component';
-import { VariableDialogComponent } from './dashboard/variable/variable-dialog.component';
-import { ScriptContainerComponent } from './dashboard/script-container/script.container.component';
-import { DashboardUserAccessComponent } from './dashboard/dashboard-user-access/dashboard.user.access.component';
-import { CollectionUserAccessComponent } from './collection/collection-user-access/collection.user.access.component';
-import { UserAccessComponent } from './shared/user-access/user.access.component';
+import {DashboardEditorComponent} from './dashboard/dashboard-editor/dashboard-editor.component';
+import {VariableComponent} from './dashboard/variable/variable.component';
+import {VariableDialogComponent} from './dashboard/variable/variable-dialog.component';
+import {ScriptContainerComponent} from './dashboard/script-container/script.container.component';
+import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/dashboard.user.access.component';
+import {CollectionUserAccessComponent} from './collection/collection-user-access/collection.user.access.component';
+import {UserAccessComponent} from './shared/user-access/user.access.component';
+import {UserAccessDialogComponent} from './shared/user-access/user.access.dialog.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -71,6 +72,7 @@ export class HammerConfig extends HammerGestureConfig {
     overrides = <any>{
         pan: {direction: Hammer.DIRECTION_HORIZONTAL}
     };
+
     buildHammer(element: HTMLElement) {
         return new Hammer(element, {
             // use TouchInput class since PointerEvents cancels prematurely on chrome
@@ -121,7 +123,8 @@ export class HammerConfig extends HammerGestureConfig {
         ScriptContainerComponent,
         DashboardUserAccessComponent,
         CollectionUserAccessComponent,
-        UserAccessComponent
+        UserAccessComponent,
+        UserAccessDialogComponent
     ],
     imports: [
         AppRoutes,

@@ -72,7 +72,15 @@ export class DashboardService {
         return this.http.get<any>(`/api/dashboards/${dashboardId}/access`);
     }
 
-    updateUserAccess(userId, dashboardId, role) {
+    addUserAccess(dashboardId, data) {
+        return this.http.post(`/api/dashboards/${dashboardId}/access`, data);
+    }
+
+    updateUserAccess(dashboardId, userId, role) {
         return this.http.put(`/api/dashboards/${dashboardId}/access`, {user_id: userId, role});
+    }
+
+    deleteUserAccess(dashboardId, userId) {
+        return this.http.delete(`/api/dashboards/${dashboardId}/access`, {params: {user_id: userId}});
     }
 }
