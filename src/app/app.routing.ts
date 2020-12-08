@@ -19,6 +19,7 @@ import {DashboardEditorComponent} from './dashboard/dashboard-editor/dashboard-e
 import {VariableComponent} from './dashboard/variable/variable.component';
 import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/dashboard.user.access.component';
 import {CollectionUserAccessComponent} from './collection/collection-user-access/collection.user.access.component';
+import {CollectionContainerComponent} from './collection/collection-container/collection-container.component';
 
 const appRoutes: Routes = [
     {
@@ -69,13 +70,19 @@ const appRoutes: Routes = [
             },
             {
                 path: 'collections/:collection_id',
-                component: CollectionComponent,
-                children: [
-                    {
-                        path: 'access',
-                        component: CollectionUserAccessComponent,
-                        data: {roles: [Role.Administrator]}
-                    }]
+                component: CollectionContainerComponent,
+                children: [{
+                    path: '',
+                    redirectTo: 'view',
+                    pathMatch: 'full'
+                }, {
+                    path: 'view',
+                    component: CollectionComponent
+                }, {
+                    path: 'access',
+                    component: CollectionUserAccessComponent,
+                    data: {roles: [Role.Administrator]}
+                }]
             },
             {
                 path: 'collections/:collection_id/dashboards/:dashboard_id',

@@ -8,7 +8,7 @@ import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {User} from '../../_models/user';
 import {UserService} from '../../_services/user.service';
-import {Role} from '../../_models/role';
+import {UserAccessRole} from '../../_models/role';
 
 @Component({
     selector: 'app-dashboard-dialog',
@@ -21,7 +21,7 @@ export class UserAccessDialogComponent implements OnInit, AfterViewInit, OnDestr
     public userNameFilter: FormControl = new FormControl();
     public searching = false;
     public filteredUsers: ReplaySubject<User[]> = new ReplaySubject<User[]>(1);
-    roles = Role;
+    roles = UserAccessRole;
     // http service for this class context
     contextService: (CollectionService | DashboardService);
     contextId: number;

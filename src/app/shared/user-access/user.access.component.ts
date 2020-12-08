@@ -10,7 +10,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 import {CollectionService} from '../../_services/collection.service';
 import {UserService} from '../../_services/user.service';
 import {User} from '../../_models/user';
-import {Role} from '../../_models/role';
+import {UserAccessRole} from '../../_models/role';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {UserAccessDialogComponent} from './user.access.dialog.component';
 
@@ -23,9 +23,10 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
 
     users: User[];
     usersAccess = [];
-    roles = Role;
+    roles = UserAccessRole;
     // http service for this class context
     contextService: (CollectionService | DashboardService);
+    contextKey: string;
     contextId: number;
     dataSource = new MatTableDataSource<User>(this.users);
     public form: FormGroup;
@@ -45,13 +46,12 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
                 protected route: ActivatedRoute,
                 protected authService: AuthenticationService,
                 protected collectionService: CollectionService,
-                protected dashboardService: DashboardService,
-                protected userService: UserService) {
+                protected dashboardService: DashboardService) {
     }
 
     ngOnInit() {
         this.route.parent.paramMap.subscribe(params => {
-            this.contextId = +params.get('dashboard_id');
+            this.contextId = +params.get(this.contextKey);
         });
 
         this.getUserAccess();
@@ -85,11 +85,20 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
     }
 
     update(role, user_access) {
-        this.contextService.updateUserAccess(this.contextId, user_access.user_id, role);
+        this.contextService.updateUserAccess(this.contextId, user_access.user_id, role).subscribe(resp => {
+        });
     }
 
     delete(user_access) {
-        this.contextService.deleteUserAccess(this.contextId, user_access.user_id);
+        this.contextService.deleteUserAccess(this.contextId, user_access.user_id).subscribe(resp => {
+            for (const ix in this.usersAccess) {
+                if (this.usersAccess[ix].user_id === user_access.user_id) {
+                    this.usersAccess.splice(+ix, 1);
+                    this.refresh();
+                    break;
+                }
+            }
+        });
     }
 
     refresh() {

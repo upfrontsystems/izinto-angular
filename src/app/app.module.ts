@@ -60,6 +60,7 @@ import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/da
 import {CollectionUserAccessComponent} from './collection/collection-user-access/collection.user.access.component';
 import {UserAccessComponent} from './shared/user-access/user.access.component';
 import {UserAccessDialogComponent} from './shared/user-access/user.access.dialog.component';
+import { CollectionContainerComponent } from './collection/collection-container/collection-container.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -124,7 +125,8 @@ export class HammerConfig extends HammerGestureConfig {
         DashboardUserAccessComponent,
         CollectionUserAccessComponent,
         UserAccessComponent,
-        UserAccessDialogComponent
+        UserAccessDialogComponent,
+        CollectionContainerComponent
     ],
     imports: [
         AppRoutes,
