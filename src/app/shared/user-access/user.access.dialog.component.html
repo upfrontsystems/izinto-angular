@@ -5,16 +5,13 @@
 
             <div fxFlex="100">
                 <mat-form-field>
-                    <mat-select [formControl]="form.get('user_id')" placeholder="User" #userSelect>
-                        <mat-option>
-                            <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
-                                                   placeholderLabel="Search user" noEntriesFoundLabel="No users found">
-                            </ngx-mat-select-search>
-                        </mat-option>
-                        <mat-option *ngFor="let user of filteredUsers | async" [value]="user.id">
-                            {{user.fullname}}
-                        </mat-option>
-                    </mat-select>
+                    <input type="text" placeholder="User" matInput [formControl]="userNameFilter" [matAutocomplete]="userSelect">
+                    <mat-icon matSuffix>search</mat-icon>
+                    <mat-autocomplete autoActiveFirstOption #userSelect="matAutocomplete" (optionSelected)="optionSelected($event)">
+                      <mat-option *ngFor="let user of filteredUsers | async" [value]="user" [disabled]="disabledOption(user)">
+                        {{user.fullname}}
+                      </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 

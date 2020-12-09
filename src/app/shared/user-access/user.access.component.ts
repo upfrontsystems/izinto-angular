@@ -66,7 +66,7 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
         // add user access role
         const dialogRef = this.dialog.open(UserAccessDialogComponent, {
             width: '600px',
-            data: {context_id: this.contextId, context_service: this.contextService}
+            data: {context_id: this.contextId, context_service: this.contextService, users_access: this.usersAccess}
         });
 
         dialogRef.afterClosed().subscribe(result => {

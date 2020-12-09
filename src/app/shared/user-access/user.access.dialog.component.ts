@@ -1,9 +1,7 @@
-import {AfterViewInit, Component, Inject, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {MatSelect} from '@angular/material/select';
 import {ReplaySubject, Subject} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
 import {CollectionService} from '../../_services/collection.service';
 import {DashboardService} from '../../_services/dashboard.service';
 import {User} from '../../_models/user';
@@ -15,18 +13,18 @@ import {UserAccessRole} from '../../_models/role';
     templateUrl: './user.access.dialog.component.html',
     styleUrls: ['./user.access.component.scss']
 })
-export class UserAccessDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UserAccessDialogComponent implements OnInit, OnDestroy {
 
     public form: FormGroup;
     public userNameFilter: FormControl = new FormControl();
-    public searching = false;
     public filteredUsers: ReplaySubject<User[]> = new ReplaySubject<User[]>(1);
     roles = UserAccessRole;
     // http service for this class context
     contextService: (CollectionService | DashboardService);
     contextId: number;
+    usersAccess: any[];
 
-    @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
+    // @ViewChild('userSelect', {static: true}) userSelect: MatSelect;
     protected _onDestroy = new Subject<void>();
 
     constructor(
@@ -40,6 +38,7 @@ export class UserAccessDialogComponent implements OnInit, AfterViewInit, OnDestr
     ngOnInit() {
         this.contextService = this.data.context_service;
         this.contextId = this.data.context_id;
+        this.usersAccess = this.data.users_access;
 
         this.form = this.fb.group({
             user_id: new FormControl(null, [Validators.required]),
@@ -48,10 +47,6 @@ export class UserAccessDialogComponent implements OnInit, AfterViewInit, OnDestr
         this.filteredUsers.next([]);
 
         this.onFormChanges();
-    }
-
-    ngAfterViewInit() {
-        this.setInitialValue();
     }
 
     ngOnDestroy() {
@@ -82,23 +77,30 @@ export class UserAccessDialogComponent implements OnInit, AfterViewInit, OnDestr
         this.dialogRef.close();
     }
 
-    protected setInitialValue() {
-        if (this.userSelect) {
-            this.filteredUsers.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-                this.userSelect.compareWith = (a: User, b: User) => a && b && a.id === b.id;
-            });
-        }
+    optionSelected(event) {
+        const user = event.option.value;
+        this.form.controls['user_id'].setValue(user.id);
+        this.userNameFilter.setValue(user.fullname, {emitEvent: false});
     }
 
     protected filterUsers(search) {
         if (!search) {
             return;
+        } else if (search.id) {
+            return;
         }
         // filter the users
-        this.searching = true;
         this.userService.getAll({'name': search}).subscribe(resp => {
             this.filteredUsers.next(resp);
-            this.searching = false;
         });
+    }
+
+    // return if user already has access
+    disabledOption(user) {
+        for (const access of this.usersAccess) {
+            if (access.user_id === user.id) {
+                return true;
+            }
+        }
     }
 }
