@@ -33,23 +33,6 @@
                 </div>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100"
-                 *ngIf="authService.hasRole('Administrator') && !dashboard.collection_id">
-                <mat-form-field>
-                    <mat-select formControlName="users" [formControl]="form.get('users')" placeholder="Users"
-                                [multiple]="true" #userSelect>
-                        <mat-option>
-                            <ngx-mat-select-search [formControl]="userNameFilter" [searching]="searching"
-                                                   placeholderLabel="Search users" noEntriesFoundLabel="No users found">
-                            </ngx-mat-select-search>
-                        </mat-option>
-                        <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
-                            {{user.fullname}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
                 <div *ngIf="!previewImage" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
                      (onFileDrop)="dropped($event)" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"

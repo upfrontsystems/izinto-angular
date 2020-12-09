@@ -40,7 +40,6 @@
     "ng2-validation": "^4.2.0",
     "ngx-color": "^4.1.1",
     "ngx-daterangepicker-material": "^3.0.1",
-    "ngx-mat-select-search": "^2.2.0",
     "ngx-perfect-scrollbar": "6.1.0",
     "path": "^0.12.7",
     "rxjs": "^6.5.5",

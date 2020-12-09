@@ -1,13 +1,17 @@
-﻿import {User} from './user';
-import {Dashboard} from './dashboard';
+﻿import {Dashboard} from './dashboard';
 
 export class Collection {
     id: number;
     title: string;
     description: string;
-    users: User[];
+    users_access: any[];
     dashboards: Dashboard[];
     image: string;
 }
+
+export const CollectionLinks = [
+    {name: 'View', link: 'view', icon: 'preview'},
+    {name: 'User Access', link: 'access', icon: 'supervisor_account'}
+];
 
 export const ImageDimensions = {width: 640, height: 400};

@@ -1,5 +1,4 @@
 ﻿import {Variable} from './variable';
-import {User} from './user';
 
 export type DashboardType = 'old' | 'new';
 
@@ -11,7 +10,7 @@ export class Dashboard {
     content: string;
     type: DashboardType;
     index: number;
-    users: User[];
+    users_access: any[];
     variables: Variable[];
     date_hidden: Boolean;
     image: string;

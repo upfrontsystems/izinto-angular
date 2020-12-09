@@ -24,7 +24,6 @@ export class DashboardServiceStub {
 
     constructor() {
         const dashboard = new Dashboard();
-        dashboard.users = [];
         dashboard.title = 'Title';
         dashboard.collection_id = 1;
         this.currentDashboard = of(dashboard);
@@ -55,7 +54,6 @@ describe('ScriptContainerComponent', () => {
     let fixture: ComponentFixture<ScriptContainerComponent>;
     const dashboard = new Dashboard();
     dashboard.id = 1;
-    dashboard.users = [];
     dashboard.title = 'Title';
     dashboard.collection_id = 1;
 
