@@ -10,6 +10,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 import {Router} from '@angular/router';
 import {DashboardLinks} from '../../_models/dashboard';
 import {MobileBreakpoint} from '../../_models/chart';
+import {CollectionLinks} from '../../_models/collection';
 
 /** @title Responsive sidenav */
 @Component({
@@ -36,6 +37,7 @@ export class FullComponent implements OnInit, OnDestroy {
     topMargin = this.topMarginValue;
     parentURL = '/';
     dashboardLinks = DashboardLinks;
+    collectionLinks = CollectionLinks;
 
     public config: PerfectScrollbarConfigInterface = {};
     private readonly _mobileQueryListener: () => void;

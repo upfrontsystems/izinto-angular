@@ -31,8 +31,13 @@ export class CollectionService {
     }
 
     // list the users and their access roles for this collection
-    getUserAccess(collectionId) {
+    listUserAccess(collectionId) {
         return this.http.get<any>(`/api/collections/${collectionId}/access`);
+    }
+
+    // return the user access role for the logged in user of the collection
+    getUserAccessRole(collectionId) {
+        return this.http.get<any>(`/api/collections/${collectionId}/access/user`);
     }
 
     addUserAccess(collectionId, data) {

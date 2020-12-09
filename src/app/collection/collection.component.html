@@ -5,4 +5,4 @@
                             (reordered)="dashboardReordered($event)"></app-dashboard-list>
     </div>
 </div>
-<app-fab-speed-dial (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="isAdmin" (buttonClick)="fabClick($event)" [fabButtons]="fabButtons"></app-fab-speed-dial>

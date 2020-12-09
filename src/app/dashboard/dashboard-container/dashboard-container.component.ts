@@ -30,6 +30,8 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
     slider: Slider = new Slider();
     canSlide = false;
     isAdmin = false;
+    canEdit = false;
+    userAccess: any;
     dashboardLinks = DashboardLinks;
     mobileQuery: MediaQueryList;
     private readonly _mobileQueryListener: () => void;
@@ -51,6 +53,7 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // only admin can add and edit
         this.isAdmin = this.authService.hasRole('Administrator');
+        this.canEdit = this.isAdmin === true;
 
         this.slider.sensitivity = 40;
         this.slider.activeSlide = 0;
@@ -58,6 +61,7 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
 
         this.route.paramMap.subscribe(params => {
             this.getDashboard(+params.get('dashboard_id'));
+            this.getUserAccess(+params['dashboard_id']);
         });
         // check if back in view tab
         this.canSlide = this.router.url.includes('view');
@@ -93,6 +97,16 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
                 this.getCollection();
             });
         }
+    }
+
+    getUserAccess(dashboardId) {
+        // get the user access role for this dashboard
+        this.dashboardService.getUserAccessRole(dashboardId).subscribe(resp => {
+            this.userAccess = resp;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
+            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
+        });
     }
 
     getCollection() {

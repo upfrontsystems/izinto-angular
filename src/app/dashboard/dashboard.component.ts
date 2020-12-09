@@ -28,6 +28,8 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
     isAdmin = false;
+    canEdit = false;
+    userAccess: any;
     mobileQuery: MediaQueryList;
     addedChart: Chart;
     addedSingleStat: SingleStat;
@@ -70,8 +72,11 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     ngOnInit() {
         // only admin can add and edit
         this.isAdmin = this.authService.hasRole('Administrator');
+        this.canEdit = this.isAdmin === true;
+
         this.route.parent.params.subscribe(params => {
             this.getDashboard(+params['dashboard_id']);
+            this.getUserAccess(+params['dashboard_id']);
         });
         this.getDataSources();
         this.getDashboardViews();
@@ -93,6 +98,16 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         if (existing && existing.id === dashboardId) {
             this.setDashboard(existing);
         }
+    }
+
+    getUserAccess(dashboardId) {
+        // get the user access role for this dashboard
+        this.dashboardService.getUserAccessRole(dashboardId).subscribe(resp => {
+            this.userAccess = resp;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
+            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
+        });
     }
 
     setDashboard(dashboard) {

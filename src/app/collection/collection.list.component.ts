@@ -30,7 +30,7 @@ export const PlaceholderBackgrounds = [
 })
 export class CollectionListComponent implements OnInit {
 
-    canEdit = false;
+    isAdmin = false;
     backgrounds = PlaceholderBackgrounds;
 
     @Input() collections: Collection[];
@@ -48,7 +48,22 @@ export class CollectionListComponent implements OnInit {
 
     ngOnInit() {
         // only admin can add and edit collections
-        this.canEdit = this.authService.hasRole('Administrator');
+        this.isAdmin = this.authService.hasRole('Administrator');
+    }
+
+    // check if user is admin or has edit permission for the collection
+    canEdit(collection) {
+        if (this.isAdmin) {
+            return true;
+        }
+
+        const user = this.authService.currentUserValue;
+        for (const access of collection.users_access) {
+            if (access.user_id === user.id) {
+                return (access.role === 'Administrator' || access.role === 'Edit');
+            }
+        }
+        return false;
     }
 
     editCollection(collection) {

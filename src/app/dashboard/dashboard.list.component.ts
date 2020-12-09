@@ -19,7 +19,7 @@ import {PlaceholderBackgrounds} from '../collection/collection.list.component';
 })
 export class DashboardListComponent implements OnInit {
 
-    canEdit = false;
+    isAdmin = false;
     collectionId: number;
     backgrounds = PlaceholderBackgrounds;
     @Input() dashboards: Dashboard[];
@@ -38,10 +38,27 @@ export class DashboardListComponent implements OnInit {
                 private dashboardService: DashboardService) { }
 
     ngOnInit() {
+        // only admin can add and edit collections
+        this.isAdmin = this.authService.hasRole('Administrator');
+
         this.route.paramMap.subscribe(params => {
             this.collectionId = +params.get('collection_id');
         });
-        this.canEdit = this.authService.hasRole('Administrator');
+    }
+
+    // check if user is admin or has edit permission for the dashboard
+    canEdit(dashboard) {
+        if (this.isAdmin) {
+            return true;
+        }
+
+        const user = this.authService.currentUserValue;
+        for (const access of dashboard.users_access) {
+            if (access.user_id === user.id) {
+                return (access.role === 'Administrator' || access.role === 'Edit');
+            }
+        }
+        return false;
     }
 
     editDashboard(dashboard) {

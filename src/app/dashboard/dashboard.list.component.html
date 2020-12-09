@@ -2,7 +2,7 @@
     <ng-container *ngFor="let dashboard of dashboards; let i=index">
         <div fxFlex="20%" fxFlex.md="25%" fxLayoutGap.md="5px" fxFlex.sm="50%" fxFlex.xs="100%" class="hover-row"
              fxLayoutAlign="space-between stretch" cdkDrag [cdkDragData]="dashboard"
-             [cdkDragDisabled]="!canEdit" cdkDragBoundary=".rowgroup">
+             [cdkDragDisabled]="!canEdit(dashboard)" cdkDragBoundary=".rowgroup">
 
                 <mat-card class="card-list">
                     <div class="image-container" (click)="routeTo(dashboard)">
@@ -18,13 +18,14 @@
                     <mat-card-header>
 
                         <button class="action-button drag-button" mat-icon-button cdkDragHandle
-                                title="Reposition dashboard" *ngIf="canEdit">
+                                title="Reposition dashboard" *ngIf="canEdit(dashboard)">
                             <mat-icon>swap_vert</mat-icon>
                         </button>
 
                         <mat-card-title [routerLink]="['/dashboards', dashboard.id]">{{dashboard.title}}</mat-card-title>
 
-                        <button class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu" *ngIf="canEdit">
+                        <button class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu"
+                                *ngIf="canEdit(dashboard)">
                             <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #itemMenu="matMenu">

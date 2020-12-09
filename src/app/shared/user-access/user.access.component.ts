@@ -54,7 +54,7 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
             this.contextId = +params.get(this.contextKey);
         });
 
-        this.getUserAccess();
+        this.listUserAccess();
         this.dataSource.sort = this.sort;
     }
 
@@ -77,8 +77,8 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
         });
     }
 
-    getUserAccess() {
-        this.contextService.getUserAccess(this.contextId).subscribe(resp => {
+    listUserAccess() {
+        this.contextService.listUserAccess(this.contextId).subscribe(resp => {
             this.usersAccess = resp;
             this.refresh();
         });

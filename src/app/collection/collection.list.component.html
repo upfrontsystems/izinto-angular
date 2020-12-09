@@ -21,7 +21,7 @@
                     </mat-card-title>
 
                     <button fxFlex="initial" class="action-button" mat-icon-button [matMenuTriggerFor]="itemMenu"
-                            *ngIf="canEdit">
+                            *ngIf="canEdit(collection)">
                         <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #itemMenu="matMenu">

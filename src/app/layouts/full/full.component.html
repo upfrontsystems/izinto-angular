@@ -67,6 +67,7 @@
                 </button>
             </mat-menu>
         </ng-container>
+        <!-- mobile menu for dashboard -->
         <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/dashboards/')">
             <button mat-icon-button [routerLink]="parentURL">
                 <mat-icon>keyboard_backspace</mat-icon>
@@ -89,6 +90,20 @@
                 </a>
             </mat-menu>
         </ng-container>
+        <!-- mobile menu for collection -->
+        <ng-container *ngIf="!mobileQuery.matches && router.url.includes('/collections/')">
+            <button mat-icon-button [matMenuTriggerFor]="tabCollectionMenu" *ngIf="authService.hasRole('Administrator')">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #tabCollectionMenu="matMenu">
+                <a mat-menu-item *ngFor="let tab of collectionLinks"
+                   [routerLink]="['/collections', currentDashboard?.id || 0, tab.link]" routerLinkActive="active">
+                    <mat-icon>{{tab.icon}}</mat-icon>
+                    {{tab.name}}
+                </a>
+            </mat-menu>
+        </ng-container>
+
     </mat-toolbar>
     <!-- ============================================================== -->
     <!-- End Topbar - style you can find in pages.scss -->

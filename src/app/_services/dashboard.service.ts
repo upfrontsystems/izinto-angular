@@ -68,8 +68,13 @@ export class DashboardService {
     }
 
     // list the users and their access roles for this dashboard
-    getUserAccess(dashboardId) {
+    listUserAccess(dashboardId) {
         return this.http.get<any>(`/api/dashboards/${dashboardId}/access`);
+    }
+
+    // return the user access role for the logged in user of the dashboard
+    getUserAccessRole(dashboardId) {
+        return this.http.get<any>(`/api/dashboards/${dashboardId}/access/user`);
     }
 
     addUserAccess(dashboardId, data) {

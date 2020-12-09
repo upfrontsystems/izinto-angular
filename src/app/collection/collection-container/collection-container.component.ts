@@ -28,6 +28,8 @@ export class CollectionContainerComponent implements OnInit {
         }
     ];
     isAdmin = false;
+    canEdit = false;
+    userAccess: any;
     mobileQuery: MediaQueryList;
     private readonly _mobileQueryListener: () => void;
 
@@ -48,16 +50,28 @@ export class CollectionContainerComponent implements OnInit {
     ngOnInit() {
         // only admin can add and edit
         this.isAdmin = this.authService.hasRole('Administrator');
+        this.canEdit = this.isAdmin === true;
 
         this.route.paramMap.subscribe(params => {
             this.collectionId = +params.get('collection_id');
             this.getCollection();
+            this.getUserAccess(this.collectionId);
         });
     }
 
     getCollection() {
         this.collectionService.getById(this.collectionId).subscribe(resp => {
             this.collection = resp;
+        });
+    }
+
+    getUserAccess(collectionId) {
+        // get the user access role for this collection
+        this.collectionService.getUserAccessRole(collectionId).subscribe(resp => {
+            this.userAccess = resp;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
+            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
         });
     }
 }
