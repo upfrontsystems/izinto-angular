@@ -56,14 +56,7 @@ export class CollectionListComponent implements OnInit {
         if (this.isAdmin) {
             return true;
         }
-
-        const user = this.authService.currentUserValue;
-        for (const access of collection.users_access) {
-            if (access.user_id === user.id) {
-                return (access.role === 'Administrator' || access.role === 'Edit');
-            }
-        }
-        return false;
+        return (collection.user_access.role === 'Administrator' || collection.user_access.role === 'Edit');
     }
 
     editCollection(collection) {

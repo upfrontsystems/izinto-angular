@@ -29,7 +29,6 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
     dateViews: DashboardView[] = [];
     isAdmin = false;
     canEdit = false;
-    userAccess: any;
     mobileQuery: MediaQueryList;
     addedChart: Chart;
     addedSingleStat: SingleStat;
@@ -76,7 +75,6 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
         this.route.parent.params.subscribe(params => {
             this.getDashboard(+params['dashboard_id']);
-            this.getUserAccess(+params['dashboard_id']);
         });
         this.getDataSources();
         this.getDashboardViews();
@@ -100,19 +98,12 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
         }
     }
 
-    getUserAccess(dashboardId) {
-        // get the user access role for this dashboard
-        this.dashboardService.getUserAccessRole(dashboardId).subscribe(resp => {
-            this.userAccess = resp;
-            // check user permission
-            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
-            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
-        });
-    }
-
     setDashboard(dashboard) {
         this.dashboard = dashboard;
         this.variables = this.dashboard.variables;
+        // check user permission
+        this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
+        this.canEdit = this.isAdmin || this.dashboard.user_access.role === 'Edit';
     }
 
     getDataSources() {

@@ -31,7 +31,6 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
     canSlide = false;
     isAdmin = false;
     canEdit = false;
-    userAccess: any;
     dashboardLinks = DashboardLinks;
     mobileQuery: MediaQueryList;
     private readonly _mobileQueryListener: () => void;
@@ -61,7 +60,6 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
 
         this.route.paramMap.subscribe(params => {
             this.getDashboard(+params.get('dashboard_id'));
-            this.getUserAccess(+params['dashboard_id']);
         });
         // check if back in view tab
         this.canSlide = this.router.url.includes('view');
@@ -87,26 +85,24 @@ export class DashboardContainerComponent implements OnInit, OnDestroy {
         const existing = this.dashboardService.currentDashboardValue;
         if (existing && existing.id === dashboardId) {
             this.dashboard = existing;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
+            this.canEdit = this.isAdmin || this.dashboard.user_access.role === 'Edit';
+
             this.getSiblings();
             this.getCollection();
         } else {
             this.dashboardService.getById(dashboardId).subscribe(resp => {
                 this.dashboard = resp;
+                // check user permission
+                this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
+                this.canEdit = this.isAdmin || this.dashboard.user_access.role === 'Edit';
+
                 this.dashboardService.setCurrentDashboard(this.dashboard);
                 this.getSiblings();
                 this.getCollection();
             });
         }
-    }
-
-    getUserAccess(dashboardId) {
-        // get the user access role for this dashboard
-        this.dashboardService.getUserAccessRole(dashboardId).subscribe(resp => {
-            this.userAccess = resp;
-            // check user permission
-            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
-            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
-        });
     }
 
     getCollection() {

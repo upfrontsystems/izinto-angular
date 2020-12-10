@@ -10,7 +10,7 @@ export class Dashboard {
     content: string;
     type: DashboardType;
     index: number;
-    users_access: any[];
+    user_access: any;
     variables: Variable[];
     date_hidden: Boolean;
     image: string;

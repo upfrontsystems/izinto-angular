@@ -4,7 +4,7 @@ export class Collection {
     id: number;
     title: string;
     description: string;
-    users_access: any[];
+    user_access: any;
     dashboards: Dashboard[];
     image: string;
 }

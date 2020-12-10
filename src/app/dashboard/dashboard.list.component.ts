@@ -52,13 +52,7 @@ export class DashboardListComponent implements OnInit {
             return true;
         }
 
-        const user = this.authService.currentUserValue;
-        for (const access of dashboard.users_access) {
-            if (access.user_id === user.id) {
-                return (access.role === 'Administrator' || access.role === 'Edit');
-            }
-        }
-        return false;
+        return (dashboard.user_access.role === 'Administrator' || dashboard.user_access.role === 'Edit');
     }
 
     editDashboard(dashboard) {
