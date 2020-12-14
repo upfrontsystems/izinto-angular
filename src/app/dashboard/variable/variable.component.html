@@ -19,7 +19,7 @@
                     <td mat-cell *matCellDef="let element">
                         <div fxLayout="row" fxLayoutAlign="end">
                         <button mat-button color="danger" (click)="deleteConfirm.show()" title="Delete"
-                                class="pull-right hover-action">
+                                *ngIf="isAdmin" class="pull-right hover-action">
                             <mat-icon>delete</mat-icon>
                         </button>
                         <confirmation #deleteConfirm [title]="'Delete Variable'"
@@ -40,4 +40,4 @@
         <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </mat-card-content>
 </mat-card>
-<app-fab-speed-dial (buttonClick)="add()" [fabButtons]="fabButtons"></app-fab-speed-dial>
+<app-fab-speed-dial *ngIf="isAdmin" (buttonClick)="add()" [fabButtons]="fabButtons"></app-fab-speed-dial>

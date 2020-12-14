@@ -9,6 +9,8 @@ import {QueryDialogComponent} from './query.dialog.component';
 import {DataSourceService} from '../../_services/data.source.service';
 import {Query} from '../../_models/query';
 import {DataSource} from '../../_models/data.source';
+import {DashboardService} from '../../_services/dashboard.service';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-query',
@@ -19,6 +21,8 @@ export class QueryComponent implements OnInit, AfterViewInit {
 
     queries: Query[];
     dashboardId: number;
+    userAccess: any;
+    isAdmin = false;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Query>(this.queries);
     displayedColumns: string[] = ['name', 'data_source', 'action'];
@@ -33,14 +37,18 @@ export class QueryComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
     constructor(private route: ActivatedRoute,
+                private authService: AuthenticationService,
+                private dashboardService: DashboardService,
                 private dataSourceService: DataSourceService,
                 private queryService: QueryService,
                 public dialog: MatDialog) {
     }
 
     ngOnInit() {
+        this.isAdmin = this.authService.hasRole('Administrator');
         this.route.parent.params.subscribe(params => {
             this.dashboardId = +params['dashboard_id'];
+            this.getUserAccessRole();
             this.getQueries();
         });
         this.dataSource.sort = this.sort;
@@ -49,6 +57,15 @@ export class QueryComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
+    }
+
+    // get user access for the dashboard
+    getUserAccessRole() {
+        this.dashboardService.getUserAccessRole(this.dashboardId).subscribe(resp => {
+            this.userAccess = resp;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
+        });
     }
 
     getQueries() {

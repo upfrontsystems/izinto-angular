@@ -5,7 +5,7 @@
         <p>{{collection?.description}}</p>
     </div>
 
-    <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin && mobileQuery.matches">
+    <nav mat-tab-nav-bar class="m-r-15" *ngIf="canEdit && mobileQuery.matches">
         <a mat-tab-link [routerLinkActive]="'preview'"
            [routerLink]="['/collections',  collection?.id || 0]">
             <mat-icon class="m-r-5">preview</mat-icon>

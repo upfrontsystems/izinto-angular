@@ -15,6 +15,8 @@ export class QueryBaseComponent {
     @Input() variables: Variable[];
     @Input() dataSources: DataSource[];
     @Input() dateViews: DashboardView[];
+    @Input() userAccess: any;
+    isAdmin = false;
     canEdit = false;
     dateSelection: DateSelection = new DateSelection();
 
@@ -22,9 +24,14 @@ export class QueryBaseComponent {
                 protected dashboardService: DashboardService) {
     }
 
-    checkCanEdit() {
-        // only admin can add and edit
-        this.canEdit = this.authService.hasRole('Administrator');
+    // check if user has admin or edit rights
+    checkPermissions() {
+        this.isAdmin = this.authService.hasRole('Administrator');
+        this.canEdit = this.isAdmin;
+        if (this.userAccess) {
+            this.isAdmin = this.isAdmin || this.userAccess.role === 'Administrator';
+            this.canEdit = this.isAdmin || this.userAccess.role === 'Edit';
+        }
     }
 
     groupByForView(chartGroupBy) {

@@ -6,7 +6,7 @@
                 <mat-icon>swap_vert</mat-icon>
             </button>
             <app-chart [chart]="chart" [variables]="variables" [dataSources]="dataSources" [dateViews]="dateViews"
-                       [sliderCoordinates]="sliderCoordinates" (edited)="chartEdited($event)"
+                       [sliderCoordinates]="sliderCoordinates" (edited)="chartEdited($event)" [userAccess]="userAccess"
                        (deleted)="chartDeleted($event)"></app-chart>
         </div>
     </ng-container>

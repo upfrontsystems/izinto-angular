@@ -13,7 +13,7 @@
                     </h3>
                 </div>
 
-                <nav mat-tab-nav-bar class="m-r-15" *ngIf="isAdmin && mobileQuery.matches">
+                <nav mat-tab-nav-bar class="m-r-15" *ngIf="canEdit && mobileQuery.matches">
                     <a mat-tab-link *ngFor="let tab of dashboardLinks" [routerLinkActive]="'active'"
                        [routerLink]="['/dashboards', dashboard?.id || 0, tab.link]">
                         <mat-icon class="m-r-5">{{tab.icon}}</mat-icon>

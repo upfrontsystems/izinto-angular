@@ -94,8 +94,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.dateSelection = this.dashboardService.getDateSelection();
         this.loadDataSet();
 
-        // only admin can edit chart
-        this.checkCanEdit();
+        // check user access permissions
+        this.checkPermissions();
 
         this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
             if (selection) {

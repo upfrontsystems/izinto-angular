@@ -8,7 +8,7 @@
             </button>
             <mat-menu #itemMenu="matMenu">
                 <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
-                        title="Delete">
+                        *ngIf="isAdmin" title="Delete">
                     <mat-icon>delete</mat-icon>
                     <span>Delete</span>
                 </button>
@@ -21,7 +21,7 @@
                     <span>Edit</span>
                 </button>
                 <button mat-menu-item class="pull-right" color="accent" (click)="copySingleStat(stat)"
-                        title="Copy">
+                        *ngIf="isAdmin" title="Copy">
                     <mat-icon>file_copy</mat-icon>
                     <span>Copy</span>
                 </button>

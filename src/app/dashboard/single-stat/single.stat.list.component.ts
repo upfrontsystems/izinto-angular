@@ -50,7 +50,7 @@ export class SingleStatListComponent extends QueryBaseComponent implements OnIni
     ngOnInit() {
         this.dateSelection = this.dashboardService.getDateSelection();
         this.getSingleStats();
-        this.checkCanEdit();
+        this.checkPermissions();
 
         this.datesUpdated = this.dashboardService.datesUpdated.subscribe((selection) => {
             if (selection) {

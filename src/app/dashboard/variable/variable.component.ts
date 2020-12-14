@@ -11,6 +11,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {VariableDialogComponent} from './variable-dialog.component';
 import {Dashboard} from '../../_models/dashboard';
 import {DashboardService} from '../../_services/dashboard.service';
+import {AuthenticationService} from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-variable',
@@ -22,6 +23,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     variables: Variable[];
     dashboardId: number;
     dashboard: Dashboard;
+    isAdmin = false;
     dataSources: DataSource[];
     dataSource = new MatTableDataSource<Variable>(this.variables);
     displayedColumns: string[] = ['name', 'value', 'action'];
@@ -36,6 +38,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
     constructor(private route: ActivatedRoute,
+                private authService: AuthenticationService,
                 private dashboardService: DashboardService,
                 private dataSourceService: DataSourceService,
                 private variableService: VariableService,
@@ -43,6 +46,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.isAdmin = this.authService.hasRole('Administrator');
         this.dataSource.sort = this.sort;
         this.route.parent.params.subscribe(params => {
             this.dashboardId = +params['dashboard_id'];
@@ -70,9 +74,11 @@ export class VariableComponent implements OnInit, AfterViewInit {
         const existing = this.dashboardService.currentDashboardValue;
         if (existing && existing.id === this.dashboardId) {
             this.dashboard = existing;
+            this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
         } else {
             this.dashboardService.getById(this.dashboardId).subscribe(resp => {
                 this.dashboard = resp;
+                this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
             });
         }
     }

@@ -59,6 +59,14 @@ export class CollectionListComponent implements OnInit {
         return (collection.user_access.role === 'Administrator' || collection.user_access.role === 'Edit');
     }
 
+    // check if user can add or delete collections
+    canAdd(collection) {
+        if (this.isAdmin) {
+            return true;
+        }
+        return collection.user_access.role === 'Administrator';
+    }
+
     editCollection(collection) {
         const dialogRef = this.dialog.open(CollectionDialogComponent, {
             width: '600px',

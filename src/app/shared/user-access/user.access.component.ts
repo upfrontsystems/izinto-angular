@@ -21,6 +21,7 @@ import {UserAccessDialogComponent} from './user.access.dialog.component';
 })
 export class UserAccessComponent implements OnInit, AfterViewInit {
 
+    isAdmin = false;
     users: User[];
     usersAccess = [];
     roles = UserAccessRole;
@@ -28,6 +29,7 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
     contextService: (CollectionService | DashboardService);
     contextKey: string;
     contextId: number;
+    contextUserAccess: any;
     dataSource = new MatTableDataSource<User>(this.users);
     public form: FormGroup;
     displayedColumns: string[] = ['name', 'role', 'action'];
@@ -50,8 +52,12 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        // only admin can add and delete access
+        this.isAdmin = this.authService.hasRole('Administrator');
+
         this.route.parent.paramMap.subscribe(params => {
             this.contextId = +params.get(this.contextKey);
+            this.getUserAccessRole();
         });
 
         this.listUserAccess();
@@ -74,6 +80,15 @@ export class UserAccessComponent implements OnInit, AfterViewInit {
                 this.usersAccess.push(result);
                 this.refresh();
             }
+        });
+    }
+
+    // get user access for the collection or dashboard
+    getUserAccessRole() {
+        this.contextService.getUserAccessRole(this.contextId).subscribe(resp => {
+            this.contextUserAccess = resp;
+            // check user permission
+            this.isAdmin = this.isAdmin || this.contextUserAccess.role === 'Administrator';
         });
     }
 

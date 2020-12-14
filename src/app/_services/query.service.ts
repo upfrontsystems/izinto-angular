@@ -19,7 +19,7 @@ export class QueryService {
     }
 
     add(dashboardId, query) {
-        return this.http.post<Query>('/api/dashboards/${dashboardId}/queries', query);
+        return this.http.post<Query>(`/api/dashboards/${dashboardId}/queries`, query);
     }
 
     edit(dashboardId, query) {

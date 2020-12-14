@@ -29,8 +29,8 @@
                             <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #itemMenu="matMenu">
-                            <button mat-menu-item class="pull-right" color="warn" (click)="deleteConfirm.show()"
-                                    title="Delete">
+                            <button mat-menu-item class="pull-right" color="warn"  *ngIf="canAdd(dashboard)"
+                                    (click)="deleteConfirm.show()" title="Delete">
                                 <mat-icon>delete</mat-icon>
                                 <span>Delete</span>
                             </button>
@@ -43,8 +43,8 @@
                                 <mat-icon>edit</mat-icon>
                                 <span>Edit</span>
                             </button>
-                            <button mat-menu-item class="pull-right" color="accent" (click)="copyDashboard(dashboard)"
-                                    title="Copy">
+                            <button mat-menu-item class="pull-right" color="accent"  *ngIf="canAdd(dashboard)"
+                                    (click)="copyDashboard(dashboard)" title="Copy">
                                 <mat-icon>file_copy</mat-icon>
                                 <span>Copy</span>
                             </button>

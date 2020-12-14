@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.8
+Issue Fixes
+=======
+* [#226](https://github.com/upfrontsystems/izinto-angular/issues/226) refactor user access to collections and dashboards
+
 ## 0.7
 Issue Fixes
 =======

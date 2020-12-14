@@ -36,7 +36,7 @@ export class ChartListComponent extends QueryBaseComponent implements OnInit, On
 
     ngOnInit() {
         this.getCharts();
-        this.checkCanEdit();
+        this.checkPermissions();
     }
 
     getCharts() {

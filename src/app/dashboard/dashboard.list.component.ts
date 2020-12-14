@@ -55,6 +55,14 @@ export class DashboardListComponent implements OnInit {
         return (dashboard.user_access.role === 'Administrator' || dashboard.user_access.role === 'Edit');
     }
 
+    // check if user can add or delete dashboards
+    canAdd(collection) {
+        if (this.isAdmin) {
+            return true;
+        }
+        return collection.user_access.role === 'Administrator';
+    }
+
     editDashboard(dashboard) {
         const dialogRef = this.dialog.open(DashboardDialogComponent, {
             width: '600px',

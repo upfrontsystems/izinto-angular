@@ -11,13 +11,13 @@
                 <mat-card-subtitle *ngIf="dashboard.description" class="m-l-30">{{dashboard.description}}</mat-card-subtitle>
 
                 <app-single-stat-list *ngIf="dashboard.type == 'old'" [dashboardId]="dashboard.id"
-                                      [addedSingleStat]="addedSingleStat"
+                                      [addedSingleStat]="addedSingleStat" [userAccess]="dashboard.user_access"
                                       [variables]="dashboard.variables" [dataSources]="dataSources">
                 </app-single-stat-list>
 
                 <app-chart-list *ngIf="dashboard.type == 'old'" appMouseListener [dateViews]="dateViews"
                                 [dashboardId]="dashboard.id" [addedChart]="addedChart" [variables]="dashboard.variables"
-                                [dataSources]="dataSources"></app-chart-list>
+                                [dataSources]="dataSources" [userAccess]="dashboard.user_access"></app-chart-list>
 
                 <app-script-container [dashboard]="dashboard" *ngIf="dashboard.type == 'new'"></app-script-container>
             </mat-card-content>
