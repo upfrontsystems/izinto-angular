@@ -62,8 +62,9 @@ export class DashboardDateSelectorComponent implements OnInit {
         const date = new Date(this.dateSelection.startDate.valueOf());
         // set only end date range based on new view
         this.dateSelection.endDate = this.setEndDate(this.range[this.dateSelection.view].count, date);
-        // updating picker object triggers change detection
+        // update picker and call change update
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
+        this.updateRange();
     }
 
     // called when navigating forward and backwards using the date range picker
@@ -85,8 +86,9 @@ export class DashboardDateSelectorComponent implements OnInit {
         }
         this.dateSelection.startDate = this.setStartDate(startCount, date);
         this.dateSelection.endDate = this.setEndDate(endCount, end);
-        // updating picker object triggers change detection
+        // update pick and call change update
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
+        this.updateRange();
     }
 
     setStartDate(count, date) {
@@ -129,9 +131,14 @@ export class DashboardDateSelectorComponent implements OnInit {
         }
     }
 
+    // call change update when datepicker closes
+    pickerClosed(event) {
+        this.updateRange();
+    }
+
     // handler function that receives the updated date range object
-    // called when picker object changes
-    updateRange(event) {
+    // called when date picker model updates
+    updateRange() {
         if (!this.pickerRange.startDate && !this.pickerRange.endDate) {
             return;
         }

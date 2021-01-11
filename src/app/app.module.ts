@@ -6,7 +6,11 @@ import * as Hammer from 'hammerjs';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {Injectable, NgModule} from '@angular/core';
+<<<<<<< HEAD
 import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
+=======
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+>>>>>>> material-daterange-picker
 import {PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {FileUploadModule} from 'ng2-file-upload';
 
@@ -138,7 +142,11 @@ export class HammerConfig extends HammerGestureConfig {
         HammerModule,
         HttpClientModule,
         MaterialModule,
+<<<<<<< HEAD
         NgxDaterangepickerMd.forRoot(),
+=======
+        NgxMatSelectSearchModule,
+>>>>>>> material-daterange-picker
         PerfectScrollbarModule,
         ReactiveFormsModule,
         SharedModule,
