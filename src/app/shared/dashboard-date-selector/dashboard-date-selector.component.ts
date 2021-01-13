@@ -3,11 +3,28 @@ import * as moment from 'moment';
 import {DashboardView} from '../../_models/dashboard_view';
 import {DateSelection} from '../../_models/date_selection';
 import {DashboardService} from '../../_services/dashboard.service';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
 
+export const DATE_FORMATS = {
+    parse: {
+        dateInput: 'D MMM YYYY'
+    },
+    display: {
+        dateInput: 'D MMM YYYY',
+        monthYearLabel: 'YYYY',
+        dateA11yLabel: 'LL',
+        monthYearA11yLabel: 'YYYY'
+    }
+};
 @Component({
     selector: 'app-dashboard-date-selector',
     templateUrl: './dashboard-date-selector.component.html',
-    styleUrls: ['./dashboard-date-selector.component.css']
+    styleUrls: ['./dashboard-date-selector.component.css'],
+    providers: [
+        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+        {provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS},
+    ],
 })
 export class DashboardDateSelectorComponent implements OnInit {
 
@@ -24,6 +41,7 @@ export class DashboardDateSelectorComponent implements OnInit {
             'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
         }
     };
+    hourValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
     private range = {
         'Hour': {'count': 1, 'unit': 'h'},
         'Day': {'count': 1, 'unit': 'd'},
@@ -58,6 +76,10 @@ export class DashboardDateSelectorComponent implements OnInit {
 
     // called when toggling between day, week, month and year
     updateView(view) {
+        if (view === 'Custom') {
+            return;
+        }
+
         this.dateSelection.view = view;
         const date = new Date(this.dateSelection.startDate.valueOf());
         // set only end date range based on new view
@@ -87,6 +109,15 @@ export class DashboardDateSelectorComponent implements OnInit {
         this.dateSelection.startDate = this.setStartDate(startCount, date);
         this.dateSelection.endDate = this.setEndDate(endCount, end);
         // update pick and call change update
+        this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
+        this.updateRange();
+    }
+
+    // set hour value from hour spinner
+    setHour(hour) {
+        this.dateSelection.startDate.setHours(hour);
+        this.dateSelection.endDate.setHours(hour + 1);
+        // update picker and call change update
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
         this.updateRange();
     }
@@ -133,6 +164,17 @@ export class DashboardDateSelectorComponent implements OnInit {
 
     // call change update when datepicker closes
     pickerClosed(event) {
+        // set new end date offset from selected start date
+        const endCount = this.range[this.dateSelection.view].count;
+        const end = new Date(this.pickerRange.startDate.valueOf());
+        this.dateSelection.endDate = this.setEndDate(endCount, end);
+        // update picker and call change update
+        this.pickerRange.endDate = moment(this.dateSelection.endDate);
+        this.updateRange();
+    }
+
+    // call change update when daterangepicker closes
+    rangePickerClosed(event) {
         this.updateRange();
     }
 
