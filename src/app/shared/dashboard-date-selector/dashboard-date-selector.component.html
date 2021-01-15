@@ -1,7 +1,7 @@
 <mat-expansion-panel hideToggle class="no-shadow sticky-toolbar date-range-toolbar mat-toolbar"
                      fxLayout="row" fxLayout.xs="column" [expanded]="dateSelectVisible()">
-    <mat-toolbar-row fxFlex fxFlex.xs="100" fxLayoutAlign.xs="center center">
-        <mat-form-field>
+    <mat-toolbar-row fxFlex="0 1 0%" fxLayoutAlign.xs="center center">
+        <mat-form-field fxFlex.xs="70">
             <mat-select [(ngModel)]="dateSelection.view" (selectionChange)="updateView($event.value)">
                 <mat-option *ngFor="let view of dateViews" [value]="view.name">
                     {{view.name}}
@@ -10,41 +10,88 @@
             </mat-select>
         </mat-form-field>
     </mat-toolbar-row>
-    <mat-toolbar-row fxFlex fxFlex.xs="100" fxLayoutAlign="center center" class="font-18">
+    <mat-toolbar-row fxFlex="1 1 0%" fxLayoutAlign="center center" class="font-18 date-navigator">
         <button mat-icon-button (click)="updateDateCounter(-1)">
             <mat-icon class="pull-right">keyboard_arrow_left</mat-icon>
         </button>
 
         <!--- hour select dropdown --->
-        <mat-form-field *ngIf="dateSelection.view == 'Hour'">
-            <mat-select [value]="pickerRange.startDate.hours()" (selectionChange)="setHour($event.value)">
+        <mat-form-field *ngIf="dateSelection.view == 'Hour'" class="date-text" fxFlex.xs="50" appearance="none">
+            <mat-select [value]="pickerRange.startDate.hours()" (selectionChange)="setHour($event.value)"
+            fxFlex="50" fxFlexOffset="25" style="padding-top: 0.5em;">
                 <mat-option *ngFor="let num of hourValues" [value]="num">
                     {{num > 12 ? num % 12 : (num || 12)}} {{num > 11 ? 'pm' : 'am'}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
-        <div class="mat-date-range-input mat-date-range-input-hide-placeholders" *ngIf="dateSelection.view != 'Custom' && dateSelection.view != 'Hour'">
-            <div class="mat-date-range-input-container" fxLayout="row">
-                <div class="mat-date-range-input-start-wrapper">
-                    <input matInput [(ngModel)]="pickerRange.startDate" [matDatepicker]="picker" (click)="picker.open()"
-                           class="mat-start-date mat-date-range-input-inner" (keydown)="false">
-                </div>
-                <span class="mat-date-range-input-separator p-r-20" *ngIf="dateSelection.view != 'Day'">–</span>
-                <div class="mat-date-range-input-end-wrapper" *ngIf="dateSelection.view != 'Day'">
-                    <input matInput [(ngModel)]="pickerRange.endDate" class="mat-end-date mat-date-range-input-inner"
-                           (click)="picker.open()" (keydown)="false" [matDatepicker]="">
-                </div>
-                <mat-datepicker #picker (closed)="pickerClosed($event)"></mat-datepicker>
-            </div>
+        <!--- single date range selection for preset ranges --->
+        <div fxLayout="row" *ngIf="dateSelection.view != 'Custom' && dateSelection.view != 'Hour'" class="date-text"
+            style="">
+            <input matInput [(ngModel)]="pickerRange.startDate" [matDatepicker]="picker" (click)="picker.open()"
+                   class="date-select-display" (keydown)="false">
+            <span class="mat-date-range-input-separator" *ngIf="dateSelection.view != 'Day'">–</span>
+            <input *ngIf="dateSelection.view != 'Day'" matInput [(ngModel)]="pickerRange.endDate"
+                   class="date-select-display" disabled
+                   (click)="picker.open()" (keydown)="false" [matDatepicker]="">
+            <mat-datepicker #picker (closed)="pickerClosed($event)"></mat-datepicker>
         </div>
 
-        <!--- custom date range selection --->
-        <mat-date-range-input [rangePicker]="rangePicker" *ngIf="dateSelection.view == 'Custom'">
-            <input matStartDate [(ngModel)]="pickerRange.startDate" (click)="rangePicker.open()" (keydown)="false">
-            <input matEndDate [(ngModel)]="pickerRange.endDate" (click)="rangePicker.open()" (keydown)="false">
-            <mat-date-range-picker #rangePicker (closed)="rangePickerClosed($event)"></mat-date-range-picker>
-        </mat-date-range-input>
+        <!--- custom date range selection in dropdown menu --->
+        <div fxLayout="row" *ngIf="dateSelection.view == 'Custom'" class="date-text">
+            <input matInput [(ngModel)]="pickerRange.startDate" [matMenuTriggerFor]="appMenu"
+                   class="date-select-display" (keydown)="false" [matDatepicker]="">
+            <span class="mat-date-range-input-separator">–</span>
+            <input matInput [(ngModel)]="pickerRange.endDate" class="date-select-display"
+                   [matMenuTriggerFor]="appMenu" (keydown)="false" [matDatepicker]="">
+            <mat-menu #appMenu="matMenu" (closed)="rangePickerClosed($event)">
+                <ng-template matMenuContent>
+                    <div fxLayout="column" class="p-20 date-range-dropdown date-text"
+                         (click)="$event.stopPropagation()">
+                        <form [formGroup]="form" fxFlex="100" fxLayoutGap="10px" autocomplete="off">
+
+                            <mat-form-field fxFlex="55">
+                                <input matInput [formControl]="form.get('startDate')" [matDatepicker]="startPicker"
+                                       placeholder="From" (click)="startPicker.open()"
+                                       class="date-select-display" (keydown)="false">
+                                <mat-datepicker #startPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field fxFlex="35" class="mat-suffix-subscript">
+                                <input type="text" matInput [formControl]="form.get('startTime')" class="text-center"
+                                       [matAutocomplete]="startTimeSelect">
+                                <mat-icon matSuffix>arrow_drop_down</mat-icon>
+                                <mat-autocomplete #startTimeSelect="matAutocomplete">
+                                    <mat-option *ngFor="let time of timeOptions" [value]="time">
+                                        {{time}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </form>
+
+                        <div fxFlex="100" fxLayoutGap="10px">
+                            <mat-form-field fxFlex="55">
+                                <input matInput placeholder="To" [formControl]="form.get('endDate')"
+                                       [matDatepicker]="endPicker" (click)="endPicker.open()"
+                                       class="date-select-display" (keydown)="false">
+                                <mat-datepicker #endPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field fxFlex="35" class="mat-suffix-subscript">
+                                <input type="text" matInput [formControl]="form.get('endTime')" class="text-center"
+                                       [matAutocomplete]="endTimeSelect">
+                                <mat-icon matSuffix>arrow_drop_down</mat-icon>
+                                <mat-autocomplete #endTimeSelect="matAutocomplete">
+                                    <mat-option *ngFor="let time of timeOptions" [value]="time">
+                                        {{time}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-menu>
+        </div>
 
         <button mat-icon-button (click)="updateDateCounter(0)">
             <mat-icon class="pull-left">keyboard_arrow_right</mat-icon>

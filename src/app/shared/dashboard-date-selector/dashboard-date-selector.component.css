@@ -9,6 +9,11 @@ button.active {
 .date-navigator .date-text {
     font-size: 16px;
     cursor: pointer;
+    padding-top: 3px;
+}
+
+.date-navigator .date-text input:disabled {
+    cursor: not-allowed;
 }
 
 .sticky-toolbar {
@@ -21,4 +26,26 @@ button.active {
 .mat-toolbar {
     border-radius: 0 !important;
     box-shadow: none;
+}
+
+.date-select-display {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 7.5em;
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.date-range-dropdown {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.date-range-dropdown input {
+    padding-top: 1px;
+}
+
+.mat-date-range-input-separator {
+    line-height: 2em;
 }

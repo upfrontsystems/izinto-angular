@@ -69,3 +69,8 @@ mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
 .hover-row:hover .action-button {
     color: initial !important;
 }
+
+/* lower mat suffix icon */
+.mat-suffix-subscript .mat-form-field-suffix {
+    align-self: flex-end;
+}

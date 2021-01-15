@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 Issue Fixes
 =======
 * [#226](https://github.com/upfrontsystems/izinto-angular/issues/226) refactor user access to collections and dashboards
-
+* [#227](https://github.com/upfrontsystems/izinto-angular/issues/227) refactor dashboard date and time selector 
 ## 0.7
 Issue Fixes
 =======
