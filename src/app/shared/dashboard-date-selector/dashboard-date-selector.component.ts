@@ -19,6 +19,7 @@ export const DATE_FORMATS = {
         monthYearA11yLabel: 'YYYY'
     }
 };
+
 @Component({
     selector: 'app-dashboard-date-selector',
     templateUrl: './dashboard-date-selector.component.html',
@@ -67,7 +68,8 @@ export class DashboardDateSelectorComponent implements OnInit {
             startDate: new FormControl(),
             startTime: new FormControl(),
             endDate: new FormControl(),
-            endTime: new FormControl()});
+            endTime: new FormControl()
+        });
 
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
 
@@ -119,21 +121,37 @@ export class DashboardDateSelectorComponent implements OnInit {
     }
 
     setDateRange() {
-        // use preset increments or calculate increment from custom range
-        const viewRange = this.range[this.dateSelection.view] || this.customRange();
-        const startCount = this.dateRangeCounter * viewRange.count;
-        const endCount = startCount + viewRange.count;
+        // use same range increment from custom range
+        if (this.dateSelection.view === 'Custom') {
+            // increment by same amount of hours or days
+            const days = (this.pickerRange.endDate.diff(this.pickerRange.startDate, 'hours') > 24);
+            const diff = this.pickerRange.endDate.diff(this.pickerRange.startDate, days ? 'd' : 'm');
 
-        // use current date value to set range based on direction of counter
-        let date = this.dateSelection.startDate || new Date();
-        let end = new Date(date.valueOf());
-        if (this.dateRangeCounter >= 0) {
-            end = this.dateSelection.endDate || new Date();
-            date = new Date(end.valueOf());
+            if (this.dateRangeCounter >= 0) {
+                this.dateSelection.startDate = this.pickerRange.startDate.clone().add(diff, days ? 'd' : 'm').toDate();
+                this.dateSelection.endDate = this.pickerRange.endDate.clone().add(diff, days ? 'd' : 'm').toDate();
+            } else {
+                this.dateSelection.startDate = this.pickerRange.startDate.clone().subtract(diff, days ? 'd' : 'm').toDate();
+                this.dateSelection.endDate = this.pickerRange.endDate.clone().subtract(diff, days ? 'd' : 'm').toDate();
+            }
+            // use preset increments
+        } else {
+            const viewRange = this.range[this.dateSelection.view];
+            const startCount = this.dateRangeCounter * viewRange.count;
+            const endCount = startCount + viewRange.count;
+
+            // use current date value to set range based on direction of counter
+            let date = this.dateSelection.startDate || new Date();
+            let end = new Date(date.valueOf());
+            if (this.dateRangeCounter >= 0) {
+                end = this.dateSelection.endDate || new Date();
+                date = new Date(end.valueOf());
+            }
+            this.dateSelection.startDate = this.setStartDate(startCount, date);
+            this.dateSelection.endDate = this.setEndDate(endCount, end);
         }
-        this.dateSelection.startDate = this.setStartDate(startCount, date);
-        this.dateSelection.endDate = this.setEndDate(endCount, end);
-        // update pick and call change update
+
+        // update picker and call change update
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
         this.updateRange();
     }
@@ -190,8 +208,20 @@ export class DashboardDateSelectorComponent implements OnInit {
     // call change update when datepicker closes
     pickerClosed(event) {
         // set new end date offset from selected start date
-        const endCount = this.range[this.dateSelection.view].count;
+        // set end of month or end of year when the 1st is chosen for month or year views
+        let endCount = this.range[this.dateSelection.view].count;
         const end = new Date(this.pickerRange.startDate.valueOf());
+        const startMoment = moment(this.pickerRange.startDate);
+        if (this.dateSelection.view === 'Month') {
+            if (startMoment.date() === 1) {
+                endCount = startMoment.daysInMonth() - 1;
+            }
+        } else if (this.dateSelection.view === 'Year') {
+            if (startMoment.date() === 1 && startMoment.month() === 0) {
+                endCount = (startMoment.isLeapYear() ? 366 : 365) - 1;
+            }
+        }
+
         this.dateSelection.endDate = this.setEndDate(endCount, end);
         // update picker and call change update
         this.pickerRange.endDate = moment(this.dateSelection.endDate);

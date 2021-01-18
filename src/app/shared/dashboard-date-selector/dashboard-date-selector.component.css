@@ -13,7 +13,7 @@ button.active {
 }
 
 .date-navigator .date-text input:disabled {
-    cursor: not-allowed;
+    cursor: initial;
 }
 
 .sticky-toolbar {
