@@ -1,7 +1,8 @@
 <mat-expansion-panel hideToggle class="no-shadow sticky-toolbar date-range-toolbar mat-toolbar"
-                     fxLayout="row" fxLayout.xs="column" [expanded]="dateSelectVisible()">
-    <mat-toolbar-row fxFlex="0 1 0%" fxLayoutAlign.xs="center center">
-        <mat-form-field fxFlex.xs="70">
+                     [expanded]="dateSelectVisible()">
+    <mat-toolbar-row class="font-16 date-navigator" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em"
+                      fxLayoutGap.xs="0"  fxLayoutAlign.xs="space-around center">
+        <mat-form-field class="view-selector">
             <mat-select [(ngModel)]="dateSelection.view" (selectionChange)="updateView($event.value)">
                 <mat-option *ngFor="let view of dateViews" [value]="view.name">
                     {{view.name}}
@@ -9,16 +10,15 @@
                 <mat-option value="Custom">Custom</mat-option>
             </mat-select>
         </mat-form-field>
-    </mat-toolbar-row>
-    <mat-toolbar-row fxFlex="1 1 0%" fxLayoutAlign="center center" class="font-18 date-navigator">
+
+        <div fxLayout="row" fxLayoutAlign="center center">
         <button mat-icon-button (click)="updateDateCounter(-1)">
             <mat-icon class="pull-right">keyboard_arrow_left</mat-icon>
         </button>
 
         <!--- hour select dropdown --->
-        <mat-form-field *ngIf="dateSelection.view == 'Hour'" class="date-text" fxFlex.xs="50" appearance="none">
-            <mat-select [value]="pickerRange.startDate.hours()" (selectionChange)="setHour($event.value)"
-            fxFlex="50" fxFlexOffset="25" style="padding-top: 0.5em;">
+        <mat-form-field *ngIf="dateSelection.view == 'Hour'" class="date-text hour-navigator" appearance="none">
+            <mat-select [value]="pickerRange.startDate.hours()" (selectionChange)="setHour($event.value)">
                 <mat-option *ngFor="let num of hourValues" [value]="num">
                     {{num > 12 ? num % 12 : (num || 12)}} {{num > 11 ? 'pm' : 'am'}}
                 </mat-option>
@@ -26,8 +26,7 @@
         </mat-form-field>
 
         <!--- single date range selection for preset ranges --->
-        <div fxLayout="row" *ngIf="dateSelection.view != 'Custom' && dateSelection.view != 'Hour'" class="date-text"
-            style="">
+        <div fxLayout="row" *ngIf="dateSelection.view != 'Custom' && dateSelection.view != 'Hour'" class="date-text">
             <input matInput [(ngModel)]="pickerRange.startDate" [matDatepicker]="picker" (click)="picker.open()"
                    class="date-select-display" (keydown)="false">
             <span class="mat-date-range-input-separator" *ngIf="dateSelection.view != 'Day'">–</span>
@@ -46,7 +45,7 @@
                    [matMenuTriggerFor]="appMenu" (keydown)="false" [matDatepicker]="">
             <mat-menu #appMenu="matMenu" (closed)="rangePickerClosed($event)">
                 <ng-template matMenuContent>
-                    <div fxLayout="column" class="p-20 date-range-dropdown date-text"
+                    <div fxLayout="column" class="date-range-dropdown date-text"
                          (click)="$event.stopPropagation()">
                         <form [formGroup]="form" fxFlex="100" fxLayoutGap="10px" autocomplete="off">
 
@@ -96,5 +95,6 @@
         <button mat-icon-button (click)="updateDateCounter(0)">
             <mat-icon class="pull-left">keyboard_arrow_right</mat-icon>
         </button>
+        </div>
     </mat-toolbar-row>
 </mat-expansion-panel>

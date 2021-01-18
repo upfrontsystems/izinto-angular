@@ -40,27 +40,6 @@ mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
     padding: initial;
 }
 
-@media only screen and (max-width: 768px) {
-    .mat-toolbar-row {
-        height: 56px !important;
-        padding: 0 0 0 8px !important;
-    }
-
-    .mat-toolbar-row .mat-button, .mat-toolbar input {
-        font-size: 12px !important;
-        line-height: 30px;
-        padding-bottom: 1px;
-        padding-top: 1px;
-    }
-}
-
-@media only screen and (max-width: 599px) {
-    mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
-        flex-direction: column !important;
-    }
-}
-
-
 /* global style action buttons on hover */
 .hover-row .action-button {
     color: rgba(0, 0, 0, 0) !important;

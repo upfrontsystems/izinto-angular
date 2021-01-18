@@ -14,7 +14,8 @@ File: scss
     margin: 0 auto;
   }
 }
-/*============================================================== 
+
+/*==============================================================
  For Laptop & above all (1370px) 
  ============================================================== */
 
@@ -34,10 +35,12 @@ File: scss
     padding: 0 15px;
     display: flex;
     flex-flow: row wrap;
+
     .mat-card {
       margin: 15px 0px;
       flex: 1 0 0%;
       border-left: 1px solid $border;
+
       &:first-child {
         border: 0px;
       }
@@ -51,9 +54,11 @@ File: scss
   }
   .card-group {
     margin: 15px 0;
+
     .mat-card {
       margin: 0 15px;
       border-top: 1px solid $border;
+
       &:first-child {
         border: 0px;
       }
@@ -68,6 +73,7 @@ File: scss
 @media (min-width: 768px) {
   .navbar-header {
     flex-shrink: 0;
+
     .navbar-brand {
       padding-top: 0px;
     }
@@ -75,10 +81,6 @@ File: scss
 }
 
 @media (max-width: 600px) {
-  mat-toolbar.date-range-toolbar {
-    height: 95px;
-  }
-
   .responsive-table {
     .header-label {
       width: 80px;
@@ -118,6 +120,7 @@ File: scss
   }
   .navbar-header {
     flex-shrink: 0;
+
     .navbar-brand {
       padding-top: 0px;
     }
@@ -130,6 +133,7 @@ File: scss
   #dashboard .mat-card {
     margin: 0;
     border-radius: 0;
+
     .mat-card-content {
       padding: 15px 5px;
     }
@@ -137,6 +141,7 @@ File: scss
 
   #dashboard mat-card.single-stat {
     margin: 15px;
+
     .mat-card-content {
       padding: 10px;
     }
@@ -147,7 +152,7 @@ File: scss
     text-align: center;
     margin-top: 5px !important;
     margin-left: 10px;
-  };
+  }
 
   mat-toolbar.topbar {
     padding: 0 5px;
@@ -167,4 +172,59 @@ File: scss
   .icon-box {
     width: 50%;
   }
+
+  /* dashboard date selector */
+  mat-toolbar.date-range-toolbar {
+    height: 40px !important;
+  }
+
+  .mat-toolbar-row {
+    padding: 0 0 0 8px !important;
+  }
+
+  .mat-toolbar-row.date-navigator {
+    font-size: 14px !important;
+  }
+
+  .mat-toolbar-row .mat-button, .mat-toolbar input {
+    line-height: 30px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+  }
+
+  .date-navigator .mat-icon-button {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    float: initial;
+  }
+
+  .date-navigator .view-selector {
+    width: 7em !important;
+    padding-top: 5px !important;
+    padding-left: 0 !important;
+  }
+
+  .date-navigator .date-select-display {
+    width: 6em !important;
+  }
+
+  .date-navigator .date-range-dropdown {
+    padding: 15px !important;
+  }
+}
+
+/*-- ==============================================================
+ Phone 5 and below (600px)
+ ============================================================== */
+@media (max-width: 320px) {
+
+  .mat-toolbar-row.date-navigator {
+    font-size: 12px !important;
+  }
+
+    .date-navigator .view-selector {
+      width: 5em !important;
+    }
+
 }
