@@ -3,11 +3,31 @@ import * as moment from 'moment';
 import {DashboardView} from '../../_models/dashboard_view';
 import {DateSelection} from '../../_models/date_selection';
 import {DashboardService} from '../../_services/dashboard.service';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+
+// momentjs date formats
+export const DATE_FORMATS = {
+    parse: {
+        dateInput: 'D MMM YYYY'
+    },
+    display: {
+        dateInput: 'D MMM YYYY',
+        monthYearLabel: 'YYYY',
+        dateA11yLabel: 'LL',
+        monthYearA11yLabel: 'YYYY'
+    }
+};
 
 @Component({
     selector: 'app-dashboard-date-selector',
     templateUrl: './dashboard-date-selector.component.html',
-    styleUrls: ['./dashboard-date-selector.component.css']
+    styleUrls: ['./dashboard-date-selector.component.css'],
+    providers: [
+        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+        {provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS},
+    ],
 })
 export class DashboardDateSelectorComponent implements OnInit {
 
@@ -18,13 +38,12 @@ export class DashboardDateSelectorComponent implements OnInit {
     // query date range from start to end
     dateRangeCounter = -1;
     pickerRange = {startDate: moment(), endDate: moment()};
-    dateFormat = {
-        'Hour': 'D MMM h:mm a', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        'mobile': {
-            'Hour': 'D MMM H:mm', 'Day': 'D MMMM', 'Week': 'D MMM YYYY', 'Month': 'D MMM YYYY', 'Year': 'MMM YYYY',
-        }
-    };
-    private range = {
+    hourValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+    timeOptions = [];
+
+    public form: FormGroup;
+
+    range = {
         'Hour': {'count': 1, 'unit': 'h'},
         'Day': {'count': 1, 'unit': 'd'},
         'Week': {'count': 7, 'unit': 'd'},
@@ -32,10 +51,26 @@ export class DashboardDateSelectorComponent implements OnInit {
         'Year': {'count': 365, 'unit': 'd'}
     };
 
-    constructor(private dashboardService: DashboardService) {
+    constructor(private dashboardService: DashboardService,
+                private fb: FormBuilder) {
     }
 
     ngOnInit(): void {
+        // build time options in 15 min increments for custom time picker
+        const minutes = ['00', '15', '30', '45'];
+        for (const hour of this.hourValues) {
+            for (const min of minutes) {
+                this.timeOptions.push(hour + ':' + min);
+            }
+        }
+        // custom datetime selection
+        this.form = this.fb.group({
+            startDate: new FormControl(),
+            startTime: new FormControl(),
+            endDate: new FormControl(),
+            endTime: new FormControl()
+        });
+
         this.dashboardService.toggleDateSelect.subscribe(status => this.dateSelectOpened = status);
 
         this.dateSelection.view = 'Week';
@@ -48,16 +83,28 @@ export class DashboardDateSelectorComponent implements OnInit {
         return this.mobileQueryMatches || this.dateSelectOpened;
     }
 
-    getDateFormat() {
-        if (this.mobileQueryMatches) {
-            return this.dateFormat[this.dateSelection.view];
-        } else {
-            return this.dateFormat.mobile[this.dateSelection.view];
+    // return range view from custom date selection
+    customRange() {
+        const start = this.pickerRange.startDate;
+        const end = this.pickerRange.endDate;
+        if (end.diff(start, 'hours') < 18) {
+            return this.range['Hour'];
+        } else if (end.diff(start, 'days') < 4) {
+            return this.range['Day'];
+        } else if (end.diff(start, 'weeks') < 4) {
+            return this.range['Week'];
+        } else if (end.diff(start, 'months') < 8) {
+            return this.range['Month'];
         }
+        return this.range['Year'];
     }
 
     // called when toggling between day, week, month and year
     updateView(view) {
+        if (view === 'Custom') {
+            return;
+        }
+
         this.dateSelection.view = view;
         const date = new Date(this.dateSelection.startDate.valueOf());
         // set only end date range based on new view
@@ -74,19 +121,46 @@ export class DashboardDateSelectorComponent implements OnInit {
     }
 
     setDateRange() {
-        const startCount = this.dateRangeCounter * this.range[this.dateSelection.view].count;
-        const endCount = startCount + this.range[this.dateSelection.view].count;
+        // use same range increment from custom range
+        if (this.dateSelection.view === 'Custom') {
+            // increment by same amount of hours or days
+            const days = (this.pickerRange.endDate.diff(this.pickerRange.startDate, 'hours') > 24);
+            const diff = this.pickerRange.endDate.diff(this.pickerRange.startDate, days ? 'd' : 'm');
 
-        // use current date value to set range based on direction of counter
-        let date = this.dateSelection.startDate || new Date();
-        let end = new Date(date.valueOf());
-        if (this.dateRangeCounter >= 0) {
-            end = this.dateSelection.endDate || new Date();
-            date = new Date(end.valueOf());
+            if (this.dateRangeCounter >= 0) {
+                this.dateSelection.startDate = this.pickerRange.startDate.clone().add(diff, days ? 'd' : 'm').toDate();
+                this.dateSelection.endDate = this.pickerRange.endDate.clone().add(diff, days ? 'd' : 'm').toDate();
+            } else {
+                this.dateSelection.startDate = this.pickerRange.startDate.clone().subtract(diff, days ? 'd' : 'm').toDate();
+                this.dateSelection.endDate = this.pickerRange.endDate.clone().subtract(diff, days ? 'd' : 'm').toDate();
+            }
+            // use preset increments
+        } else {
+            const viewRange = this.range[this.dateSelection.view];
+            const startCount = this.dateRangeCounter * viewRange.count;
+            const endCount = startCount + viewRange.count;
+
+            // use current date value to set range based on direction of counter
+            let date = this.dateSelection.startDate || new Date();
+            let end = new Date(date.valueOf());
+            if (this.dateRangeCounter >= 0) {
+                end = this.dateSelection.endDate || new Date();
+                date = new Date(end.valueOf());
+            }
+            this.dateSelection.startDate = this.setStartDate(startCount, date);
+            this.dateSelection.endDate = this.setEndDate(endCount, end);
         }
-        this.dateSelection.startDate = this.setStartDate(startCount, date);
-        this.dateSelection.endDate = this.setEndDate(endCount, end);
-        // update pick and call change update
+
+        // update picker and call change update
+        this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
+        this.updateRange();
+    }
+
+    // set hour value from hour spinner
+    setHour(hour) {
+        this.dateSelection.startDate.setHours(hour);
+        this.dateSelection.endDate.setHours(hour + 1);
+        // update picker and call change update
         this.pickerRange = {startDate: moment(this.dateSelection.startDate), endDate: moment(this.dateSelection.endDate)};
         this.updateRange();
     }
@@ -133,6 +207,34 @@ export class DashboardDateSelectorComponent implements OnInit {
 
     // call change update when datepicker closes
     pickerClosed(event) {
+        // set new end date offset from selected start date
+        // set end of month or end of year when the 1st is chosen for month or year views
+        let endCount = this.range[this.dateSelection.view].count;
+        const end = new Date(this.pickerRange.startDate.valueOf());
+        const startMoment = moment(this.pickerRange.startDate);
+        if (this.dateSelection.view === 'Month') {
+            if (startMoment.date() === 1) {
+                endCount = startMoment.daysInMonth() - 1;
+            }
+        } else if (this.dateSelection.view === 'Year') {
+            if (startMoment.date() === 1 && startMoment.month() === 0) {
+                endCount = (startMoment.isLeapYear() ? 366 : 365) - 1;
+            }
+        }
+
+        this.dateSelection.endDate = this.setEndDate(endCount, end);
+        // update picker and call change update
+        this.pickerRange.endDate = moment(this.dateSelection.endDate);
+        this.updateRange();
+    }
+
+    // call change update when daterange picker closes
+    // format date and time selection to moment
+    rangePickerClosed(event) {
+        const form = this.form.value;
+        const startDay = new Date(form.startDate).setHours(form.startTime.split(':')[0], form.startTime.split(':')[1] || 0);
+        const endDay = new Date(form.endDate).setHours(form.endTime.split(':')[0], form.endTime.split(':')[1] || 0);
+        this.pickerRange = {startDate: moment(startDay), endDate: moment(endDay)};
         this.updateRange();
     }
 
@@ -144,7 +246,13 @@ export class DashboardDateSelectorComponent implements OnInit {
         }
 
         this.dateSelection.startDate = this.pickerRange.startDate.toDate();
+        // update date range form values
+        this.form.controls.startDate.setValue(this.dateSelection.startDate);
+        this.form.controls.startTime.setValue(this.pickerRange.startDate.format('HH:mm'));
         this.dateSelection.endDate = this.pickerRange.endDate.toDate();
+        this.form.controls.endDate.setValue(this.dateSelection.endDate);
+        this.form.controls.endTime.setValue(this.pickerRange.endDate.format('HH:mm'));
+
         this.dateSelection.dateRange = `time > '${this.dateSelection.startDate.toISOString()
             }' AND time < '${this.dateSelection.endDate.toISOString()}'`;
         // update selection in service
