@@ -52,7 +52,7 @@ import {environment} from '../environments/environment';
 import {LandingpageComponent} from './landingpage/landingpage.component';
 import {DashboardDateSelectorComponent} from './shared/dashboard-date-selector/dashboard-date-selector.component';
 import {DashboardEditorComponent} from './dashboard/dashboard-editor/dashboard-editor.component';
-import {VariableComponent} from './dashboard/variable/variable.component';
+import {DashboardVariableComponent} from './dashboard/variable/variable.component';
 import {VariableDialogComponent} from './dashboard/variable/variable-dialog.component';
 import {ScriptContainerComponent} from './dashboard/script-container/script.container.component';
 import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/dashboard.user.access.component';
@@ -60,6 +60,7 @@ import {CollectionUserAccessComponent} from './collection/collection-user-access
 import {UserAccessComponent} from './shared/user-access/user.access.component';
 import {UserAccessDialogComponent} from './shared/user-access/user.access.dialog.component';
 import { CollectionContainerComponent } from './collection/collection-container/collection-container.component';
+import { CollectionVariableComponent } from './collection/collection-variable/collection-variable.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -118,14 +119,15 @@ export class HammerConfig extends HammerGestureConfig {
         QueryComponent,
         QueryDialogComponent,
         DashboardEditorComponent,
-        VariableComponent,
+        DashboardVariableComponent,
         VariableDialogComponent,
         ScriptContainerComponent,
         DashboardUserAccessComponent,
         CollectionUserAccessComponent,
         UserAccessComponent,
         UserAccessDialogComponent,
-        CollectionContainerComponent
+        CollectionContainerComponent,
+        CollectionVariableComponent
     ],
     imports: [
         AppRoutes,

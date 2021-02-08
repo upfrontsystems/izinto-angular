@@ -1,4 +1,5 @@
 ﻿import {Dashboard} from './dashboard';
+import {Variable} from './variable';
 
 export class Collection {
     id: number;
@@ -7,6 +8,7 @@ export class Collection {
     user_access: any;
     dashboards: Dashboard[];
     image: string;
+    variables: Variable[];
 }
 
 export const CollectionLinks = [

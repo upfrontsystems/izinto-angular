@@ -12,6 +12,11 @@
             View
         </a>
         <a mat-tab-link [routerLinkActive]="'active'"
+           [routerLink]="['/collections', collection?.id || 0, 'variables']">
+            <mat-icon class="m-r-5">view_module</mat-icon>
+            Variables
+        </a>
+        <a mat-tab-link [routerLinkActive]="'active'"
            [routerLink]="['/collections', collection?.id || 0, 'access']">
             <mat-icon class="m-r-5">supervisor_account</mat-icon>
             User Access

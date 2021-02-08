@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {VariableComponent} from './variable.component';
+import {DashboardVariableComponent} from './variable.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MaterialModule} from '../../material.module';
@@ -24,13 +24,13 @@ export class ActivatedRouteStub {
     }
 }
 
-describe('VariableComponent', () => {
-    let component: VariableComponent;
-    let fixture: ComponentFixture<VariableComponent>;
+describe('DashboardVariableComponent', () => {
+    let component: DashboardVariableComponent;
+    let fixture: ComponentFixture<DashboardVariableComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [VariableComponent],
+            declarations: [DashboardVariableComponent],
             imports: [FormsModule, ReactiveFormsModule, RouterTestingModule, MaterialModule, BrowserAnimationsModule,
                 HttpClientTestingModule],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
@@ -40,7 +40,7 @@ describe('VariableComponent', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(VariableComponent);
+        fixture = TestBed.createComponent(DashboardVariableComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

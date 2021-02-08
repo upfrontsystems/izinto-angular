@@ -1,27 +1,27 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {Variable} from '../../_models/variable';
-import {DataSource} from '../../_models/data.source';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
-import {MatPaginator} from '@angular/material/paginator';
-import {ActivatedRoute} from '@angular/router';
-import {DataSourceService} from '../../_services/data.source.service';
-import {VariableService} from '../../_services/variable.service';
-import {MatDialog} from '@angular/material/dialog';
-import {VariableDialogComponent} from './variable-dialog.component';
-import {Dashboard} from '../../_models/dashboard';
-import {DashboardService} from '../../_services/dashboard.service';
-import {AuthenticationService} from '../../_services/authentication.service';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Variable } from '../../_models/variable';
+import { DataSource } from '../../_models/data.source';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { ActivatedRoute } from '@angular/router';
+import { DataSourceService } from '../../_services/data.source.service';
+import { VariableService } from '../../_services/variable.service';
+import { MatDialog } from '@angular/material/dialog';
+import { VariableDialogComponent } from './variable-dialog.component';
+import { Dashboard } from '../../_models/dashboard';
+import { DashboardService } from '../../_services/dashboard.service';
+import { AuthenticationService } from '../../_services/authentication.service';
 
 @Component({
     selector: 'app-variable',
     templateUrl: './variable.component.html',
     styleUrls: ['./variable.component.css']
 })
-export class VariableComponent implements OnInit, AfterViewInit {
+export class DashboardVariableComponent implements OnInit, AfterViewInit {
 
-    variables: Variable[];
-    dashboardId: number;
+    variables: Variable[] = [];
+    containerId: number;
     dashboard: Dashboard;
     isAdmin = false;
     dataSources: DataSource[];
@@ -34,22 +34,21 @@ export class VariableComponent implements OnInit, AfterViewInit {
         }
     ];
 
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
-    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-    constructor(private route: ActivatedRoute,
-                private authService: AuthenticationService,
-                private dashboardService: DashboardService,
-                private dataSourceService: DataSourceService,
-                private variableService: VariableService,
-                public dialog: MatDialog) {
+    constructor(protected route: ActivatedRoute,
+        protected authService: AuthenticationService,
+        protected dashboardService: DashboardService,
+        protected variableService: VariableService,
+        public dialog: MatDialog) {
     }
 
     ngOnInit() {
         this.isAdmin = this.authService.hasRole('Administrator');
         this.dataSource.sort = this.sort;
         this.route.parent.params.subscribe(params => {
-            this.dashboardId = +params['dashboard_id'];
+            this.containerId = +params['dashboard_id'];
             this.getVariables();
             this.getDashboard();
         });
@@ -60,7 +59,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     }
 
     getVariables() {
-        this.variableService.getVariables(this.dashboardId, {dashboard_id: this.dashboardId}).subscribe(
+        this.variableService.getVariables(this.containerId, { container_id: this.containerId }).subscribe(
             resp => {
                 this.variables = resp;
                 this.refresh();
@@ -72,11 +71,11 @@ export class VariableComponent implements OnInit, AfterViewInit {
         // check if dashboard is in service
         // otherwise load dashboard
         const existing = this.dashboardService.currentDashboardValue;
-        if (existing && existing.id === this.dashboardId) {
+        if (existing && existing.id === this.containerId) {
             this.dashboard = existing;
             this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
         } else {
-            this.dashboardService.getById(this.dashboardId).subscribe(resp => {
+            this.dashboardService.getById(this.containerId).subscribe(resp => {
                 this.dashboard = resp;
                 this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';
             });
@@ -86,7 +85,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     add() {
         const dialogRef = this.dialog.open(VariableDialogComponent, {
             width: '550px',
-            data: {dashboard_id: this.dashboardId}
+            data: { container_id: this.containerId }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -117,7 +116,7 @@ export class VariableComponent implements OnInit, AfterViewInit {
     }
 
     delete(item: Variable) {
-        this.variableService.delete(this.dashboardId, item).subscribe(resp => {
+        this.variableService.delete(this.containerId, item).subscribe(resp => {
             for (const ix in this.variables) {
                 if (this.variables[ix].id === item.id) {
                     this.variables.splice(+ix, 1);

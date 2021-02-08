@@ -10,23 +10,23 @@ export class VariableService {
     constructor(private http: HttpClient) {
     }
 
-    getVariables(dashboardId, filters) {
-        return this.http.get<Variable[]>(`/api/dashboards/${dashboardId}/variables`, {params: filters});
+    getVariables(containerId, filters) {
+        return this.http.get<Variable[]>(`/api/containers/${containerId}/variables`, {params: filters});
     }
 
-    getById(dashboardId, id) {
-        return this.http.get<Variable>(`/api/dashboards/${dashboardId}/variables/` + id);
+    getById(containerId, id) {
+        return this.http.get<Variable>(`/api/containers/${containerId}/variables/` + id);
     }
 
-    add(dashboardId, variable) {
-        return this.http.post<Variable>(`/api/dashboards/${dashboardId}/variables`, variable);
+    add(containerId, variable) {
+        return this.http.post<Variable>(`/api/containers/${containerId}/variables`, variable);
     }
 
-    edit(dashboardId, variable) {
-        return this.http.put<Variable>(`/api/dashboards/${dashboardId}/variables/` + variable.id, variable);
+    edit(containerId, variable) {
+        return this.http.put<Variable>(`/api/containers/${containerId}/variables/` + variable.id, variable);
     }
 
-    delete(dashboardId, variable) {
-        return this.http.delete(`/api/dashboards/${dashboardId}/variables/` + variable.id);
+    delete(containerId, variable) {
+        return this.http.delete(`/api/containers/${containerId}/variables/` + variable.id);
     }
 }

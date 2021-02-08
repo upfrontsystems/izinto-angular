@@ -7,6 +7,8 @@ Issue Fixes
 =======
 * [#226](https://github.com/upfrontsystems/izinto-angular/issues/226) refactor user access to collections and dashboards
 * [#227](https://github.com/upfrontsystems/izinto-angular/issues/227) refactor dashboard date and time selector 
+* [#157](https://github.com/upfrontsystems/izinto-angular/issues/157) Add variables to collections
+
 ## 0.7
 Issue Fixes
 =======

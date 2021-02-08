@@ -28,7 +28,7 @@ export class VariableDialogComponent implements OnInit {
             id: this.variable.id,
             name: [this.variable.name, Validators.required],
             value: [this.variable.value, Validators.required],
-            dashboard_id: this.variable.dashboard_id
+            container_id: this.variable.container_id
         });
 
         this.onFormChanges();
@@ -51,13 +51,13 @@ export class VariableDialogComponent implements OnInit {
     }
 
     add(form) {
-        this.variableService.add(this.variable.dashboard_id, form).subscribe(resp => {
+        this.variableService.add(this.variable.container_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }
 
     edit(form) {
-        this.variableService.edit(this.variable.dashboard_id, form).subscribe(resp => {
+        this.variableService.edit(this.variable.container_id, form).subscribe(resp => {
             this.dialogRef.close(resp);
         });
     }
