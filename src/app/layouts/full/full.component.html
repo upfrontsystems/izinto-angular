@@ -97,7 +97,7 @@
             </button>
             <mat-menu #tabCollectionMenu="matMenu">
                 <a mat-menu-item *ngFor="let tab of collectionLinks"
-                   [routerLink]="['/collections', currentDashboard?.id || 0, tab.link]" routerLinkActive="active">
+                   [routerLink]="['/collections', router.url.split('/')[2], tab.link]" routerLinkActive="active">
                     <mat-icon>{{tab.icon}}</mat-icon>
                     {{tab.name}}
                 </a>

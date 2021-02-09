@@ -13,6 +13,7 @@ export class Collection {
 
 export const CollectionLinks = [
     {name: 'View', link: 'view', icon: 'preview'},
+    {name: 'Variables', link: 'variables', icon: 'view_module'},
     {name: 'User Access', link: 'access', icon: 'supervisor_account'}
 ];
 

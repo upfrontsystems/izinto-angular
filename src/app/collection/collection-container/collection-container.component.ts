@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {Collection} from '../../_models/collection';
+import {Collection, CollectionLinks} from '../../_models/collection';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
@@ -29,6 +29,7 @@ export class CollectionContainerComponent implements OnInit {
     ];
     isAdmin = false;
     canEdit = false;
+    collectionLinks = CollectionLinks;
     mobileQuery: MediaQueryList;
     private readonly _mobileQueryListener: () => void;
 

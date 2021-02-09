@@ -1,0 +1,5 @@
+.page-title {
+    max-width: 90vw;
+    overflow: auto;
+    text-overflow: ellipsis;
+}

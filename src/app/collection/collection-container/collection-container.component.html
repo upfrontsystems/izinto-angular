@@ -6,20 +6,10 @@
     </div>
 
     <nav mat-tab-nav-bar class="m-r-15" *ngIf="canEdit && mobileQuery.matches">
-        <a mat-tab-link [routerLinkActive]="'preview'"
-           [routerLink]="['/collections',  collection?.id || 0]">
-            <mat-icon class="m-r-5">preview</mat-icon>
-            View
-        </a>
-        <a mat-tab-link [routerLinkActive]="'active'"
-           [routerLink]="['/collections', collection?.id || 0, 'variables']">
-            <mat-icon class="m-r-5">view_module</mat-icon>
-            Variables
-        </a>
-        <a mat-tab-link [routerLinkActive]="'active'"
-           [routerLink]="['/collections', collection?.id || 0, 'access']">
-            <mat-icon class="m-r-5">supervisor_account</mat-icon>
-            User Access
+        <a mat-tab-link *ngFor="let tab of collectionLinks" [routerLinkActive]="'active'"
+            [routerLink]="['/collections', collection?.id || 0, tab.link]">
+            <mat-icon class="m-r-5">{{tab.icon}}</mat-icon>
+            {{tab.name}}
         </a>
     </nav>
 </div>
