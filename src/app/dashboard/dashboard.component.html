@@ -19,7 +19,8 @@
                                 [dashboardId]="dashboard.id" [addedChart]="addedChart" [variables]="dashboard.variables"
                                 [dataSources]="dataSources" [userAccess]="dashboard.user_access"></app-chart-list>
 
-                <app-script-container [dashboard]="dashboard" *ngIf="dashboard.type == 'new'"></app-script-container>
+                <app-script-container *ngIf="dashboard.type == 'new'"
+                    [dashboard]="dashboard" [collection]="collection"></app-script-container>
             </mat-card-content>
 
         </mat-card>

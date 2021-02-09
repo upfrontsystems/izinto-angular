@@ -130,7 +130,9 @@ export class DashboardVariableComponent implements OnInit, AfterViewInit {
     refresh() {
         this.dataSource.data = this.dataSource.sortData(this.variables, this.sort);
         // update variables on cached dashboard
-        this.dashboard.variables = this.variables;
-        this.dashboardService.setCurrentDashboard(this.dashboard);
+        if (this.dashboard) {
+            this.dashboard.variables = this.variables;
+            this.dashboardService.setCurrentDashboard(this.dashboard);
+        }
     }
 }

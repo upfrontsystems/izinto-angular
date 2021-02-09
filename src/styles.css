@@ -53,3 +53,7 @@ mat-expansion-panel.mat-toolbar .mat-expansion-panel-body {
 .mat-suffix-subscript .mat-form-field-suffix {
     align-self: flex-end;
 }
+
+.overflow-hidden {
+    overflow: hidden;
+}

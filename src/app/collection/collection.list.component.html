@@ -3,7 +3,7 @@
          fxLayoutAlign="space-between stretch" class="hover-row"
          *ngFor="let collection of collections; let i = index">
 
-        <mat-card>
+        <mat-card class="overflow-hidden">
             <div class="image-container" (click)="routeTo(collection)">
                 <img *ngIf="collection.image" mat-card-image [src]="collection.image"
                      alt="Collection">

@@ -16,6 +16,8 @@ import {QueryBaseComponent} from './query.base.component';
 import {AlertService} from '../_services/alert.service';
 import {DataSourceService} from '../_services/data.source.service';
 import {DashboardView} from '../_models/dashboard_view';
+import { Collection } from '../_models/collection';
+import { CollectionService } from '../_services/collection.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -25,6 +27,7 @@ import {DashboardView} from '../_models/dashboard_view';
 export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
     dashboard: Dashboard;
+    collection: Collection;
     dataSources: DataSource[];
     dateViews: DashboardView[] = [];
     isAdmin = false;
@@ -60,6 +63,7 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
                 protected dialog: MatDialog,
                 protected authService: AuthenticationService,
                 protected copyService: CopyService,
+                protected collectionService: CollectionService,
                 protected dashboardService: DashboardService,
                 protected dataSourceService: DataSourceService) {
         super(authService, dashboardService);
@@ -100,6 +104,12 @@ export class DashboardComponent extends QueryBaseComponent implements OnInit {
 
     setDashboard(dashboard) {
         this.dashboard = dashboard;
+        // load collection and collection variables
+        if (this.dashboard.collection_id && this.dashboard.type === 'new') {
+            this.collectionService.getById(this.dashboard.collection_id).subscribe(resp => {
+                this.collection = resp;
+            });
+        }
         this.variables = this.dashboard.variables;
         // check user permission
         this.isAdmin = this.isAdmin || this.dashboard.user_access.role === 'Administrator';

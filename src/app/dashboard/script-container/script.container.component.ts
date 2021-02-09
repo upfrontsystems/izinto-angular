@@ -7,6 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {QueryBaseComponent} from '../query.base.component';
 import {AuthenticationService} from '../../_services/authentication.service';
 import {DashboardService} from '../../_services/dashboard.service';
+import { Collection } from '../../_models/collection';
 
 @Component({
     selector: 'app-script-container',
@@ -16,6 +17,7 @@ import {DashboardService} from '../../_services/dashboard.service';
 export class ScriptContainerComponent extends QueryBaseComponent implements OnInit {
 
     @ViewChild('iframe') iframe;
+    @Input() collection: Collection;
     @Input() dashboard: Dashboard;
     contentURL: SafeResourceUrl;
 
@@ -62,6 +64,12 @@ export class ScriptContainerComponent extends QueryBaseComponent implements OnIn
         if (this.iframe && this.iframe.nativeElement.contentWindow) {
             // format variables to dict
             const variables = {};
+            // include collection variables
+            if (this.collection) {
+                for (const item of this.collection.variables) {
+                    variables[item.name] = item;
+                }
+            }
             for (const item of this.dashboard.variables) {
                 variables[item.name] = item;
             }

@@ -4,7 +4,7 @@
              fxLayoutAlign="space-between stretch" cdkDrag [cdkDragData]="dashboard"
              [cdkDragDisabled]="!canEdit(dashboard)" cdkDragBoundary=".rowgroup">
 
-                <mat-card class="card-list">
+                <mat-card class="card-list overflow-hidden">
                     <div class="image-container" (click)="routeTo(dashboard)">
                         <img *ngIf="dashboard.image" mat-card-image [src]="dashboard.image"
                              alt="Collection">
