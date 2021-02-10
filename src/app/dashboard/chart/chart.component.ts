@@ -39,13 +39,14 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     datesUpdated: Subscription;
     groupByValues = {};
     private dataSets = [];
-    private scales = [];
     private chartHeight = 250;
     private chartWidth = 1200;
     private innerWidth = 0;
     private innerHeight = 0;
     private legendHeight = 30;
-    private margin = {top: 50, right: 10, bottom: 20, left: 40};
+    private margin = {top: 50, right: 10, bottom: 20, left: 50};
+    localMin = 0;
+    localMax = 1.5;
 
     constructor(protected dialog: MatDialog,
                 protected authService: AuthenticationService,
@@ -141,50 +142,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         this.groupByValues['30d'] = 30 * secondsPerUnit['d'];
     }
 
-    setChartDimensions() {
-        // default height of 250
-        this.chartHeight = this.chart.height || 200;
-        this.windowWidth = window.innerWidth;
-        // smaller legend font size on mobile
-        let charWidth = 10;
-        if (this.windowWidth > MobileBreakpoint) {
-            this.chartWidth = this.windowWidth - 130;
-        } else {
-            this.chartWidth = this.windowWidth - 30;
-            charWidth = 8;
-        }
-        this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
-
-        // calculate number of legend rows
-        const labels = this.buildLegendLabels();
-        let legendRows = 1,
-            xOffset = 0;
-        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
-            const dataset = this.dataSets[dix];
-            if (dataset.length === 0) {
-                continue;
-            }
-            const header = dataset[0].header,
-                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
-                rectWidth = charWidth,
-                recordValueWidth = 8 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
-                labelWidth = fieldName.length * charWidth,
-                legendWidth = rectWidth + labelWidth + recordValueWidth;
-
-            xOffset += legendWidth;
-            // count next row
-            if ((dix < this.dataSets.length - 1) && (xOffset + legendWidth) > this.chartWidth) {
-                xOffset = 0;
-                legendRows += 1;
-            }
-        }
-
-        this.legendHeight = legendRows * (charWidth * 2.5);
-        this.chartHeight += this.legendHeight;
-        this.margin.bottom = 20 + this.legendHeight;
-        this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
-    }
-
     editChart() {
         const dialogRef = this.dialog.open(ChartDialogComponent, {
             width: '600px',
@@ -260,7 +217,6 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
 
     loadDataSet() {
         this.dataSets.length = 0;
-        this.scales = [];
         d3.selectAll('div.svg-container').remove();
         let query = this.chart.query;
         query = this.formatQuery(query, this.chart.group_by, this.chart.data_source);
@@ -337,6 +293,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     buildChart() {
+        this.setMinMax();
         this.setChartDimensions();
         if (this.chart.type === 'Line') {
             this.lineChart(this.dataSets);
@@ -347,6 +304,69 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         } else {
             this.barChart(this.dataSets);
         }
+    }
+
+    setMinMax() {
+        const dataset = this.arrayUnique([].concat.apply([], this.visibleSeries(this.dataSets))
+            ).sort((a, b) => a.date - b.date);
+        let ymin = this.chart.min,
+            ymax = this.chart.max;
+        if (ymin === null) {
+            ymin = d3Array.min<number>(dataset.map(d => d.value));
+        }
+        if (ymax === null) {
+            ymax = d3Array.max<number>(dataset.map(d => d.value));
+        }
+        // default chart min and max values
+        this.localMin = ymin === undefined ? 0 : ymin;
+        this.localMax = (ymax === undefined ? 1.5 : ymax);
+    }
+
+    setChartDimensions() {
+        // default height of 200
+        this.chartHeight = this.chart.height || 200;
+        this.windowWidth = window.innerWidth;
+        // smaller legend font size on mobile
+        let charWidth = 10;
+        if (this.windowWidth > MobileBreakpoint) {
+            this.chartWidth = this.windowWidth - 140;
+        } else {
+            this.chartWidth = this.windowWidth - 40;
+            charWidth = 8;
+        }
+        // set left margin depending on dataset value max width
+        const charMargin = ((this.localMax.toString()).length * (charWidth * 0.8));
+        this.margin.left = Math.max(charMargin, this.margin.left);
+        this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
+
+        // calculate number of legend rows
+        const labels = this.buildLegendLabels();
+        let legendRows = 1,
+            xOffset = 0;
+        for (let dix = 0; dix < this.dataSets.length; dix += 1) {
+            const dataset = this.dataSets[dix];
+            if (dataset.length === 0) {
+                continue;
+            }
+            const header = dataset[0].header,
+                fieldName = labels[header] || labels[dix] || (this.dataSets.length === 1 ? dataset[0].fieldName : header),
+                rectWidth = charWidth,
+                recordValueWidth = 8 * charWidth + (this.chart.unit || '').length * charWidth + this.chart.decimals * charWidth,
+                labelWidth = fieldName.length * charWidth,
+                legendWidth = rectWidth + labelWidth + recordValueWidth;
+
+            xOffset += legendWidth;
+            // count next row
+            if ((dix < this.dataSets.length - 1) && (xOffset + legendWidth) > this.chartWidth) {
+                xOffset = 0;
+                legendRows += 1;
+            }
+        }
+
+        this.legendHeight = legendRows * (charWidth * 2.5);
+        this.chartHeight += this.legendHeight;
+        this.margin.bottom = 20 + this.legendHeight;
+        this.innerHeight = this.chartHeight - this.margin.top - this.margin.bottom;
     }
 
     visibleSeries(dataSets) {
@@ -362,18 +382,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         );
     }
 
-    yScale(dataset, ascending = true) {
-        let ymin = this.chart.min,
-            ymax = this.chart.max;
-        if (ymin === null) {
-            ymin = d3Array.min<number>(dataset.map(d => d.value));
-        }
-        if (ymax === null) {
-            ymax = d3Array.max<number>(dataset.map(d => d.value));
-        }
-        // default chart min and max values
-        ymin = ymin === undefined ? 0 : ymin;
-        ymax = ymax === undefined ? 1.5 : ymax;
+    yScale(ascending = true) {
+        let ymin = this.localMin,
+            ymax = this.localMax;
 
         // add pixel space below for arrows
         if (this.chart.type === 'Wind Arrow') {
@@ -577,7 +588,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (!this.dataSets.length) {
             tickCount = 2;
         }
-        const gridLines = d3Axis.axisLeft(yScale).ticks(tickCount, 's').tickSize(-this.innerWidth);
+        const gridLines = d3Axis.axisLeft(yScale).ticks(tickCount).tickSize(-this.innerWidth);
 
         svg.selectAll('g.grid > *').remove();
         svg.select('g.grid')
@@ -587,7 +598,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
                 .style('font-size', '11px')
-                .attr('x', -15))
+                .attr('x', -23))
             .call(g => g.select('.domain')
                 .remove());
     }
@@ -752,9 +763,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     barChart(dataSet) {
-        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
-            xAxisScale = this.xAxisScale(),
-            yScale = this.yScale(merged);
+        const xAxisScale = this.xAxisScale(),
+            yScale = this.yScale();
 
         let svg = d3.select('svg.chart-' + this.chart.id + ' > g'),
             barChart = svg.select('g.chart-' + this.chart.id);
@@ -791,7 +801,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         // add x axis
         this.addXAxis(svg, xAxisScale);
         // add grid
-        this.addGrid(svg, this.yScale(merged, false));
+        this.addGrid(svg, this.yScale(false));
 
         const fillFunc = this.chart.fillFunc,
             colors = (this.chart.color || '').split(',');
@@ -833,8 +843,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     }
 
     lineChart(dataSet) {
-        const merged = this.arrayUnique([].concat.apply([], this.visibleSeries(dataSet))).sort((a, b) => a.date - b.date),
-            yScale = this.yScale(merged, false),
+        const yScale = this.yScale(false),
             xAxisScale = this.xAxisScale();
 
         const line = d3Shape.line<Record>()
