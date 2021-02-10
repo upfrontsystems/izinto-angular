@@ -331,7 +331,9 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (this.windowWidth > MobileBreakpoint) {
             this.chartWidth = this.windowWidth - 140;
         } else {
-            this.chartWidth = this.windowWidth - 40;
+            this.chartWidth = this.windowWidth - 20;
+            this.margin.left = 60;
+            this.margin.right = 10;
             charWidth = 8;
         }
         // set left margin depending on dataset value max width
@@ -588,6 +590,10 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
         if (!this.dataSets.length) {
             tickCount = 2;
         }
+        let fontSize = 11;
+        if (this.windowWidth <= MobileBreakpoint) {
+            fontSize = 9;
+        }
         const gridLines = d3Axis.axisLeft(yScale).ticks(tickCount).tickSize(-this.innerWidth);
 
         svg.selectAll('g.grid > *').remove();
@@ -597,8 +603,8 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
                 .attr('stroke-opacity', 0.5)
                 .attr('stroke-dasharray', '2,2'))
             .call(g => g.selectAll('.tick text')
-                .style('font-size', '11px')
-                .attr('x', -23))
+                .style('font-size', fontSize + 'px')
+                .attr('x', -fontSize * 2))
             .call(g => g.select('.domain')
                 .remove());
     }
@@ -607,11 +613,15 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     addXAxis(svg, xAxisScale) {
         const interval = this.calcTickCount(this.innerWidth),
             tickFormat = this.tickFormat();
+        let fontSize = 11;
+        if (this.windowWidth <= MobileBreakpoint) {
+            fontSize = 9;
+        }
 
         svg.selectAll('g.x-axis').remove();
         svg.append('g')
             .attr('class', 'x-axis')
-            .style('font-size', '11px')
+            .style('font-size', fontSize + 'px')
             .attr('transform', 'translate(0,' + this.innerHeight + ')')
             .call(d3Axis.axisBottom(xAxisScale)
                 .ticks(interval)
