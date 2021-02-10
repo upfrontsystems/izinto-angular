@@ -44,7 +44,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
     private innerWidth = 0;
     private innerHeight = 0;
     private legendHeight = 30;
-    private margin = {top: 50, right: 10, bottom: 20, left: 50};
+    private margin = {top: 50, right: 20, bottom: 20, left: 50};
     localMin = 0;
     localMax = 1.5;
 
@@ -335,7 +335,7 @@ export class ChartComponent extends QueryBaseComponent implements OnInit, OnDest
             charWidth = 8;
         }
         // set left margin depending on dataset value max width
-        const charMargin = ((this.localMax.toString()).length * (charWidth * 0.8));
+        const charMargin = Math.min(((this.localMax.toString()).length * (charWidth * 0.8)), 80);
         this.margin.left = Math.max(charMargin, this.margin.left);
         this.innerWidth = this.chartWidth - this.margin.left - this.margin.right;
 
