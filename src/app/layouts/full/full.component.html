@@ -52,12 +52,11 @@
             <!-- ============================================================== -->
             <!-- settings dropdown -->
             <!-- ============================================================== -->
-            <button *ngIf="authService.hasRole('Administrator')" [matMenuTriggerFor]="settings"
-                    mat-icon-button class="ml-xs overflow-visible">
+            <button [matMenuTriggerFor]="settings" mat-icon-button class="ml-xs overflow-visible">
                 <mat-icon>settings</mat-icon>
             </button>
             <mat-menu #settings="matMenu" class="mymegamenu">
-                <button mat-menu-item [routerLink]="['/users']">
+                <button mat-menu-item [routerLink]="['/users']" *ngIf="authService.hasRole('Administrator')">
                     <mat-icon>people_alt</mat-icon>
                     Users
                 </button>
