@@ -2,9 +2,8 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {DataSource} from '../_models/data.source';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import {ActivatedRoute} from '@angular/router';
 import {DataSourceService} from '../_services/data.source.service';
 import {DataSourceDialogComponent} from '../data-source/data.source.dialog.component';
 
@@ -15,7 +14,7 @@ import {DataSourceDialogComponent} from '../data-source/data.source.dialog.compo
 })
 export class DataSourceComponent implements OnInit, AfterViewInit  {
 
-    dataSources: DataSource[];
+    dataSources: DataSource[] = [];
     dataSource = new MatTableDataSource<DataSource>(this.dataSources);
     displayedColumns: string[] = ['name', 'type', 'url', 'database', 'action'];
     fabButtons = [
@@ -28,12 +27,12 @@ export class DataSourceComponent implements OnInit, AfterViewInit  {
     @ViewChild(MatSort, {static: true}) sort: MatSort;
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
-    constructor(private route: ActivatedRoute,
-                private dataSourceService: DataSourceService,
+    constructor(private dataSourceService: DataSourceService,
                 public dialog: MatDialog) {
     }
 
     ngOnInit() {
+        this.sort.sort(({ id: 'name', start: 'asc'}) as MatSortable);
         this.dataSource.sort = this.sort;
         this.getDataSources();
     }
