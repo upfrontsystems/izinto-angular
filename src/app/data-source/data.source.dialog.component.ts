@@ -12,7 +12,7 @@ import {DataSourceService} from '../_services/data.source.service';
 export class DataSourceDialogComponent implements OnInit {
     public form: FormGroup;
     state: string;
-    dataSourceTypes = ['InfluxDB'];
+    dataSourceTypes = ['HTTP', 'InfluxDB'];
 
     constructor(
         public dialogRef: MatDialogRef<DataSourceDialogComponent>,
@@ -32,7 +32,8 @@ export class DataSourceDialogComponent implements OnInit {
             url: this.dataSource.url,
             username: this.dataSource.username,
             password: this.dataSource.password,
-            database: this.dataSource.database
+            database: this.dataSource.database,
+            request: this.dataSource.request
         });
 
         this.onFormChanges();

@@ -21,10 +21,18 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value != 'HTTP'">
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="URL" [formControl]="form.get('url')"
                            autocomplete="off">
+                </mat-form-field>
+            </div>
+
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value == 'HTTP'">
+                <mat-form-field>
+                    <mat-label>Request</mat-label>
+                    <textarea matInput rows="4" [formControl]="form.get('request')">
+                    </textarea>
                 </mat-form-field>
             </div>
 

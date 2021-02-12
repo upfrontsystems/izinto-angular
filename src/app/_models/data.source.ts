@@ -6,4 +6,5 @@ export class DataSource {
     username: string;
     password: string;
     database: string;
+    request: string;
 }
