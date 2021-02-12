@@ -4,6 +4,9 @@
         <div fxLayout="row wrap">
 
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+                <small *ngIf="form.get('name').hasError('required') && form.get('name').touched"
+                        class="text-danger support-text">Data source name required.
+                </small>
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="Name" [formControl]="form.get('name')"
                            autocomplete="off">
@@ -21,6 +24,17 @@
                 </mat-form-field>
             </div>
 
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value == 'HTTP'">
+                <small *ngIf="form.get('request').hasError('json') && form.get('request').touched"
+                        class="text-danger support-text">Valid JSON format required.
+                </small>
+                <mat-form-field>
+                    <mat-label>Request Config</mat-label>
+                    <textarea matInput rows="8" [formControl]="form.get('request')">
+                    </textarea>
+                </mat-form-field>
+            </div>
+
             <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value != 'HTTP'">
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="URL" [formControl]="form.get('url')"
@@ -28,29 +42,21 @@
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value == 'HTTP'">
-                <mat-form-field>
-                    <mat-label>Request</mat-label>
-                    <textarea matInput rows="4" [formControl]="form.get('request')">
-                    </textarea>
-                </mat-form-field>
-            </div>
-
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value != 'HTTP'">
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="Username"
                            [formControl]="form.get('username')" autocomplete="new-password">
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value != 'HTTP'">
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="Password"
                            [formControl]="form.get('password')" autocomplete="new-password">
                 </mat-form-field>
             </div>
 
-            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+            <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100" *ngIf="form.controls['type'].value != 'HTTP'">
                 <mat-form-field style="width: 100%">
                     <input matInput placeholder="Database" [formControl]="form.get('database')"
                            autocomplete="off">

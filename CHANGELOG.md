@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.9
+Issue Fixes
+=======
+* [#230](https://github.com/upfrontsystems/izinto-angular/issues/230) Add request config to data source
+
 ## 0.8
 Issue Fixes
 =======

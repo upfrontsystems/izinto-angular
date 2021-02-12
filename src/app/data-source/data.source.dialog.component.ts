@@ -1,8 +1,9 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DataSource} from '../_models/data.source';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {DataSourceService} from '../_services/data.source.service';
+import { CustomValidators } from 'ng2-validation';
 
 @Component({
   selector: 'app-data-source-dialog',
@@ -27,13 +28,13 @@ export class DataSourceDialogComponent implements OnInit {
 
         this.form = this.fb.group({
             id: this.dataSource.id,
-            name: this.dataSource.name,
+            name: [this.dataSource.name, Validators.required],
             type: this.dataSource.type,
             url: this.dataSource.url,
             username: this.dataSource.username,
             password: this.dataSource.password,
             database: this.dataSource.database,
-            request: this.dataSource.request
+            request: [this.dataSource.request, CustomValidators.json]
         });
 
         this.onFormChanges();
