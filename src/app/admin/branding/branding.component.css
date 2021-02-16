@@ -1,0 +1,75 @@
+
+.image-drop-zone {
+    border: dotted 2px #dadada;
+    background-color: aliceblue !important;
+    min-height: 200px;
+    line-height: 200px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.nv-file-over {
+    border: dotted 2px cadetblue;
+}
+
+.image-preview {
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    height: auto !important;
+}
+
+.mat-card {
+    width: 100%;
+}
+
+.mat-card-header.card-list-header {
+    padding: 0;
+}
+
+.mat-card-title {
+    padding-left: 30px;
+    padding-top: 5px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 19px !important;
+    word-wrap: break-word;
+    cursor: pointer;
+}
+
+.mat-card-subtitle {
+    padding: 0 20px 15px 30px;
+}
+
+img.mat-card-image {
+    width: 100%;
+    height: auto;
+    margin-top: 0 !important;
+    background-position: center;
+    background-size: cover;
+}
+
+.image-container {
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.mat-card-content.placeholder {
+    width: 100%;
+    height: 0;
+    padding-top: 50%;
+    position: relative;
+    padding-bottom: 13%;
+    margin-bottom: 6px;
+    border-radius: 4px 4px 0 0;
+}
+
+.placeholder .mat-icon {
+    font-size: 9rem;
+    color: white;
+    line-height: 9rem;
+    width: auto;
+    height: 9rem;
+    margin-top: -50%;
+}

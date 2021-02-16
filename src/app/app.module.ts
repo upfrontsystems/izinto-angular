@@ -15,7 +15,6 @@ import {AppComponent} from './app.component';
 import {AppBlankComponent} from './layouts/blank/blank.component';
 import {AppHeaderComponent} from './layouts/full/header/header.component';
 import {AppSidebarComponent} from './layouts/full/sidebar/sidebar.component';
-import {AdminComponent} from './admin/admin.component';
 import {AlertService} from './_services/alert.service';
 import {ChartComponent} from './dashboard/chart/chart.component';
 import {ChartDialogComponent} from './dashboard/chart/chart.dialog.component';
@@ -61,6 +60,7 @@ import {UserAccessComponent} from './shared/user-access/user.access.component';
 import {UserAccessDialogComponent} from './shared/user-access/user.access.dialog.component';
 import { CollectionContainerComponent } from './collection/collection-container/collection-container.component';
 import { CollectionVariableComponent } from './collection/collection-variable/collection-variable.component';
+import { BrandingComponent } from './admin/branding/branding.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
@@ -86,7 +86,6 @@ export class HammerConfig extends HammerGestureConfig {
 
 @NgModule({
     declarations: [
-        AdminComponent,
         AppComponent,
         AppHeaderComponent,
         AppBlankComponent,
@@ -127,7 +126,8 @@ export class HammerConfig extends HammerGestureConfig {
         UserAccessComponent,
         UserAccessDialogComponent,
         CollectionContainerComponent,
-        CollectionVariableComponent
+        CollectionVariableComponent,
+        BrandingComponent
     ],
     imports: [
         AppRoutes,

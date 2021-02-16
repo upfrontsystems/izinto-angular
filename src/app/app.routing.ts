@@ -1,6 +1,5 @@
 import {RouterModule, Routes} from '@angular/router';
 
-import {AdminComponent} from './admin/admin.component';
 import {AuthGuard} from './_guards/auth.guard';
 import {Role} from './_models/role';
 import {FullComponent} from './layouts/full/full.component';
@@ -21,6 +20,7 @@ import {DashboardUserAccessComponent} from './dashboard/dashboard-user-access/da
 import {CollectionUserAccessComponent} from './collection/collection-user-access/collection.user.access.component';
 import {CollectionContainerComponent} from './collection/collection-container/collection-container.component';
 import { CollectionVariableComponent } from './collection/collection-variable/collection-variable.component';
+import { BrandingComponent } from './admin/branding/branding.component';
 
 const appRoutes: Routes = [
     {
@@ -99,8 +99,14 @@ const appRoutes: Routes = [
             },
             {
                 path: 'admin',
-                component: AdminComponent,
-                data: {roles: [Role.Administrator]}
+                data: {roles: [Role.Administrator]},
+                children: [
+                    {
+                        path: 'branding',
+                        component: BrandingComponent,
+                        pathMatch: 'full'
+                    }
+                ]
             },
             {
                 path: 'users',

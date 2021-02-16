@@ -64,6 +64,10 @@
                     <mat-icon>table_chart</mat-icon>
                     Data Sources
                 </button>
+                <button mat-menu-item [routerLink]="['/admin/branding']" *ngIf="authService.hasRole('Administrator')">
+                    <mat-icon>api</mat-icon>
+                    Branding
+                </button>
             </mat-menu>
         </ng-container>
         <!-- mobile menu for dashboard -->
