@@ -1,7 +1,7 @@
 <mat-card>
     <mat-card-content>
 
-        <h3>Edit Host name and branding</h3>
+        <h3>Edit hostname and branding</h3>
         <div class="p-30" *ngIf="form">
             <div [formGroup]="form" autocomplete="off">
                 <div fxLayout="row wrap" fxLayoutAlign="center center">
@@ -15,43 +15,43 @@
                     <div fxFlex.gt-sm="80" fxFlex="100">
                         <mat-label>Favicon</mat-label>
                         <div *ngIf="!form.get('favicon').value" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                             (onFileDrop)="dropped($event, 'favicon')" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"
+                             (onFileDrop)="dropped($event, 'favicon')" (fileOver)="fileOverBase($event)" (click)="favInput.click()"
                              [uploader]="uploader"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone">
                             Image Upload
                         </div>
-                        <img [src]="form.get('favicon').value" (click)="fileInput.click()" *ngIf="form.get('favicon').value"
+                        <img [src]="form.get('favicon').value" (click)="favInput.click()" *ngIf="form.get('favicon').value"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone image-preview">
-                        <input #fileInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
-                               (change)="imageSelected(fileInput.files, 'favicon')" accept='image/*'/>
+                        <input #favInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
+                               (change)="imageSelected(favInput.files, 'favicon')" accept='image/*'/>
                     </div>
 
                     <div fxFlex.gt-sm="80" fxFlex="100">
                         <mat-label>Logo</mat-label>
                         <div *ngIf="!form.get('logo').value" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                             (onFileDrop)="dropped($event, 'logo')" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"
+                             (onFileDrop)="dropped($event, 'logo')" (fileOver)="fileOverBase($event)" (click)="logoInput.click()"
                              [uploader]="uploader"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone">
                             Image Upload
                         </div>
-                        <img [src]="form.get('logo').value" (click)="fileInput.click()" *ngIf="form.get('logo').value"
+                        <img [src]="form.get('logo').value" (click)="logoInput.click()" *ngIf="form.get('logo').value"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone image-preview">
-                        <input #fileInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
-                               (change)="imageSelected(fileInput.files, 'logo')" accept='image/*'/>
+                        <input #logoInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
+                               (change)="imageSelected(logoInput.files, 'logo')" accept='image/*'/>
                     </div>
 
                     <div fxFlex.gt-sm="80" fxFlex="100">
                         <mat-label>Banner</mat-label>
                         <div *ngIf="!form.get('banner').value" ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                             (onFileDrop)="dropped($event, 'banner')" (fileOver)="fileOverBase($event)" (click)="fileInput.click()"
+                             (onFileDrop)="dropped($event, 'banner')" (fileOver)="fileOverBase($event)" (click)="bannerInput.click()"
                              [uploader]="uploader"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone">
                             Image Upload
                         </div>
-                        <img [src]="form.get('banner').value" (click)="fileInput.click()" *ngIf="form.get('banner').value"
+                        <img [src]="form.get('banner').value" (click)="bannerInput.click()" *ngIf="form.get('banner').value"
                              class="py-5 mb-3 text-center font-medium-5 text-uppercase grey image-drop-zone image-preview">
-                        <input #fileInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
-                               (change)="imageSelected(fileInput.files, 'banner')" accept='image/*'/>
+                        <input #bannerInput type="file" style="display:none;" ng2FileSelect [uploader]="uploader"
+                               (change)="imageSelected(bannerInput.files, 'banner')" accept='image/*'/>
                     </div>
                 </div>
             </div>

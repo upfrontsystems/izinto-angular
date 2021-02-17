@@ -1,6 +1,6 @@
 import { Inject, OnDestroy, Component, OnInit } from '@angular/core';
 import {Location} from '@angular/common';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FileUploader } from 'ng2-file-upload';
 import { Subject } from 'rxjs';
 import { CollectionDialogComponent } from '../../collection/collection.dialog.component';
@@ -37,10 +37,12 @@ export class BrandingComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.brandingService.getById(1).subscribe(resp => {
+        // find branding linked to admin user
+        this.brandingService.search({user_id: true}).subscribe(resp => {
             this.branding = resp;
             const formData = {
-                hostname: this.branding.hostname,
+                id: this.branding.id,
+                hostname: [this.branding.hostname, Validators.required],
                 favicon: this.branding.favicon,
                 logo: this.branding.logo,
                 banner: this.branding.banner
@@ -67,41 +69,18 @@ export class BrandingComponent implements OnInit, OnDestroy {
         if (files.length === 0) {
             return;
         }
-
-        // get image data and format to match size constraints
-        const reader = new FileReader();
-        const type = files[0].type;
-        reader.readAsDataURL(files[0]);
-        reader.onload = () => {
-            const img = new Image();
-            img.src = reader.result.toString();
-            img.onload = () => {
-                const elem = document.createElement('canvas');
-                elem.width = this.maxDimensions.width;
-                elem.height = this.maxDimensions.height;
-
-                let width = img.width;
-                let height = img.height;
-                if (width > height) {
-                    width = this.maxDimensions.width * width / height;
-                    height = this.maxDimensions.height;
-                } else {
-                    height = this.maxDimensions.height * height / width;
-                    width = this.maxDimensions.width;
-                }
-                const widthOffset = (this.maxDimensions.width - width) / 2;
-                const heightOffset = (this.maxDimensions.height - height) / 2;
-
-                const ctx = elem.getContext('2d');
-                // resize and crop image
-                ctx.drawImage(img, widthOffset, heightOffset, width, height);
-                this.form.controls[field].setValue(ctx.canvas.toDataURL(type, 1));
-            };
-        };
+        this.form.controls[field].setValue(files[0]);
     }
 
     updateBranding() {
-        this.brandingService.edit(this.form.value).subscribe(resp => {
+        const formData = new FormData();
+        formData.append('id', this.form.get('id').value);
+        formData.append('hostname', this.form.get('hostname').value);
+        formData.append('favicon', this.form.get('favicon').value);
+        formData.append('logo', this.form.get('logo').value);
+        formData.append('banner', this.form.get('banner').value);
+
+        this.brandingService.edit(formData).subscribe(resp => {
             this.location.back();
         });
     }

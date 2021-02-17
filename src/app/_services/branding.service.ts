@@ -11,11 +11,19 @@ export class BrandingService {
     }
 
     getById(id) {
-        return this.http.get<Branding>(`/api/collections/` + id);
+        return this.http.get<Branding>(`/api/branding/` + id);
     }
 
-    edit(collection) {
-        return this.http.put<Branding>(`/api/collections/` + collection.id, collection);
+    search(filters) {
+        return this.http.get<Branding>(`/api/branding/search`, {params: filters});
+    }
+
+    add(branding) {
+        return this.http.post<Branding>('/api/branding', branding);
+    }
+
+    edit(branding) {
+        return this.http.put<Branding>(`/api/branding/` + branding.id, branding);
     }
 
 }
