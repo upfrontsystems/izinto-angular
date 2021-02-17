@@ -22,8 +22,8 @@ export class BrandingService {
         return this.http.post<Branding>('/api/branding', branding);
     }
 
-    edit(branding) {
-        return this.http.put<Branding>(`/api/branding/` + branding.id, branding);
+    edit(brandingId, branding) {
+        return this.http.put<Branding>(`/api/branding/` + brandingId, branding);
     }
 
 }
