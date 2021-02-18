@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 Issue Fixes
 =======
 * [#230](https://github.com/upfrontsystems/izinto-angular/issues/230) Add request config to data source
+* [#160](https://github.com/upfrontsystems/izinto-angular/issues/160) Add branding page
 
 ## 0.8
 Issue Fixes

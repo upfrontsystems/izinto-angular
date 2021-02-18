@@ -27,6 +27,8 @@ export class BrandingComponent implements OnInit, OnDestroy {
     hasBaseDropZoneOver = false;
     previews = {};
     maxDimensions = ImageDimensions;
+    imageFields = ['favicon', 'logo', 'logo_mobile', 'banner'];
+    imageLabels = {'favicon': 'Favicon', 'logo': 'Logo', 'logo_mobile': 'Mobile Logo', 'banner': 'Banner'}
     protected _onDestroy = new Subject<void>();
 
     constructor(
@@ -40,14 +42,16 @@ export class BrandingComponent implements OnInit, OnDestroy {
         // find branding linked to admin user
         this.brandingService.search({ user_id: true }).subscribe(resp => {
             this.branding = resp;
-            this.previews['favicon'] = 'data:image/png;base64,' + this.branding.favicon;
-            this.previews['logo'] = 'data:image/png;base64,' + this.branding.logo;
-            this.previews['banner'] = 'data:image/png;base64,' + this.branding.banner;
+            console.log(this.branding);
+            for (const field of this.imageFields) {
+                this.previews[field] = 'data:image/png;base64,' + this.branding[field];
+            }
             const formData = {
                 id: this.branding.id,
                 hostname: [this.branding.hostname, Validators.required],
                 favicon: this.branding.favicon,
                 logo: this.branding.logo,
+                logo_mobile: this.branding.logo_mobile,
                 banner: this.branding.banner
             };
             this.form = this.fb.group(formData);
@@ -88,14 +92,10 @@ export class BrandingComponent implements OnInit, OnDestroy {
         const formData = new FormData();
         formData.append('id', this.form.get('id').value);
         formData.append('hostname', this.form.get('hostname').value);
-        if (this.form.get('favicon').value !== this.branding.favicon) {
-            formData.append('favicon', this.form.get('favicon').value);
-        }
-        if (this.form.get('logo').value !== this.branding.logo) {
-            formData.append('logo', this.form.get('logo').value);
-        }
-        if (this.form.get('banner').value !== this.branding.banner) {
-            formData.append('banner', this.form.get('banner').value);
+        for (const field of this.imageFields) {
+            if (this.form.get(field).value !== this.branding[field]) {
+                formData.append(field, this.form.get(field).value);
+            }
         }
 
         if (!this.branding.id) {
