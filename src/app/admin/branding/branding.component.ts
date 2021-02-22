@@ -42,7 +42,6 @@ export class BrandingComponent implements OnInit, OnDestroy {
         // find branding linked to admin user
         this.brandingService.search({ user_id: true }).subscribe(resp => {
             this.branding = resp;
-            console.log(this.branding);
             for (const field of this.imageFields) {
                 this.previews[field] = 'data:image/png;base64,' + this.branding[field];
             }
