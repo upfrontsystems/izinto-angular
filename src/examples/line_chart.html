@@ -1,0 +1,87 @@
+<!-- example of d3 line chart displaying query results -->
+<html>
+
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+<!-- CSS Reset -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+<!-- Milligram CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+<!-- weather icons -->
+<link rel="stylesheet" href="https://unpkg.com/weathericons@2.1.0/css/weather-icons.min.css"
+    integrity="sha384-szLUueQrzbQ7pcKT75ctBZROj4f8CTouAAhmUEYms/2Zgfxg3mwCL2avXkcKTqn+" crossorigin="" />
+
+<script type='text/javascript' src='../assets/js/time-series-chart.js'></script>
+
+<style>
+</style>
+
+<body>
+
+    <div id="example"></div>
+
+    <script type="module">
+        import 'https://d3js.org/d3-fetch.v1.min.js';
+        import 'https://d3js.org/d3-selection.v1.min.js';
+        
+        var dateSelection = {};
+
+        var chart = timeSeriesChart()
+            .x(function (d) { return formatDate.parse(d.date); })
+            .y(function (d) { return +d.price; });
+
+        var formatDate = d3.time.format("%b %Y");
+
+        // load query result
+        function loadQuery() {
+            if (!dateSelection) {
+                return;
+            }
+            var query = {
+                'query':
+                {
+                    'name': 'table_query',
+                    'values': { range: dateSelection.dateRange }
+                }
+            };
+
+            // execute query
+            window.top.postMessage(query, '*');
+        }
+
+        // build d3 table with results
+        function buildTable(response) {
+            if (!response['results']) {
+                return;
+            }
+
+            // get single series result nested in database response
+            var results = response['results'][0].series[0];
+            var data = results.values;
+            var headers = results.columns;
+
+            d3.select("#example")
+                .datum(data)
+                .call(chart);
+        }
+
+        window.addEventListener("message", receiveMessage, false);
+
+        function receiveMessage(event) {
+            // date selection updated load query
+            if (event.data.type === 'date_range_updated') {
+                dateSelection = event.data.message;
+                loadQuery();
+                // set dashboard variables
+            } else if (event.data.type === 'result') {
+                buildTable(event.data.message.result.results);
+            }
+        }
+
+        // send ready message
+        window.top.postMessage({ 'status': 'ready' }, '*');
+
+    </script>
+</body>
+
+</html>
