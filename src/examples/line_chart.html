@@ -12,7 +12,7 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <!-- <script type='text/javascript' src='../assets/js/time-series-chart.js'></script> -->
 
-    <div id="example"></div>
+    <div id="chart"></div>
 
     <script type="module">
 
@@ -29,22 +29,24 @@
                 line = d3.line().x(X).y(Y);
 
             function chart(selection) {
-                selection.each(function (data) {
+                selection.each(function (dataSet) {
 
                     // Convert data to standard representation greedily;
                     // this is needed for nondeterministic accessors.
-                    data = data.map(function (d, i) {
-                        return [xValue.call(data, d, i), yValue.call(data, d, i)];
+                    dataSet = dataSet.map(function(data) {
+                        return data.map(function (d, i) {
+                            return [xValue.call(data, d, i), yValue.call(data, d, i)];
+                        });
                     });
 
                     // Update the x-scale.
                     xScale
-                        .domain(d3.extent(data, function (d) { return d[0]; }))
+                        .domain(d3.extent(dataSet[0], function (d) { return d[0]; }))
                         .range([0, width - margin.left - margin.right]);
 
                     // Update the y-scale.
                     yScale
-                        .domain([0, d3.max(data, function (d) { return d[1]; })])
+                        .domain([0, d3.max(dataSet[0], function (d) { return d[1]; })])
                         .range([height - margin.top - margin.bottom, 0]);
 
                     var svg = d3.select(this)
@@ -58,15 +60,21 @@
 
                     svg.append('g').attr('class', 'grid');
 
-                    const linechart = svg.append('g').attr('class', 'line-chart');
-                    linechart.append('path')
-                        .datum(data)
-                        .attr('fill', 'none')
-                        .style('stroke', 'black')
-                        .style('stroke-width', '2px')
-                        .attr('class', 'line')
-                        .attr('d', line);
-
+                    dataSet.forEach((data, index) => {
+                        const ch = svg.select('g.line-chart-' + index);
+                        if (ch.empty()) {
+                            const linechart = svg.append('g').attr('class', 'line-chart-' + index);
+                            linechart.append('path')
+                                .datum(data)
+                                .attr('fill', 'none')
+                                .style('stroke', 'black')
+                                .style('stroke-width', '2px')
+                                .attr('class', 'line')
+                                .attr('d', line);
+                        } else {
+                            ch.select('path').transition(trans).attr('d', line(dataset));
+                        }
+                    });
                     svg.append('g')
                         .attr('class', 'x-axis')
                         .attr('transform', "translate(0," + yScale.range()[0] + ")")
@@ -120,9 +128,7 @@
         var dateSelection = {};
 
         var chart = timeSeriesChart()
-            .x(function (d) {
-                return new Date(d[0]);
-            })
+            .x(function (d) {return new Date(d[0]);})
             .y(function (d) { return +d[1]; });
 
         // load query result
@@ -149,12 +155,11 @@
             }
 
             // get single series result nested in database response
-            var results = response['results'][0].series[0];
-            var data = results.values;
-            var headers = results.columns;
+            var seriesList = response['results'][0].series;
+            var dataSet = seriesList.map(function(series) {return series.values});
 
-            d3.select("#example")
-                .datum(data)
+            d3.select("#chart")
+                .datum(dataSet)
                 .call(chart);
         }
 
