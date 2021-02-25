@@ -87,7 +87,53 @@
                         .attr('class', 'x-axis')
                         .attr('transform', "translate(0," + yScale.range()[0] + ")")
                         .call(xAxis);
+
+                    addLegend(svg, dataSet);
                 });
+            }
+
+            function addLegend(svg, dataSet) {
+                svg.selectAll('g.legend').remove();
+                var legendGroup = svg.append('g')
+                    .attr('class', 'legend'),
+                    chart = this,
+                    labels = [],
+                    yOffset = height - 60,
+                    xOffset = -10;
+
+                for (var dix = 0; dix < dataSet.length; dix += 1) {
+                    var data = dataSet[dix];
+                    if (dataset.length === 0) {
+                        continue;
+                    }
+                    const header = data[0].header,
+                        fieldName = dataSet.length === 1 ? data[0].fieldName : header;
+                    const padding = 5,
+                        rectWidth = charWidth,
+                        recordValueWidth = 100,
+                        labelWidth = fieldName.length * charWidth,
+                        legendWidth = rectWidth + labelWidth + recordValueWidth;
+                    const seriesLegend = legendGroup.append('g')
+                        .style('font-size', '12px')
+                        .attr('class', 'series-legend')
+                        .attr('series-index', dix);
+                    let textFill = 'black',
+                        rectFill = 'black';
+                    seriesLegend.append('rect')
+                        .attr('x', xOffset)
+                        .attr('y', yOffset - 5)
+                        .attr('width', 10)
+                        .attr('height', '2')
+                        .attr('fill', rectFill);
+                    const label = seriesLegend.append('text')
+                        .style('font-weight', '400')
+                        .attr('class', 'legend-label dataset-' + dix)
+                        .attr('x', xOffset + rectWidth + padding)
+                        .attr('y', yOffset)
+                        .attr('fill', textFill)
+                        .text(fieldName + ': ');
+                    xOffset += legendWidth;
+                }
             }
 
             // The x-accessor for the path generator; xScale ∘ xValue.
