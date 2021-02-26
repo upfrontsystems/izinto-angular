@@ -10,180 +10,16 @@
 <body>
 
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    <!-- <script type='text/javascript' src='../assets/js/time-series-chart.js'></script> -->
+    <script type='text/javascript' src='../../static/js/time-series-chart.js'></script>
 
     <div id="chart"></div>
 
     <script type="module">
-
-        function timeSeriesChart() {
-            var margin = { top: 20, right: 20, bottom: 20, left: 20 },
-                width = 760,
-                height = 120,
-                xValue = function (d) { return d[0]; },
-                yValue = function (d) { return d[1]; },
-                xScale = d3.scaleTime(),
-                yScale = d3.scaleLinear(),
-                xAxis = d3.axisBottom(xScale).tickSize(6, 0),
-                area = d3.area().x(X).y1(Y),
-                line = d3.line().x(X).y(Y);
-
-            function chart(selection) {
-                selection.each(function (dataSet) {
-
-                    // Convert data to standard representation greedily;
-                    // this is needed for nondeterministic accessors.
-                    dataSet = dataSet.map(function (data) {
-                        return data.map(function (d, i) {
-                            return [xValue.call(data, d, i), yValue.call(data, d, i)];
-                        });
-                    });
-
-                    // Update the x-scale.
-                    xScale
-                        .domain(d3.extent(dataSet[0], function (d) { return d[0]; }))
-                        .range([0, width - margin.left - margin.right]);
-
-                    // Update the y-scale.
-                    yScale
-                        .domain([0, d3.max(dataSet[0], function (d) { return d[1]; })])
-                        .range([height - margin.top - margin.bottom, 0]);
-
-                    var create = svg.empty(),
-                        trans = 1000;
-                    if (create) {
-                        var svg = d3.select(this)
-                            .append('svg')
-                            .attr('viewBox', '0 0 ' + width + ' ' + height)
-                            .attr('preserveAspectRatio', 'xMidYMid meet')
-                            .attr('width', width)
-                            .attr('height', height)
-                            .append('g')
-                            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-                        svg.append('g').attr('class', 'grid');
-                    } else {
-                        d3.select(this)
-                            .attr('viewBox', '0 0 ' + width + ' ' + height)
-                            .attr('width', width)
-                            .attr('height', height);
-                    }
-
-                    dataSet.forEach((data, index) => {
-                        const ch = svg.select('g.line-chart-' + index);
-                        if (ch.empty()) {
-                            const linechart = svg.append('g').attr('class', 'line-chart-' + index);
-                            linechart.append('path')
-                                .datum(data)
-                                .attr('fill', 'none')
-                                .style('stroke', 'black')
-                                .style('stroke-width', '2px')
-                                .attr('class', 'line')
-                                .attr('d', line);
-                        } else {
-                            ch.select('path').transition(trans).attr('d', line(dataset));
-                        }
-                    });
-                    svg.append('g')
-                        .attr('class', 'x-axis')
-                        .attr('transform', "translate(0," + yScale.range()[0] + ")")
-                        .call(xAxis);
-
-                    addLegend(svg, dataSet);
-                });
-            }
-
-            function addLegend(svg, dataSet) {
-                svg.selectAll('g.legend').remove();
-                var legendGroup = svg.append('g')
-                    .attr('class', 'legend'),
-                    chart = this,
-                    labels = [],
-                    yOffset = height - 60,
-                    xOffset = -10;
-
-                for (var dix = 0; dix < dataSet.length; dix += 1) {
-                    var data = dataSet[dix];
-                    if (dataset.length === 0) {
-                        continue;
-                    }
-                    const header = data[0].header,
-                        fieldName = dataSet.length === 1 ? data[0].fieldName : header;
-                    const padding = 5,
-                        rectWidth = charWidth,
-                        recordValueWidth = 100,
-                        labelWidth = fieldName.length * charWidth,
-                        legendWidth = rectWidth + labelWidth + recordValueWidth;
-                    const seriesLegend = legendGroup.append('g')
-                        .style('font-size', '12px')
-                        .attr('class', 'series-legend')
-                        .attr('series-index', dix);
-                    let textFill = 'black',
-                        rectFill = 'black';
-                    seriesLegend.append('rect')
-                        .attr('x', xOffset)
-                        .attr('y', yOffset - 5)
-                        .attr('width', 10)
-                        .attr('height', '2')
-                        .attr('fill', rectFill);
-                    const label = seriesLegend.append('text')
-                        .style('font-weight', '400')
-                        .attr('class', 'legend-label dataset-' + dix)
-                        .attr('x', xOffset + rectWidth + padding)
-                        .attr('y', yOffset)
-                        .attr('fill', textFill)
-                        .text(fieldName + ': ');
-                    xOffset += legendWidth;
-                }
-            }
-
-            // The x-accessor for the path generator; xScale ∘ xValue.
-            function X(d) {
-                return xScale(d[0]);
-            }
-
-            // The x-accessor for the path generator; yScale ∘ yValue.
-            function Y(d) {
-                return yScale(d[1]);
-            }
-
-            chart.margin = function (_) {
-                if (!arguments.length) return margin;
-                margin = _;
-                return chart;
-            };
-
-            chart.width = function (_) {
-                if (!arguments.lengtsh) return width;
-                width = _;
-                return chart;
-            };
-
-            chart.height = function (_) {
-                if (!arguments.length) return height;
-                height = _;
-                return chart;
-            };
-
-            chart.x = function (_) {
-                if (!arguments.length) return xValue;
-                xValue = _;
-                return chart;
-            };
-
-            chart.y = function (_) {
-                if (!arguments.length) return yValue;
-                yValue = _;
-                return chart;
-            };
-
-            return chart;
-        }
-
         var dateSelection = {};
 
         var chart = timeSeriesChart()
-            .x(function (d) { return new Date(d[0]); })
-            .y(function (d) { return +d[1]; });
+            .x(function (d) { return new Date(d.date); })
+            .y(function (d) { return +d.value; });
 
         // load query result
         function loadQuery() {
@@ -209,12 +45,66 @@
             }
 
             // get single series result nested in database response
-            var seriesList = response['results'][0].series;
-            var dataSet = seriesList.map(function (series) { return series.values });
+            var dataSets = formatResponse(response['results']);
 
-            d3.select("#chart")
-                .datum(dataSet)
-                .call(chart);
+            d3.select("#chart").datum(dataSets).call(chart);
+        }
+
+        function formatResponse(results) {
+            var seriesList = results[0].series;
+            var dataSets = [];
+            var groupByValue = 60 * 60 * 24;
+            for (var series of seriesList) {
+                var datasets = [];
+                var tag;
+                if (seriesList.length > 1) {
+                    var tags = Object.keys(series['tags']).map(function (key) {
+                        return series['tags'][key];
+                    });
+                    tag = tags[0];
+                }
+
+                for (var record of series['values']) {
+                    var date = new Date(record[0]);
+                    if (date < dateSelection.startDate || date > dateSelection.endDate) {
+                        continue;
+                    }
+                    // Add timezone offset if group by is greater than 1 hour
+                    if (groupByValue > 3600) {
+                        var timeOffsetInMS = date.getTimezoneOffset() * 60000;
+                        date.setTime(date.getTime() + timeOffsetInMS);
+                    }
+                    var values = record.splice(1);
+                    // a record can have multiple values which must be unpacked into different data sets
+                    values.forEach((val, index) => {
+                        if (datasets[index] === undefined) {
+                            datasets[index] = [];
+                        }
+                        var rec = {};
+                        rec.date = date;
+                        if (tag) {
+                            rec.fieldName = series['columns'][index + 1] + ': ' + tag;
+                        } else {
+                            rec.fieldName = series['columns'][index + 1];
+                        }
+                        rec.value = val;
+                        rec.header = tag || rec.fieldName;
+                        if (val !== null) {
+                            datasets[index].push(rec);
+                        }
+                    });
+                }
+
+                // if there is only one record in this dataset exclude it
+                if (datasets[0] && datasets[0].length === 1 && resp['results'].length > 1) {
+                    continue;
+                }
+                for (var dataset of datasets) {
+                    dataset.sort();
+                    dataSets.push(dataset);
+                }
+            }
+            return dataSets;
         }
 
         window.addEventListener("message", receiveMessage, false);
